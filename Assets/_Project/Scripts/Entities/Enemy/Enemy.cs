@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] protected EnemyData enemyData;
+    [SerializeField] protected SO_EnemyData enemyData;
 
     protected Transform[] waypoints;
     protected int currentWaypointIndex = 0;

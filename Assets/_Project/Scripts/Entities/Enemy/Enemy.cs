@@ -1,3 +1,4 @@
+using System.Threading;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -118,19 +119,28 @@ public class Enemy : MonoBehaviour
     {
         lastAttackTime = Time.time;
 
-        if (targetBarrier != null)
+        // [수정] GetComponent도 매번 하면 느리므로, Barrier 컴포넌트를 직접 참조하는 게 더 좋습니다.
+        if (Barrier.Instance != null)
         {
-            // 실제 방벽 스크립트의 데미지 함수 호출 부위
-            // targetBarrier.GetComponent<Barrier>().TakeDamage(enemyData.attackDamage);
-            Debug.Log($"{enemyData.enemyName}이(가) 방벽을 공격! 피해량: {enemyData.attackDamage}");
+            Barrier.Instance.TakeDamage(enemyData.attackDamage);
+            Debug.Log($"{enemyData.enemyName}이(가) 방벽을 공격!");
         }
     }
 
     protected virtual void ReachEnd()
     {
         isAtEnd = true;
-        targetBarrier = GameObject.FindGameObjectWithTag("Barrier");
-        Debug.Log($"{enemyData.enemyName}이 방벽에 도달했습니다.");
+
+        // [수정] 씬 전체를 뒤지는 대신, 미리 등록된 Instance를 바로 가져옴 (성능 소모 0)
+        if (Barrier.Instance != null)
+        {
+            targetBarrier = Barrier.Instance.gameObject;
+            Debug.Log($"{enemyData.enemyName}이 방벽에 도달했습니다.");
+        }
+        else
+        {
+            Debug.LogError("씬에 Barrier가 존재하지 않습니다!");
+        }
     }
 
     public virtual void TakeDamage(float damage)

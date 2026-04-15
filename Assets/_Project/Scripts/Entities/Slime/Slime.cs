@@ -66,7 +66,7 @@ public class Slime : MonoBehaviour
             }
         }
 
-        Debug.Log($"{slimeData.slimeName}이(가) {targetEnemy.name}을(를) 공격!");
+        //Debug.Log($"{slimeData.slimeName}이(가) {targetEnemy.name}을(를) 공격!");
     }
 
     // ======================================================================================

@@ -15,7 +15,7 @@ public class Enemy : MonoBehaviour
     protected bool isAtEnd = false;
     protected GameObject targetBarrier;
 
-    // [추가] 타워가 타겟을 결정할 때 참조할 정보
+    // 타워가 타겟을 결정할 때 참조할 정보
     public float TotalDistanceTraveled { get; private set; } // 누적 이동 거리
     public bool IsDead => isDead; // 사망 여부 확인용 프로퍼티
 
@@ -24,7 +24,7 @@ public class Enemy : MonoBehaviour
         // WaypointManager에서 경로 자동 할당
         if (WaypointManager.Waypoints != null && WaypointManager.Waypoints.Length > 0)
         {
-            Setup(WaypointManager.Waypoints);
+            Setup(WaypointManager.Waypoints, 0);
         }
         else
         {
@@ -32,19 +32,27 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public virtual void Setup(Transform[] path)
+    public virtual void Setup(Transform[] path, float hpGrowthRate)
     {
         waypoints = path;
-        currentHealth = enemyData.maxHealth;
+
+        // 기본 체력 + (기본 체력 * 상승률 / 100)
+        // 예: 기본체력 30, 상승률 10% -> 30 + (30 * 0.1) = 33
+        float bonusHealth = enemyData.maxHealth * (hpGrowthRate / 100f);
+        currentHealth = enemyData.maxHealth + bonusHealth;
+
         isDead = false;
         isAtEnd = false;
-        TotalDistanceTraveled = 0f; // 누적 거리 초기화
+        TotalDistanceTraveled = 0f;
+        targetBarrier = null;
 
         if (waypoints != null && waypoints.Length > 0)
         {
             transform.position = waypoints[0].position;
             currentWaypointIndex = 1;
         }
+
+        //Debug.Log($"{gameObject.name} 생성 - 최종 체력: {currentHealth} (증가량: {hpGrowthRate}%)");
     }
 
     protected virtual void Update()
@@ -54,10 +62,10 @@ public class Enemy : MonoBehaviour
         if (!isAtEnd)
         {
             Move();
-            if (Time.frameCount % 60 == 0) // 약 1초(60프레임)마다 한 번씩 출력
+            /*if (Time.frameCount % 60 == 0) // 약 1초(60프레임)마다 한 번씩 출력
             {
                 Debug.Log($"[{gameObject.name}] 현재 누적 이동 거리: {TotalDistanceTraveled:F2}");
-            }
+            }*/
         }
         else
         {
@@ -111,15 +119,22 @@ public class Enemy : MonoBehaviour
 
     protected virtual bool CanAttack()
     {
+        // 1. 공격 쿨타임 확인
         bool canTimeAttack = Time.time >= lastAttackTime + enemyData.attackInterval;
-        return isAtEnd && canTimeAttack && targetBarrier != null;
+
+        // 2. 방벽 생존 확인 (Barrier의 IsDestroyed 프로퍼티 참조)
+        // Barrier 클래스에 public bool IsDestroyed { get; private set; }가 있어야 합니다.
+        bool isBarrierAlive = Barrier.Instance != null && !Barrier.Instance.IsDestroyed;
+
+        // 도착함 + 쿨타임 참 + 타겟 존재함 + 방벽이 아직 파괴 안됨
+        return isAtEnd && canTimeAttack && targetBarrier != null && isBarrierAlive;
     }
 
     public virtual void Attack()
     {
         lastAttackTime = Time.time;
 
-        // [수정] GetComponent도 매번 하면 느리므로, Barrier 컴포넌트를 직접 참조하는 게 더 좋습니다.
+        // GetComponent도 매번 하면 느리므로, Barrier 컴포넌트를 직접 참조하는 게 더 좋습니다.
         if (Barrier.Instance != null)
         {
             Barrier.Instance.TakeDamage(enemyData.attackDamage);
@@ -152,8 +167,19 @@ public class Enemy : MonoBehaviour
 
     protected virtual void Die()
     {
-        if (isDead) return;
+        if (isDead) return; // 이미 죽은 상태라면 중복 실행 방지
         isDead = true;
-        Destroy(gameObject);
+
+        // [회수 로직] Destroy 대신 PoolManager에 반납
+        // enemyData.enemyID는 인스펙터나 데이터 테이블에서 설정된 int 값입니다.
+        if (PoolManager.Instance != null)
+        {
+            PoolManager.Instance.ReturnToPool(enemyData.enemyID, gameObject);
+        }
+        else
+        {
+            // 만약 매니저가 없다면 (테스트용) 삭제
+            Destroy(gameObject);
+        }
     }
 }

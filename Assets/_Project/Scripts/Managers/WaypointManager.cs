@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class WaypointManager : MonoBehaviour
 {
-    // static 변수는 관례상 대문자로 시작하거나 규칙에 따라 표기
     public static Transform[] Waypoints;
 
     private void Awake()

@@ -9,18 +9,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 9aeb5bca6bacd114887663200fbe28a2, type: 3}
   m_Name: WaveData
   m_EditorClassIdentifier: Assembly-CSharp::SO_WaveData
-  waveID: 1
-  waveTime: 0
-  waitTime: 0
-  nextGroupCycle: 0
-  rewardID: 1
-  rewardQuantity: 0
-  slotMoveRecovery: 0
+  waveID: 301
+  waveTime: 5
+  waitTime: 1
+  nextGroupCycle: 2
+  rewardID: 201
+  rewardQuantity: 1
+  slotMoveRecovery: 1
   enemyList:
   - enemyID: 101
-    spawnCount: 1
-    spawnInterval: 1
+    spawnCount: 5
+    spawnInterval: 2
     hpGrowth: 0

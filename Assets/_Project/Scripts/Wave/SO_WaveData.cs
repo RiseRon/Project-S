@@ -4,7 +4,7 @@ using System.Collections.Generic;
 [System.Serializable]
 public class EnemySpawnGroup
 {
-    public string enemyID;      // 적 데이터 테이블의 ID (Basic, Tank 등)
+    public int enemyID;      // 적 데이터 테이블의 ID (Basic, Tank 등)
     public int spawnCount;      // 소환 마릿수
     public float spawnInterval; // 같은 종류의 적 사이의 소환 간격
     public float hpGrowth;      // 해당 웨이브의 체력 상승치

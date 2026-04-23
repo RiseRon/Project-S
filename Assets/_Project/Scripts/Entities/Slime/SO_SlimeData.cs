@@ -2,16 +2,16 @@ using UnityEngine;
 using UnityEngine.UIElements.Experimental;
 
 // 슬라임의 속성 및 공격 방식을 열거형으로 정의
-public enum SlimeAttribute { Fire, Water, Electric, Ice, Posion, Earth }
-public enum ProjectileType { Single, Area, Floor }
-public enum TrajectoryType { Straight, Parabolic }
+public enum SlimeElementType { Fire, Water, Electric, Ice, Posion, Earth }
+public enum ProjectileType { Single, Area, Floor } // 투사체 타입 (단일, 범위, 장판)
+public enum TrajectoryType { Straight, Parabolic } // 궤도 타입 (직선, 포물선)
 [CreateAssetMenu(fileName = "NewSlimeData", menuName = "ScriptableObjects/SlimeData")]
 public class SO_SlimeData : ScriptableObject
 {
     [Header("기본 정보")]
     public string slimeID;
     public string slimeName;
-    public SlimeAttribute attribute;
+    public SlimeElementType elementType;
     public int MasteryLevel; // 1: Noema, 2: Rare, 3Epic
 
     [Header("전투 스탯")]
@@ -21,8 +21,8 @@ public class SO_SlimeData : ScriptableObject
 
     [Header("투사체 설정")]
     public GameObject projectilePrefab;
-    public ProjectileType projectileType;
-    public TrajectoryType trajectoryType;
+    public ProjectileType projectileType; // 투사체 타입
+    public TrajectoryType trajectoryType; // 궤도 타입
 
     [Header("투사체 세부 설정")]
     public float projectileSpeed; // 탄환 속도

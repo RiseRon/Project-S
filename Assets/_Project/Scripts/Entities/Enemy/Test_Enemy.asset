@@ -16,7 +16,7 @@ MonoBehaviour:
   enemyName: Test_Emeny
   maxHealth: 10
   attackDamage: 10
-  moveSpeed: 20
+  moveSpeed: 15
   attackInterval: 2
   normalReward: 10
   specialReward: 0

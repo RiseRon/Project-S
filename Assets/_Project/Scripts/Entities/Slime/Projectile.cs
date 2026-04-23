@@ -45,7 +45,14 @@ public class Projectile : MonoBehaviour
         // 도착 체크
         if (progress >= 1.0f)
         {
-            Hit();
+            if (data.trajectoryType == TrajectoryType.Straight)
+            {
+                Hit();
+            }
+            else
+            {
+                SpawnArea();
+            }
         }
     }
 
@@ -84,20 +91,28 @@ public class Projectile : MonoBehaviour
         // 1. 데미지 입히기
         targetEnemy.TakeDamage(data.attackDamage);
 
-        // 2. 속성별 특수 효과 적용 (예시: 물-슬로우, 얼음-스턴)
-        ApplyAttributeEffects();
+        // 2. 속성별 특수 효과 적용 (얼음-스턴)
+        ApplyElementEffects();
 
         Destroy(gameObject);
     }
 
-    private void ApplyAttributeEffects()
+    private void SpawnArea()
+    {
+
+        
+
+        Destroy(gameObject);
+    }
+
+    private void ApplyElementEffects()
     {
         // 타겟 Enemy의 상태를 변화시키는 로직 (기획서 데이터 기반)
-        if (data.attribute == SlimeAttribute.Water)
+        if (data.elementType == SlimeElementType.Water)
         {
             // target.ApplySlow(data.slowRate, data.effectDuration);
         }
-        else if (data.attribute == SlimeAttribute.Ice)
+        else if (data.elementType == SlimeElementType.Ice)
         {
             // float rand = Random.value * 100;
             // if(rand <= data.stunChance) target.ApplyStun(data.effectDuration);

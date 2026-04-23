@@ -22,7 +22,7 @@ MonoBehaviour:
   projectilePrefab: {fileID: 4749688299387629109, guid: ec0a879aad52e39478a433515e7f2261, type: 3}
   projectileType: 0
   trajectoryType: 0
-  projectileSpeed: 20
+  projectileSpeed: 50
   arcHeight: 2
   slowRate: 0
   stunChance: 0

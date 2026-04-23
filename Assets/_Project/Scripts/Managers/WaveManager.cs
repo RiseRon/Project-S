@@ -17,7 +17,15 @@ public class WaveManager : MonoBehaviour
     private void Awake()
     {
         // 싱글톤 초기화
-        if (Instance == null) Instance = this;
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            // 중복된 매니저 파괴
+            Destroy(gameObject);
+        }
     }
 
     private void Start()

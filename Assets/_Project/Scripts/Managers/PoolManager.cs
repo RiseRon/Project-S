@@ -24,7 +24,15 @@ public class PoolManager : MonoBehaviour
     private void Awake()
     {
         // 싱글톤 초기화
-        Instance = this;
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            // 중복된 매니저 파괴
+            Destroy(gameObject);
+        }
         // 게임 시작 시 설정된 모든 풀을 생성 및 초기화
         InitializePool();
     }

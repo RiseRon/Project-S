@@ -14,17 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SO_SlimeData
   slimeID: 0
   slimeName: Test_Slime
-  attribute: 0
+  elementType: 0
   MasteryLevel: 1
   attackDamage: 1
   attackRange: 26
-  attackInterval: 1
+  attackInterval: 5
   projectilePrefab: {fileID: 4749688299387629109, guid: ec0a879aad52e39478a433515e7f2261, type: 3}
-  projectileType: 0
-  trajectoryType: 0
+  projectileType: 2
+  trajectoryType: 1
   projectileSpeed: 50
-  arcHeight: 2
-  slowRate: 0
+  arcHeight: 10
+  slowRate: 50
   stunChance: 0
   dotDamage: 0
+  damageInterval: 0
   effectDuration: 0
+  areaPrefabID: 801
+  areaDuration: 5

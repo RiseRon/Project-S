@@ -10,7 +10,7 @@ public class SO_EnemyData : ScriptableObject
     [Header("능력치")]
     public float maxHealth; // 최대 체력
     public float attackDamage; // 공격력
-    public float moveSpeed; // 공격 속도
+    public float moveSpeed; // 이동 속도
     public float attackInterval; // 공격 주기 (초)
 
     [Header("보상")]

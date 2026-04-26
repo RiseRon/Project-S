@@ -12,7 +12,7 @@ public class SO_SlimeData : ScriptableObject
     public string slimeID;
     public string slimeName;
     public SlimeElementType elementType;
-    public int MasteryLevel; // 1: Noema, 2: Rare, 3Epic
+    public int MasteryLevel; // 1: Noemal, 2: Rare, 3Epic
 
     [Header("전투 스탯")]
     public float attackDamage;
@@ -31,6 +31,11 @@ public class SO_SlimeData : ScriptableObject
     [Header("특수 효과")]
     [Range(0, 100)] public float slowRate; // 슬로우 비율
     [Range(0, 100)] public float stunChance; //스턴 확률
-    public float dotDamage; // 지속 초당 데미지
+    public float dotDamage; // 도트 데미지
+    public float damageInterval; // 도트 데미지 주기
     public float effectDuration; //효과 지속 시간
+
+    [Header("장판 설정")]
+    public int areaPrefabID; // PoolManager에 등록된 장판 프리팹의 ID
+    public float areaDuration; // 장판 유지 시간
 }

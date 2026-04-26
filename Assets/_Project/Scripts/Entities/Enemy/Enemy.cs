@@ -8,6 +8,7 @@ public class Enemy : MonoBehaviour
     protected Transform[] waypoints;
     protected int currentWaypointIndex = 0;
     protected float currentHealth;
+    protected float currentSpeed;
     protected float lastAttackTime;
 
     // 상태 확인용 변수
@@ -40,6 +41,8 @@ public class Enemy : MonoBehaviour
         // 예: 기본체력 30, 상승률 10% -> 30 + (30 * 0.1) = 33
         float bonusHealth = enemyData.maxHealth * (hpGrowthRate / 100f);
         currentHealth = enemyData.maxHealth + bonusHealth;
+
+        currentSpeed = enemyData.moveSpeed;
 
         isDead = false;
         isAtEnd = false;
@@ -89,7 +92,7 @@ public class Enemy : MonoBehaviour
         transform.position = Vector3.MoveTowards(
             transform.position,
             target.position,
-            enemyData.moveSpeed * Time.deltaTime
+            currentSpeed * Time.deltaTime
         );
 
         // [추가] 실제로 이동한 물리적 거리를 누적 거리에 더함
@@ -181,5 +184,15 @@ public class Enemy : MonoBehaviour
             // 만약 매니저가 없다면 (테스트용) 삭제
             Destroy(gameObject);
         }
+    }
+
+    public void ApplySlow(float slowRate)
+    {
+        currentSpeed = enemyData.moveSpeed * (1.0f - (slowRate / 100.0f));
+    }
+
+    public void ResetSlow()
+    {
+        currentSpeed = enemyData.moveSpeed;
     }
 }

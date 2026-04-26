@@ -99,9 +99,19 @@ public class Projectile : MonoBehaviour
 
     private void SpawnArea()
     {
+        if (PoolManager.Instance != null)
+        {
+            // 1. Pool에서 장판 오브젝트 소환 (현재 투사체 위치)
+            GameObject areaObj = PoolManager.Instance.SpawnFromPool(data.areaPrefabID, targetPosition, Quaternion.identity);
 
-        
+            // 2. 장판 스크립트를 가져와서 유지 시간 및 ID 설정
+            if (areaObj.TryGetComponent<AreaEffect>(out var area))
+            {
+                area.Init(data.areaPrefabID, data);
+            }
+        }
 
+        // 투사체 파괴
         Destroy(gameObject);
     }
 

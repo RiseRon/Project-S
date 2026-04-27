@@ -39,7 +39,7 @@ public class AreaEffect : MonoBehaviour
                 // 첫 데미지 시간 설정 (입장 즉시 혹은 1초 뒤)
                 if (!enemyTimers.ContainsKey(enemy))
                 {
-                    enemyTimers.Add(enemy, Time.time + 1.0f);
+                    enemyTimers.Add(enemy, Time.time + data.damageInterval);
                     // 만약 밟자마자 첫 틱 데미지를 주고 싶다면 여기서 TakeDamage 호출
                 }
             }

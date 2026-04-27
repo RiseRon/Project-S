@@ -118,11 +118,7 @@ public class Projectile : MonoBehaviour
     private void ApplyElementEffects()
     {
         // 타겟 Enemy의 상태를 변화시키는 로직 (기획서 데이터 기반)
-        if (data.elementType == SlimeElementType.Water)
-        {
-            // target.ApplySlow(data.slowRate, data.effectDuration);
-        }
-        else if (data.elementType == SlimeElementType.Ice)
+        if (data.elementType == SlimeElementType.Ice)
         {
             // float rand = Random.value * 100;
             // if(rand <= data.stunChance) target.ApplyStun(data.effectDuration);

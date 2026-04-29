@@ -18,7 +18,6 @@ MonoBehaviour:
   damage: 10
   moveSpeed: 20
   attackSpeed: 1
-  attack_Interval: 0
   splitID: 0
   splitSpwanCount: 0
   canMoveStun: 0

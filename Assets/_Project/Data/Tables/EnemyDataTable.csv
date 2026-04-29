@@ -1,11 +1,11 @@
-﻿기본 정보,,,능력치,,,,,,,,,,보상,
-ID,이름,한글 이름,공격력,이동속도,체력,공격속도(s),공격 주기(s),분열 유닛 ID,분열 유닛 마릿수,스턴 시 이동 가능 여부,스턴 시 공격 가능 여부,스턴 후 스턴 무적시간(s),드롭 재화,수량
-ID,Name,K_Name,Damage,MoveSpeed,EnemyHP,AttackSpeed,Attack_Interval,SplitID,SplitSpawnCount,CanMoveStun,CanAtkStun,StunGrace,DropID,Amount
-int,string,string,int,int,int,float,int,int,int,bool,bool,int,int,int
-201,Basic,기본,10,30,30,1.0,0,0,0,0,0,1,1,0
-202,Tank,탱커,20,15,20,1.0,0,0,0,0,0,1,1,0
-203,Fast,이속,10,20,20,1.0,0,0,0,0,0,1,1,0
-204,Splitter,분열기,20,20,10,1.0,0,1,2,0,0,1,1,0
-205,Splitter_Fragment,파편,10,20,5,1.0,0,0,0,0,0,1,1,0
-206,MidBoss,중간보스,30,20,200,1.0,0,0,0,0,1,1,2,0
-207,FinalBoss,최종보스,40,20,300,1.0,0,0,0,0,1,1,2,0
+﻿기본 정보,,,능력치,,,,,,,,,보상,
+ID,이름,한글 이름,공격력,이동속도,체력,공격속도(s),분열 유닛 ID,분열 유닛 마릿수,스턴 시 이동 가능 여부,스턴 시 공격 가능 여부,스턴 후 스턴 무적시간(s),드롭 재화,수량
+ID,Name,K_Name,Damage,MoveSpeed,EnemyHP,AttackSpeed,SplitID,SplitSpawnCount,CanMoveStun,CanAtkStun,StunGrace,DropID,Amount
+int,string,string,int,int,int,float,int,int,bool,bool,int,int,int
+201,Basic,기본,10,30,30,1.0,0,0,0,0,1,1,0
+202,Tank,탱커,20,15,20,1.0,0,0,0,0,1,1,0
+203,Fast,이속,10,20,20,1.0,0,0,0,0,1,1,0
+204,Splitter,분열기,20,20,10,1.0,1,2,0,0,1,1,0
+205,Splitter_Fragment,파편,10,20,5,1.0,0,0,0,0,1,1,0
+206,MidBoss,중간보스,30,20,200,1.0,0,0,0,1,1,2,0
+207,FinalBoss,최종보스,40,20,300,1.0,0,0,0,1,1,2,0

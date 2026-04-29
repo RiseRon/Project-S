@@ -58,18 +58,17 @@ public class EnemyDataImporter
             asset.moveSpeed = int.Parse(data[4]);
             asset.enemyHP = int.Parse(data[5]);
             asset.attackSpeed = float.Parse(data[6]);
-            asset.attack_Interval = float.Parse(data[7]);
 
             // 특수 능력 (CSV의 0/1 값을 bool처럼 처리하거나 int 그대로 대입)
-            asset.splitID = int.Parse(data[8]);
-            asset.splitSpwanCount = int.Parse(data[9]);
+            asset.splitID = int.Parse(data[7]);
+            asset.splitSpwanCount = int.Parse(data[8]);
+            asset.canMoveStun = (int.Parse(data[9]) == 1);
             asset.canMoveStun = (int.Parse(data[10]) == 1);
-            asset.canMoveStun = (int.Parse(data[11]) == 1);
-            asset.StunGrace = int.Parse(data[12]);
+            asset.StunGrace = int.Parse(data[11]);
 
             // 보상
-            asset.dropID = int.Parse(data[13]);
-            asset.amount = int.Parse(data[14]);
+            asset.dropID = int.Parse(data[12]);
+            asset.amount = int.Parse(data[13]);
 
             // 에디터 변경사항 기록
             EditorUtility.SetDirty(asset);

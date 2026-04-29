@@ -123,7 +123,7 @@ public class Enemy : MonoBehaviour
     protected virtual bool CanAttack()
     {
         // 1. 공격 쿨타임 확인
-        bool canTimeAttack = Time.time >= lastAttackTime + enemyData.attack_Interval;
+        bool canTimeAttack = Time.time >= lastAttackTime + enemyData.attackSpeed;
 
         // 2. 방벽 생존 확인 (Barrier의 IsDestroyed 프로퍼티 참조)
         // Barrier 클래스에 public bool IsDestroyed { get; private set; }가 있어야 합니다.

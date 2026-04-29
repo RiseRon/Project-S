@@ -12,7 +12,6 @@ public class SO_EnemyData : ScriptableObject
     public int damage; // 공격력
     public int moveSpeed; // 이동 속도
     public float attackSpeed; // 공격속도 (s)
-    public float attack_Interval; // 공격주기 (s)
 
     [Header("특수 능력 및 효과 부여")]
     public int splitID; // 분열 유닛 ID

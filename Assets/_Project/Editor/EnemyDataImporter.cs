@@ -33,8 +33,8 @@ public class EnemyDataImporter
 
             // CSV 컬럼 순서 매칭
             // 0:ID, 1:Name, 2:K_Name, 3:Damage, 4:MoveSpeed, 5:EnemyHP, 6:AttackSpeed, 
-            // 7:Attack_Interval, 8:SplitID, 9:SplitSpawnCount, 10:CanMoveStun, 
-            // 11:CanAtkStun, 12:StunGrace, 13:DropID, 14:Amount
+            // 7:SplitID, 8:SplitSpawnCount, 9:CanMoveStun, 
+            // 10:CanAtkStun, 11:StunGrace, 12:DropID, 14:Amount
 
             int id = int.Parse(data[0]);
             string assetPath = $"{saveFolderPath}/Enemy_{id}.asset";

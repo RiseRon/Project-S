@@ -16,7 +16,7 @@ MonoBehaviour:
   waveTime: 5
   waitTime: 1
   nextGroupCycle: 2
-  rewardID: 201
+  rewardID: 0
   rewardQuantity: 1
   slotMoveRecovery: 1
   enemyList:

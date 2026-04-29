@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: abe81235f3ed1f84d9ad739e0136121d, type: 3}
-  m_Name: Test_Enemy
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  id: 1
-  name: 
-  enemyHP: 0
-  damage: 0
-  moveSpeed: 15
-  attackSpeed: 0
+  m_Name: Enemy_207
+  m_EditorClassIdentifier: Assembly-CSharp::SO_EnemyData
+  id: 207
+  name: FinalBoss
+  enemyHP: 300
+  damage: 40
+  moveSpeed: 20
+  attackSpeed: 1
   attack_Interval: 0
   splitID: 0
   splitSpwanCount: 0
-  canMoveStun: 0
+  canMoveStun: 1
   canAtkStun: 0
-  StunGrace: 0
-  dropID: 0
+  StunGrace: 1
+  dropID: 2
   amount: 0
   rotationSpeed: 10

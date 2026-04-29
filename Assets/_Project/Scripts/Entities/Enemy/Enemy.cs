@@ -39,8 +39,8 @@ public class Enemy : MonoBehaviour
 
         // 기본 체력 + (기본 체력 * 상승률 / 100)
         // 예: 기본체력 30, 상승률 10% -> 30 + (30 * 0.1) = 33
-        float bonusHealth = enemyData.maxHealth * (hpGrowthRate / 100f);
-        currentHealth = enemyData.maxHealth + bonusHealth;
+        float bonusHealth = enemyData.enemyHP * (hpGrowthRate / 100f);
+        currentHealth = enemyData.enemyHP + bonusHealth;
 
         currentSpeed = enemyData.moveSpeed;
 
@@ -123,7 +123,7 @@ public class Enemy : MonoBehaviour
     protected virtual bool CanAttack()
     {
         // 1. 공격 쿨타임 확인
-        bool canTimeAttack = Time.time >= lastAttackTime + enemyData.attackInterval;
+        bool canTimeAttack = Time.time >= lastAttackTime + enemyData.attack_Interval;
 
         // 2. 방벽 생존 확인 (Barrier의 IsDestroyed 프로퍼티 참조)
         // Barrier 클래스에 public bool IsDestroyed { get; private set; }가 있어야 합니다.
@@ -140,8 +140,8 @@ public class Enemy : MonoBehaviour
         // GetComponent도 매번 하면 느리므로, Barrier 컴포넌트를 직접 참조하는 게 더 좋습니다.
         if (Barrier.Instance != null)
         {
-            Barrier.Instance.TakeDamage(enemyData.attackDamage);
-            Debug.Log($"{enemyData.enemyName}이(가) 방벽을 공격!");
+            Barrier.Instance.TakeDamage(enemyData.damage);
+            Debug.Log($"{enemyData.name}이(가) 방벽을 공격!");
         }
     }
 
@@ -153,7 +153,7 @@ public class Enemy : MonoBehaviour
         if (Barrier.Instance != null)
         {
             targetBarrier = Barrier.Instance.gameObject;
-            Debug.Log($"{enemyData.enemyName}이 방벽에 도달했습니다.");
+            Debug.Log($"{enemyData.name}이 방벽에 도달했습니다.");
         }
         else
         {
@@ -177,7 +177,7 @@ public class Enemy : MonoBehaviour
         // enemyData.enemyID는 인스펙터나 데이터 테이블에서 설정된 int 값입니다.
         if (PoolManager.Instance != null)
         {
-            PoolManager.Instance.ReturnToPool(enemyData.enemyID, gameObject);
+            PoolManager.Instance.ReturnToPool(enemyData.id, gameObject);
         }
         else
         {

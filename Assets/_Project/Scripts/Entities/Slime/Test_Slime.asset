@@ -21,7 +21,7 @@ MonoBehaviour:
   attackInterval: 5
   projectilePrefab: {fileID: 4749688299387629109, guid: ec0a879aad52e39478a433515e7f2261, type: 3}
   projectileType: 2
-  trajectoryType: 0
+  trajectoryType: 1
   projectileSpeed: 50
   arcHeight: 10
   slowRate: 50
@@ -29,5 +29,5 @@ MonoBehaviour:
   dotDamage: 0
   damageInterval: 0
   effectDuration: 0
-  areaPrefabID: 801
+  areaPrefabID: 901
   areaDuration: 5

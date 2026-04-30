@@ -37,7 +37,7 @@ public class EnemyDataImporter
             // 10:CanAtkStun, 11:StunGrace, 12:DropID, 13:Amount
 
             int id = int.Parse(data[0]);
-            string assetPath = $"{saveFolderPath}/Enemy_{id}.asset";
+            string assetPath = $"{saveFolderPath}/{id}_{data[1]}.asset";
 
             // 3. ScriptableObject 파일 로드 또는 생성
             SO_EnemyData asset = AssetDatabase.LoadAssetAtPath<SO_EnemyData>(assetPath);

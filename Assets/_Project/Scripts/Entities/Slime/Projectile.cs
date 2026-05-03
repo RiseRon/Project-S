@@ -89,7 +89,7 @@ public class Projectile : MonoBehaviour
     private void Hit()
     {
         // 1. 데미지 입히기
-        targetEnemy.TakeDamage(data.attackDamage);
+        targetEnemy.TakeDamage(data.damage);
 
         // 2. 속성별 특수 효과 적용 (얼음-스턴)
         ApplyElementEffects();

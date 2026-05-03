@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 776598c7b2d4ea74da83234b2c33d86b, type: 3}
+  m_Name: 124_E_Ice
+  m_EditorClassIdentifier: Assembly-CSharp::SO_SlimeData
+  id: 124
+  name: E_Ice
+  kName: 
+  elementType: 3
+  rank: 3
+  damage: 40
+  attackRange: 12
+  attackSpeed: 1
+  projectilePrefabID: 0
+  projectileType: 0
+  trajectoryType: 0
+  projectileSpeed: 50
+  arcHeight: 0
+  stunChance: 20
+  stunDuration: 1
+  slowRate: 0
+  dotDamage: 0
+  dotDamageInterval: 0
+  areaPrefabID: 0
+  areaDuration: 0

@@ -47,26 +47,23 @@ public class Slime : MonoBehaviour
 
     protected virtual bool CanAttack()
     {
-        return targetEnemy != null && Time.time >= lastAttackTime + slimeData.attackInterval;
+        return targetEnemy != null && Time.time >= lastAttackTime + slimeData.attackSpeed;
     }
 
     public virtual void Attack()
     {
         lastAttackTime = Time.time;
 
-        if (slimeData.projectilePrefab != null)
+        if (PoolManager.Instance != null)
         {
-            GameObject projGO = Instantiate(slimeData.projectilePrefab, transform.position, Quaternion.identity);
-            Projectile projectile = projGO.GetComponent<Projectile>();
+            GameObject projGO = PoolManager.Instance.SpawnFromPool(slimeData.projectilePrefabID, transform.position, Quaternion.identity);
 
-            if (projectile != null)
+            if (projGO != null && projGO.TryGetComponent<Projectile>(out var projectile))
             {
                 // 투사체에 슬라임의 속성 데이터(데미지, 효과 등) 전달
                 projectile.Setup(targetEnemy, slimeData);
             }
         }
-
-        //Debug.Log($"{slimeData.slimeName}이(가) {targetEnemy.name}을(를) 공격!");
     }
 
     // ======================================================================================

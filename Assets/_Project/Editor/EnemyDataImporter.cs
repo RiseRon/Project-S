@@ -51,7 +51,7 @@ public class EnemyDataImporter
 
             // ID & 정보
             asset.id = id;
-            asset.name = data[1]; // 한글 이름을 사용하려면 인덱스 2번
+            asset.enemyName = data[1]; // 한글 이름을 사용하려면 인덱스 2번
 
             // 능력치
             asset.damage = int.Parse(data[3]);

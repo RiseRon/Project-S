@@ -48,7 +48,7 @@ public class SlimeDataImporter
 
             // 기본 정보
             asset.id = id;
-            asset.name = data[1]; // 한글 이름을 사용하려면 인덱스 2번
+            asset.slimeName = data[1]; // 한글 이름을 사용하려면 인덱스 2번
             Enum.TryParse(data[3], out asset.elementType); // Enum도 안전하게 파싱 (데이터가 잘못되어도 튕기지 않음)
             asset.rank = ParseInt(data[4], "숙련도", id);
 

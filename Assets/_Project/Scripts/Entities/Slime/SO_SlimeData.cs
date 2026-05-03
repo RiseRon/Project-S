@@ -9,7 +9,7 @@ public class SO_SlimeData : ScriptableObject
 {
     [Header("기본 정보")]
     public int id;              
-    public string name;                 
+    public string slimeName;
     public SlimeElementType elementType;
     public int rank;
 

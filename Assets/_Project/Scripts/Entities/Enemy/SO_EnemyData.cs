@@ -5,7 +5,7 @@ public class SO_EnemyData : ScriptableObject
 {
     [Header("ID & 정보")]
     public int id;
-    public string name;
+    public string enemyName;
 
     [Header("능력치")]
     public int enemyHP; // 최대 체력

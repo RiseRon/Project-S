@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: 103_N_Electric
   m_EditorClassIdentifier: Assembly-CSharp::SO_SlimeData
   id: 103
-  name: N_Electric
-  kName: 
+  slimeName: N_Electric
   elementType: 2
   rank: 1
   damage: 10

@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: 106_N_Earth
   m_EditorClassIdentifier: Assembly-CSharp::SO_SlimeData
   id: 106
-  name: N_Earth
-  kName: 
+  slimeName: N_Earth
   elementType: 5
   rank: 1
   damage: 5

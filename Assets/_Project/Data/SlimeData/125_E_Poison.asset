@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: 125_E_Poison
   m_EditorClassIdentifier: Assembly-CSharp::SO_SlimeData
   id: 125
-  name: E_Poison
-  kName: 
+  slimeName: E_Poison
   elementType: 4
   rank: 3
   damage: 0

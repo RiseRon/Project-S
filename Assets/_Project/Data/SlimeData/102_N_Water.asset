@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: 102_N_Water
   m_EditorClassIdentifier: Assembly-CSharp::SO_SlimeData
   id: 102
-  name: N_Water
-  kName: 
+  slimeName: N_Water
   elementType: 1
   rank: 1
   damage: 5

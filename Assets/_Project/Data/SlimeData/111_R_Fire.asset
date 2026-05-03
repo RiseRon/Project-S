@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: 111_R_Fire
   m_EditorClassIdentifier: Assembly-CSharp::SO_SlimeData
   id: 111
-  name: R_Fire
-  kName: 
+  slimeName: R_Fire
   elementType: 0
   rank: 2
   damage: 30

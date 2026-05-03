@@ -125,4 +125,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 130fe1d520ae6ac45a39f91923b60b48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Slime
-  slimeData: {fileID: 11400000, guid: ce839ce3b2edf8a46b482d46cfd4afc8, type: 2}
+  slimeData: {fileID: 11400000, guid: 67abfe4f51b3f1545af670e3cef80bae, type: 2}

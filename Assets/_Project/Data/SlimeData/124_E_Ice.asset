@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: 124_E_Ice
   m_EditorClassIdentifier: Assembly-CSharp::SO_SlimeData
   id: 124
-  name: E_Ice
-  kName: 
+  slimeName: E_Ice
   elementType: 3
   rank: 3
   damage: 40

@@ -9,7 +9,7 @@ public class SlimeDataImporter
     public static void ImportSlimeData()
     {
         string csvPath = Path.Combine(Application.dataPath, "_Project", "Data", "Tables", "SlimeDataTable.csv");
-        string saveFolderPath = Path.Combine("Assets", "_Project", "Data", "SlimeData");
+        string saveFolderPath = Path.Combine("Assets", "_Project", "Data", "Resources", "SlimeData");
 
         if (!File.Exists(csvPath))
         {

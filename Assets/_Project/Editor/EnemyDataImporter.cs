@@ -9,7 +9,7 @@ public class EnemyDataImporter
     {
         // 1. 경로 설정
         string csvPath = Path.Combine(Application.dataPath, "_Project", "Data","Tables", "EnemyDataTable.csv");
-        string saveFolderPath = Path.Combine("Assets", "_Project", "Data", "EnemyData");
+        string saveFolderPath = Path.Combine("Assets", "_Project", "Data", "Resources", "EnemyData");
 
         if (!File.Exists(csvPath))
         {

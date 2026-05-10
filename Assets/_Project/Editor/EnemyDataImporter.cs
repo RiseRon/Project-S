@@ -61,7 +61,7 @@ public class EnemyDataImporter
 
             // 특수 능력 (CSV의 0/1 값을 bool처럼 처리하거나 int 그대로 대입)
             asset.splitID = int.Parse(data[7]);
-            asset.splitSpwanCount = int.Parse(data[8]);
+            asset.splitSpawnCount = int.Parse(data[8]);
             asset.canMoveStun = (int.Parse(data[9]) == 1);
             asset.canMoveStun = (int.Parse(data[10]) == 1);
             asset.StunGrace = int.Parse(data[11]);

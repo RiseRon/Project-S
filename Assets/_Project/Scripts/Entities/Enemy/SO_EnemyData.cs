@@ -15,7 +15,7 @@ public class SO_EnemyData : ScriptableObject
 
     [Header("특수 능력 및 효과 부여")]
     public int splitID; // 분열 유닛 ID
-    public int splitSpwanCount; // 분열 유닛 마릿수
+    public int splitSpawnCount; // 분열 유닛 마릿수
     public bool canMoveStun; // 스턴시 이동 가능 여부
     public bool canAtkStun; // 스턴시 공격 가능 여부
     public int StunGrace; // 스턴 후 스턴 무적시간(s)

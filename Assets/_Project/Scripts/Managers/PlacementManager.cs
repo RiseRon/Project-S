@@ -117,25 +117,64 @@ public class PlacementManager : MonoBehaviour
 
     private void EndDrag()
     {
-        // 조건 4: 슬롯 위에서 드롭 + 비어있음 + 이동 횟수 남음
-        if (currentOverSlot != null && currentOverSlot.IsEmpty && remainingMoves > 0)
+        // 1. 빈 슬롯에 배치하는 경우
+        if (currentOverSlot != null && currentOverSlot.IsEmpty)
         {
+            // 인벤토리에서 온 것인지(기존 슬롯이 없는지) 확인
+            bool isFromInventory = (originalSlot == null);
+
+            // [예외 처리] 맵에서 맵으로 이동하는데 이동 횟수가 없는 경우 배치 취소
+            if (!isFromInventory && remainingMoves <= 0)
+            {
+                ReturnToOriginalPosition();
+                return;
+            }
+
+            // [배치 실행] 슬라임을 목표 슬롯으로 이동 및 정보 갱신
             draggingSlime.transform.position = currentOverSlot.transform.position;
             currentOverSlot.placedSlime = draggingSlime;
 
-            // 이동 횟수 차감
-            remainingMoves--;
-            Debug.Log($"이동 성공! 남은 횟수: {remainingMoves}");
+            // [횟수 차감] 맵에서 맵으로 이동한 경우에만 차감
+            if (!isFromInventory)
+            {
+                remainingMoves--;
+                Debug.Log($"슬롯 간 이동 완료! 남은 이동 횟수: {remainingMoves}");
+            }
+            else
+            {
+                Debug.Log("인벤토리에서 최초 배치 완료! (이동 횟수 차감 안 됨)");
+            }
+        }
+        // 2. 머지(Merge)가 가능한 슬롯에 놓은 경우
+        else if (currentOverSlot != null && currentOverSlot.CanMerge(draggingSlime))
+        {
+            // 여기에 머지 로직 실행 (아래 매니저 관련 설명 참고)
+            // ex) MergeManager.Instance.ExecuteMerge(draggingSlime, currentOverSlot);
+        }
+        // 3. 배치할 수 없는 곳(허공, 병합 불가능한 꽉 찬 슬롯 등)에 놓은 경우
+        else
+        {
+            ReturnToOriginalPosition();
+        }
+
+        // 상태 초기화
+        draggingSlime = null;
+        currentOverSlot = null;
+    }
+
+    // 복구 로직
+    private void ReturnToOriginalPosition()
+    {
+        draggingSlime.transform.position = originalPos;
+        if (originalSlot != null)
+        {
+            originalSlot.placedSlime = draggingSlime;
         }
         else
         {
-            // 배치 불가 시 원래 위치로 복구
-            draggingSlime.transform.position = originalPos;
-            if (originalSlot != null) originalSlot.placedSlime = draggingSlime;
+            // 만약 인벤토리에서 꺼내다가 취소한 거라면 인벤토리 UI로 다시 돌려보내는 로직 필요
+            Debug.Log("인벤토리로 슬라임 복귀");
         }
-
-        draggingSlime = null;
-        currentOverSlot = null;
     }
 
     private Slot FindSlotUnderSlime(Vector3 position)

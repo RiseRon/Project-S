@@ -9,7 +9,7 @@ public class Slot : MonoBehaviour
     public bool IsEmpty => placedSlime == null;
 
     // 머지 가능 여부를 확인하는 가상 함수 (추후 확장)
-    public bool CanMerge(Slime dreggingslime)
+    public bool CanMerge(Slime draggingslime)
     {
         if (IsEmpty ) return false;
         

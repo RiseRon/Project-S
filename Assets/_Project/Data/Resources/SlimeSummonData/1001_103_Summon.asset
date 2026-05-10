@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4721388d2b66544e8628edfe9b51e6e, type: 3}
-  m_Name: SlimeSpawn_104
-  m_EditorClassIdentifier: Assembly-CSharp::SO_SlimeSpawnData
+  m_Name: 1001_103_Summon
+  m_EditorClassIdentifier: Assembly-CSharp::SO_SlimeSummonData
   groupID: 1001
-  id: 104
-  weight: 5
+  id: 103
+  weight: 10

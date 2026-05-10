@@ -2,16 +2,16 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 
-public class SlimeSpawnImporter
+public class SlimeSummonImporter
 {
     // 메뉴 이름을 Full로 설정하여 전체 갱신임을 명시
-    [MenuItem("Tools/CSV Data Import/Slime Spawn Data (Full)")]
+    [MenuItem("Tools/CSV Data Import/Slime Summon Data (Full)")]
     public static void ImportSlimeSpawnDataFull()
     {
         // 1. 경로 설정 (Path.Combine을 사용하여 OS간 호환성 확보)
-        string csvPath = Path.Combine(Application.dataPath, "_Project", "Data", "Tables", "SlimeSpawnTable.csv");
-        string relativeSavePath = "Assets/_Project/Data/Resources/SlimeSpawnData";
-        string absoluteSavePath = Path.Combine(Application.dataPath, "_Project", "Data", "Resources", "SlimeSpawnData");
+        string csvPath = Path.Combine(Application.dataPath, "_Project", "Data", "Tables", "SlimeSummonTable.csv");
+        string relativeSavePath = "Assets/_Project/Data/Resources/SlimeSummonData";
+        string absoluteSavePath = Path.Combine(Application.dataPath, "_Project", "Data", "Resources", "SlimeSummonData");
 
         // CSV 파일 존재 여부 확인
         if (!File.Exists(csvPath))
@@ -45,12 +45,12 @@ public class SlimeSpawnImporter
             int weight = int.Parse(data[2]);
 
             // 3. 에셋 생성 또는 로드 (Full 방식: 있으면 덮어쓰고 없으면 생성)
-            string assetPath = $"{relativeSavePath}/SlimeSpawn_{id}.asset";
-            SO_SlimeSpawnData asset = AssetDatabase.LoadAssetAtPath<SO_SlimeSpawnData>(assetPath);
+            string assetPath = $"{relativeSavePath}/{data[0]}_{data[1]}_Summon.asset";
+            SO_SlimeSummonData asset = AssetDatabase.LoadAssetAtPath<SO_SlimeSummonData>(assetPath);
 
             if (asset == null)
             {
-                asset = ScriptableObject.CreateInstance<SO_SlimeSpawnData>();
+                asset = ScriptableObject.CreateInstance<SO_SlimeSummonData>();
                 AssetDatabase.CreateAsset(asset, assetPath);
             }
 
@@ -68,6 +68,6 @@ public class SlimeSpawnImporter
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        Debug.Log($"[Importer] Slime Spawn Data (Full) 완료: {importCount}개의 에셋이 갱신되었습니다.");
+        Debug.Log($"[Importer] Slime Summon Data (Full) 완료: {importCount}개의 에셋이 갱신되었습니다.");
     }
 }

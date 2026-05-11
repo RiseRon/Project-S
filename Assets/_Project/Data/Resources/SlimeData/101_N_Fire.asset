@@ -17,9 +17,9 @@ MonoBehaviour:
   elementType: 0
   rank: 1
   damage: 15
-  attackRange: 5
+  attackRange: 20
   attackSpeed: 1
-  projectilePrefabID: 0
+  projectilePrefabID: 902
   projectileType: 0
   trajectoryType: 0
   projectileSpeed: 50

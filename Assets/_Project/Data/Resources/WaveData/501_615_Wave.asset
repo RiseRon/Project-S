@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9aeb5bca6bacd114887663200fbe28a2, type: 3}
+  m_Name: 501_615_Wave
+  m_EditorClassIdentifier: Assembly-CSharp::SO_WaveData
+  stageID: 501
+  waveID: 615
+  waveTime: 30
+  waitingTime: 5
+  nextGroupCycle: 2
+  hpGrowthRate: 0
+  rewardID: 301
+  rewardAmount: 0
+  slotMoveRecovery: 0
+  enemyList:
+  - enemyID: 201
+    spawnCount: 5
+    spawnInterval: 1
+  - enemyID: 203
+    spawnCount: 1
+    spawnInterval: 1
+  - enemyID: 204
+    spawnCount: 1
+    spawnInterval: 1
+  - enemyID: 206
+    spawnCount: 1
+    spawnInterval: 1

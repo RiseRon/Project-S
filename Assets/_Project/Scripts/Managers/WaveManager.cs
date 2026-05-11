@@ -1,18 +1,19 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq; // 데이터 정렬(OrderBy)을 위해 필요
 
 public class WaveManager : MonoBehaviour
 {
     // 어디서든 접근 가능한 싱글톤 인스턴스
     public static WaveManager Instance { get; private set; }
 
-    [Header("Wave Data")]
-    // 스테이지에 설정된 웨이브 데이터 리스트 (인스펙터에서 할당)
-    [SerializeField] private List<SO_WaveData> stageWaves;
+    [Header("Wave Data Settings")]
+    // 자동으로 로드된 웨이브 데이터들이 저장될 리스트
+    [SerializeField] private List<SO_WaveData> stageWaves = new List<SO_WaveData>();
 
-    private int currentWaveIndex = 0; // 현재 진행 중인 웨이브 번호
-    private bool isWaveActive = false; // 현재 웨이브가 동작 중인지 여부
+    private int currentWaveIndex = 0;   // 현재 진행 중인 웨이브 번호 (리스트 인덱스)
+    private bool isWaveActive = false;  // 현재 웨이브가 동작 중인지 여부
 
     private void Awake()
     {
@@ -23,118 +24,146 @@ public class WaveManager : MonoBehaviour
         }
         else
         {
-            // 중복된 매니저 파괴
             Destroy(gameObject);
+            return;
         }
+
+        // 게임 시작 시 Resources 폴더에서 데이터를 자동으로 불러옴
+        LoadWaveDataFromResources();
     }
 
     private void Start()
     {
-        // 게임 시작 시 첫 번째 웨이브 실행
+        // 첫 번째 웨이브 실행
         StartNextWave();
     }
 
-    // 다음 웨이브를 실행하는 공용 함수
+    /// <summary>
+    /// Resources/WaveData 폴더에 있는 모든 SO_WaveData를 로드하고 정렬합니다.
+    /// </summary>
+    private void LoadWaveDataFromResources()
+    {
+        // 1. Resources 폴더 내 해당 경로의 모든 SO_WaveData 타입 에셋 로드
+        SO_WaveData[] loadedArray = Resources.LoadAll<SO_WaveData>("WaveData");
+
+        if (loadedArray == null || loadedArray.Length == 0)
+        {
+            Debug.LogError("[WaveManager] Resources/WaveData 폴더에 데이터 에셋이 없습니다! 경로를 확인하세요.");
+            return;
+        }
+
+        // 2. 스테이지 ID와 웨이브 ID 순서대로 정렬하여 리스트에 담기 (LINQ 사용)
+        stageWaves = loadedArray
+            .OrderBy(w => w.stageID)
+            .ThenBy(w => w.waveID)
+            .ToList();
+
+        Debug.Log($"[WaveManager] {stageWaves.Count}개의 웨이브 데이터를 성공적으로 로드했습니다.");
+    }
+
+    /// <summary>
+    /// 다음 웨이브를 실행하는 공용 함수
+    /// </summary>
     public void StartNextWave()
     {
-        // 이미 웨이브가 진행 중이거나 모든 웨이브를 끝냈다면 중단
-        if (isWaveActive || currentWaveIndex >= stageWaves.Count) return;
+        // 이미 진행 중이거나 모든 웨이브가 끝났으면 중단
+        if (isWaveActive || currentWaveIndex >= stageWaves.Count)
+        {
+            if (currentWaveIndex >= stageWaves.Count)
+                Debug.Log("모든 웨이브가 완료되었습니다!");
+            return;
+        }
 
-        // 현재 인덱스에 맞는 웨이브 데이터로 루틴 시작
+        // 현재 순서의 데이터를 전달하여 루틴 시작
         StartCoroutine(WaveRoutine(stageWaves[currentWaveIndex]));
     }
 
-    // 웨이브의 전체 흐름(대기 -> 소환 -> 지속 -> 종료)을 관리하는 코루틴
     private IEnumerator WaveRoutine(SO_WaveData data)
     {
         isWaveActive = true;
-        Debug.Log($"[웨이브 {data.waveID}] 준비 중...");
 
-        // 1. 웨이브 시작 전 대기 시간 (WaitTime)
-        // 이전 웨이브 종료 후 또는 게임 시작 직후의 여유 시간을 가짐
-        yield return new WaitForSeconds(data.waitTime);
+        // 1. 웨이브 시작 전 대기 (watingTime 사용)
+        Debug.Log($"[웨이브 {data.waveID}] 시작 전 대기 중... ({data.waitingTime}초)");
+        yield return new WaitForSeconds(data.waitingTime);
 
-        Debug.Log($"[웨이브 {data.waveID}] 소환 시작!");
+        Debug.Log($"[웨이브 {data.waveID}] 전투 개시!");
 
-        // 2. 적 소환 루틴 실행 (실제 소환이 끝날 때까지 기다림)
-        yield return StartCoroutine(SpawnRoutine(data));
+        // 2. 적 소환 (Enemy List 순회)
+        foreach (var group in data.enemyList)
+        {
+            // 각 몬스터 그룹의 마릿수만큼 소환
+            for (int i = 0; i < group.spawnCount; i++)
+            {
+                // Enemy.cs의 HP 계산 방식과 맞추기 위해 CSV 수치(0, 10, 20...)를 그대로 넘김
+                SpawnEnemy(group.enemyID, (float)data.hpGrowthRate);
 
-        // 3. 웨이브 지속 시간 대기 (WaveTime)
-        // 소환이 끝난 시점부터 테이블에 정의된 시간만큼 웨이브 유지
+                // 마리당 소환 간격 대기
+                yield return new WaitForSeconds(group.spawnInterval);
+            }
+
+            // 그룹 간 대기 시간 (nextGroupCycle 사용)
+            Debug.Log($"[웨이브 {data.waveID}] 다음 그룹 소환까지 대기 ({data.nextGroupCycle}초)");
+            yield return new WaitForSeconds(data.nextGroupCycle);
+        }
+
+        // 3. 웨이브 제한 시간 동안 대기 (waveTime 사용)
+        // 적을 다 뽑은 후 웨이브가 유지되는 시간입니다.
         yield return new WaitForSeconds(data.waveTime);
 
-        // 4. 웨이브 종료 처리 및 보상 지급
+        // 4. 웨이브 종료 처리
         EndWave(data);
     }
 
-    // 웨이브 데이터에 정의된 적들을 순서대로 소환하는 코루틴
-    private IEnumerator SpawnRoutine(SO_WaveData data)
+    /// <summary>
+    /// SpawnManager를 통해 실제로 적을 씬에 등장시키는 함수
+    /// </summary>
+    private void SpawnEnemy(int id, float hpGrowthRate)
     {
-        // 데이터 테이블에 등록된 적 그룹(EnemyList)을 하나씩 순회
-        foreach (var group in data.enemyList)
-        {
-            // 각 그룹에 설정된 소환 마릿수만큼 반복
-            for (int i = 0; i < group.spawnCount; i++)
-            {
-                // [핵심] 직접 소환하지 않고 SpawnManager에게 요청 (관심사 분리)
-                // group.id: 적의 종류(int), group.hpGrowth: 이번 웨이브의 체력 보너스
-                SpawnEnemy(group.enemyID, group.hpGrowth);
-
-                // 같은 종류의 적 사이의 생성 간격 적용
-                if (group.spawnInterval > 0)
-                    yield return new WaitForSeconds(group.spawnInterval);
-            }
-
-            // 한 종류의 적 소환이 끝난 후 다음 종류 소환 전까지의 그룹 간 대기 시간 적용
-            yield return new WaitForSeconds(data.nextGroupCycle);
-        }
-    }
-
-    // SpawnManager를 통해 실제로 적을 씬에 등장시키는 함수
-    private void SpawnEnemy(int id, float hpBonus)
-    {
-        // 나중에 생성할 SpawnManager가 씬에 있는지 확인 후 소환 명령 전달
         if (SpawnManager.Instance != null)
         {
-            // SpawnManager는 내부적으로 PoolManager를 사용하여 적을 꺼내고 Setup을 호출함
-            SpawnManager.Instance.Spawn(id, hpBonus);
+            // hpGrowthRate는 10, 20 같은 정수값으로 전달됨 (Enemy.cs에서 백분율 계산)
+            SpawnManager.Instance.Spawn(id, hpGrowthRate);
         }
         else
         {
-            Debug.LogError("SpawnManager를 찾을 수 없습니다! 적 소환에 실패했습니다.");
+            Debug.LogError("SpawnManager를 찾을 수 없습니다!");
         }
     }
 
-    // 웨이브가 끝났을 때 호출되는 마무리 함수
+    /// <summary>
+    /// 웨이브 종료 시 보상 지급 및 다음 준비
+    /// </summary>
     private void EndWave(SO_WaveData data)
     {
-        Debug.Log($"[웨이브 {data.waveID}] 종료. 보상을 지급합니다.");
+        Debug.Log($"[웨이브 {data.waveID}] 종료. 보상을 확인합니다.");
 
-        // 데이터에 설정된 보상(재화, 슬롯 회복 등) 지급
+        // 보상 지급 로직 실행
         GiveRewards(data);
 
         isWaveActive = false;
-        currentWaveIndex++; // 다음 웨이브 번호로 증가
+        currentWaveIndex++; // 인덱스 증가
 
-        // 일정 시간 후 다음 웨이브가 자동으로 시작되도록 재귀 호출
+        // 자동 다음 웨이브 시작
         StartNextWave();
     }
 
-    // 테이블 수치에 따른 보상 지급 로직
+    /// <summary>
+    /// SO 데이터에 정의된 보상을 플레이어에게 지급합니다.
+    /// </summary>
     private void GiveRewards(SO_WaveData data)
     {
-        // 재화 보상 (예: 코인)
-        if (!string.IsNullOrEmpty(data.rewardID) && data.rewardQuantity > 0)
+        // 1. 아이템/재화 보상
+        if (data.rewardID > 0 && data.rewardAmount > 0)
         {
-            Debug.Log($"아이템 보상 획득: {data.rewardID} x{data.rewardQuantity}");
-            // CurrencyManager.Instance.AddCurrency(data.rewardID, data.rewardQuantity);
+            Debug.Log($"보상 아이템 획득: ID {data.rewardID}, 수량 {data.rewardAmount}");
+            // 예: InventoryManager.Instance.AddItem(data.rewardID, data.rewardAmount);
         }
 
-        // 슬롯 이동 횟수 보상
+        // 2. 슬롯 이동 횟수 회복
         if (data.slotMoveRecovery > 0)
         {
-            Debug.Log($"슬롯 이동 횟수 {data.slotMoveRecovery}회 회복");
-            // SlotManager.Instance.RecoverMoveCount(data.slotMoveRecovery);
+            Debug.Log($"슬롯 이동 횟수 {data.slotMoveRecovery}회 회복!");
+            // 예: PlayerStatus.Instance.RecoverMoveCount(data.slotMoveRecovery);
         }
     }
 }

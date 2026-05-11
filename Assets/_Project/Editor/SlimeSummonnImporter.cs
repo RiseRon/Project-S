@@ -10,7 +10,7 @@ public class SlimeSummonImporter
     {
         // 1. 경로 설정 (Path.Combine을 사용하여 OS간 호환성 확보)
         string csvPath = Path.Combine(Application.dataPath, "_Project", "Data", "Tables", "SlimeSummonTable.csv");
-        string relativeSavePath = "Assets/_Project/Data/Resources/SlimeSummonData";
+        string relativeSavePath = Path.Combine(Application.dataPath, "_Project", "Data", "Resources", "SlimeSummonData");
         string absoluteSavePath = Path.Combine(Application.dataPath, "_Project", "Data", "Resources", "SlimeSummonData");
 
         // CSV 파일 존재 여부 확인

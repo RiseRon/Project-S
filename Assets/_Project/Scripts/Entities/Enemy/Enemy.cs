@@ -25,7 +25,7 @@ public class Enemy : MonoBehaviour
         // WaypointManager에서 경로 자동 할당
         if (WaypointManager.Waypoints != null && WaypointManager.Waypoints.Length > 0)
         {
-            Setup(WaypointManager.Waypoints, 0);
+            Setup(WaypointManager.Waypoints, 0, null);
         }
         else
         {
@@ -33,8 +33,15 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public virtual void Setup(Transform[] path, float hpGrowthRate)
+    public virtual void Setup(Transform[] path, float hpGrowthRate, SO_EnemyData data)
     {
+        if (data != null) enemyData = data;
+
+        if (enemyData == null)
+        {
+            Debug.LogError("EnemyData가 할당되지 않았습니다!");
+            return;
+        }
         waypoints = path;
 
         // 기본 체력 + (기본 체력 * 상승률 / 100)

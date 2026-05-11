@@ -1,9 +1,13 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
     // 어디서든 접근 가능한 싱글톤 인스턴스
     public static SpawnManager Instance { get; private set; }
+
+    [Header("로드된 데이터")]
+    public List<SO_EnemyData> enemyDataList = new List<SO_EnemyData>();
 
     private void Awake()
     {
@@ -17,6 +21,14 @@ public class SpawnManager : MonoBehaviour
             // 중복된 매니저 파괴
             Destroy(gameObject);
         }
+        LoadAllResources();
+    }
+    private void LoadAllResources()
+    {
+        enemyDataList.Clear();
+        // Resources/SlimeSummonData 폴더에서 로드
+        var enemys = Resources.LoadAll<SO_EnemyData>("EnemyData");
+        enemyDataList.AddRange(enemys);
     }
 
     /// <summary>
@@ -30,6 +42,12 @@ public class SpawnManager : MonoBehaviour
         if (WaypointManager.Waypoints == null || WaypointManager.Waypoints.Length == 0)
         {
             Debug.LogError("WaypointManager에 웨이포인트 데이터가 없습니다! 스폰을 중단합니다.");
+            return;
+        }
+        SO_EnemyData finalData = enemyDataList.Find(x => x.id == id);
+        if (finalData == null)
+        {
+            Debug.LogError($"ID {id}에 해당하는 SO_EnemyData를 찾을 수 없습니다!");
             return;
         }
 
@@ -54,7 +72,7 @@ public class SpawnManager : MonoBehaviour
                 Transform[] path = WaypointManager.Waypoints;
 
                 // Enemy 클래스의 Setup 함수를 호출하여 적을 작동시킵니다.
-                enemyScript.Setup(path, hpBonus);
+                enemyScript.Setup(path, hpBonus, finalData);
 
                 Debug.Log($"[SpawnManager] ID {id} 소환 완료 (위치: 첫 번째 웨이포인트)");
             }

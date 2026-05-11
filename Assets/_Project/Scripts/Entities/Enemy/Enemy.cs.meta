@@ -1,2 +1,13 @@
 fileFormatVersion: 2
 guid: c6ae93d831145584491033c48779e516
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - enemyData: {instanceID: 0}
+  - rewardPopupPrefab: {fileID: 4367947410307406954, guid: ee8e006af4b6f3f44839e93fb8a98726, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

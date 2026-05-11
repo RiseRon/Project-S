@@ -1,0 +1,7 @@
+﻿기본 정보,,,,
+ID,이름,종류,재화,소모량
+ID,Name,SummonType,CostType,Cost
+int,string,int,int,int
+401,normal_summon,0,301,5
+402,epic_summon,1,302,1
+403,epic_summon,1,301,20

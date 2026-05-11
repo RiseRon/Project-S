@@ -94,7 +94,15 @@ public class Projectile : MonoBehaviour
         // 2. 속성별 특수 효과 적용 (얼음-스턴)
         ApplyElementEffects();
 
-        Destroy(gameObject);
+        if (PoolManager.Instance != null)
+        {
+            PoolManager.Instance.ReturnToPool(902, gameObject);
+        }
+        else
+        {
+            // 만약 매니저가 없다면 (테스트용) 삭제
+            Destroy(gameObject);
+        }
     }
 
     private void SpawnArea()

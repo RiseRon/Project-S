@@ -19,10 +19,10 @@ MonoBehaviour:
   moveSpeed: 15
   attackSpeed: 1
   splitID: 0
-  splitSpwanCount: 0
+  splitSpawnCount: 0
   canMoveStun: 0
   canAtkStun: 0
   StunGrace: 1
-  dropID: 1
-  amount: 0
+  dropID: 301
+  amount: 5
   rotationSpeed: 10

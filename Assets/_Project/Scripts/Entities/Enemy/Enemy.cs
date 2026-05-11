@@ -5,6 +5,9 @@ public class Enemy : MonoBehaviour
 {
     [SerializeField] protected SO_EnemyData enemyData;
 
+    [Header("UI Feedback")]
+    [SerializeField] private int rewardPopupID = 912; // PoolManager에 등록된 팝업 프리팹의 ID
+
     protected Transform[] waypoints;
     protected int currentWaypointIndex = 0;
     protected float currentHealth;
@@ -180,6 +183,8 @@ public class Enemy : MonoBehaviour
         if (isDead) return; // 이미 죽은 상태라면 중복 실행 방지
         isDead = true;
 
+        GiveDeathReward();
+
         // [회수 로직] Destroy 대신 PoolManager에 반납
         // enemyData.enemyID는 인스펙터나 데이터 테이블에서 설정된 int 값입니다.
         if (PoolManager.Instance != null)
@@ -190,6 +195,73 @@ public class Enemy : MonoBehaviour
         {
             // 만약 매니저가 없다면 (테스트용) 삭제
             Destroy(gameObject);
+        }
+    }
+    protected virtual void GiveDeathReward()
+    {
+        if (CurrencyManager.Instance == null || enemyData == null) return;
+
+        CurrencyType rewardType = (CurrencyType)enemyData.dropID;
+
+        if (enemyData.amount > 0)
+        {
+            // 1. 재화 데이터 추가
+            CurrencyManager.Instance.AddCurrency(rewardType, enemyData.amount);
+
+            // 2. UI 팝업 생성 함수 호출
+            ShowRewardUI(rewardType, enemyData.amount);
+        }
+    }
+
+    private void ShowRewardUI(CurrencyType type, int amount)
+    {
+        // 1. 카메라 체크
+        if (Camera.main == null)
+        {
+            Debug.LogError("씬에 MainCamera 태그가 붙은 카메라가 없습니다!");
+            return;
+        }
+
+        if (PoolManager.Instance == null) return;
+
+        // 2. 월드 좌표를 화면 좌표로 변환
+        Vector3 worldPos = transform.position + Vector3.up * 2f;
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
+
+        if (screenPos.z < 0) return; // 카메라 뒤쪽이면 무시
+
+        // 3. 풀에서 객체 가져오기
+        GameObject popupObj = PoolManager.Instance.SpawnFromPool(rewardPopupID, transform.position, Quaternion.identity);
+
+        if (popupObj == null)
+        {
+            Debug.LogWarning($"PoolManager에서 ID {rewardPopupID}를 찾을 수 없습니다.");
+            return;
+        }
+
+        // 4. 캔버스 찾기 (가장 흔한 에러 지점)
+        // "Canvas"라는 이름 대신 태그나 타입을 쓰는 것이 더 안전합니다.
+        Canvas mainCanvas = FindFirstObjectByType<Canvas>(); // 유니티 2023 이상 권장 (또는 FindObjectOfType)
+
+        if (mainCanvas != null)
+        {
+            popupObj.transform.SetParent(mainCanvas.transform);
+        }
+        else
+        {
+            Debug.LogError("씬에 Canvas가 존재하지 않습니다!");
+            return;
+        }
+
+        // 5. 컴포넌트 호출
+        RewardPopup popup = popupObj.GetComponent<RewardPopup>();
+        if (popup != null)
+        {
+            popup.Setup(type, amount, rewardPopupID, (Vector2)screenPos);
+        }
+        else
+        {
+            Debug.LogError("팝업 프리팹에 RewardPopup 스크립트가 붙어있지 않습니다!");
         }
     }
 

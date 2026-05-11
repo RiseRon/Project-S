@@ -1,0 +1,6 @@
+﻿기본 정보,,,
+ID,이름,한글 이름,최대 보유 개수
+ID,Name,K_Name,Max_Coin
+int,string,string,int
+301,Coin_1,마석 파편,10000
+302,Coin_2,완전한 마석,100

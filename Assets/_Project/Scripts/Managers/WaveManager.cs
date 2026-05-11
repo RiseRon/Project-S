@@ -153,10 +153,14 @@ public class WaveManager : MonoBehaviour
     private void GiveRewards(SO_WaveData data)
     {
         // 1. 아이템/재화 보상
-        if (data.rewardID > 0 && data.rewardAmount > 0)
+        if (data.rewardID <= 0 || data.rewardAmount <= 0) return;
+
+        // int ID를 Enum으로 형변환
+        CurrencyType rewardType = (CurrencyType)data.rewardID;
+
+        if (rewardType == CurrencyType.FragmentCoin || rewardType == CurrencyType.CompleteCoin)
         {
-            Debug.Log($"보상 아이템 획득: ID {data.rewardID}, 수량 {data.rewardAmount}");
-            // 예: InventoryManager.Instance.AddItem(data.rewardID, data.rewardAmount);
+            CurrencyManager.Instance.AddCurrency(rewardType, data.rewardAmount);
         }
 
         // 2. 슬롯 이동 횟수 회복

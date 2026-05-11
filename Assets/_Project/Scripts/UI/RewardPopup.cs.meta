@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: bb6dbd5e39eca9541aaaa26b8441d52a
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - amountText: {instanceID: 0}
+  - currencyIcon: {instanceID: 0}
+  - fragmentIcon: {fileID: 21300000, guid: 260b468acb710204cbb813a881667cf1, type: 3}
+  - completeIcon: {fileID: 21300000, guid: 38e769e13b6190445ab2d8f890bd0959, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

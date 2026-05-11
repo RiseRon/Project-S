@@ -5,32 +5,13 @@ public class Slime : MonoBehaviour
 {
     [SerializeField] protected SO_SlimeData slimeData;
 
-    public int SlimeID => slimeData != null ? slimeData.id : -1;
+    public int SlimeID => slimeData.id;
 
     private float lastAttackTime;
-    private Enemy targetEnemy;
-
-    // [추가] 현재 드래그(배치) 중인지 확인하는 상태 변수
-    public bool isDragging = false;
-
-    // PlacementManager에서 호출하여 데이터를 주입함
-    public void SetData(SO_SlimeData data)
-    {
-        slimeData = data;
-        Debug.Log($"<color=green>[Slime]</color> {data.slimeName} 데이터 주입 완료.");
-    }
+    private Enemy targetEnemy; 
 
     protected virtual void Update()
     {
-        if (slimeData == null) return;
-
-        // 드래그 중일 때는 타겟팅과 공격을 모두 중단
-        if (isDragging)
-        {
-            targetEnemy = null;
-            return;
-        }
-
         Targeting();
 
         if (CanAttack())
@@ -39,11 +20,13 @@ public class Slime : MonoBehaviour
         }
     }
 
+    // "경로상 가장 앞선 적" 식별 (Enemy의 TotalDistanceTraveled 참조)
     protected virtual void Targeting()
     {
         float maxDistance = -1f;
         targetEnemy = null;
 
+        // 공격 범위 내의 모든 적 탐색 (성능 최적화가 필요할 경우 OverlapSphere 사용 가능)
         Enemy[] enemies = Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
 
         foreach (Enemy enemy in enemies)
@@ -54,6 +37,7 @@ public class Slime : MonoBehaviour
 
             if (distanceToEnemy <= slimeData.attackRange)
             {
+                // Enemy.cs에 구현된 누적 이동 거리를 비교하여 가장 멀리 간 적 선택
                 if (enemy.TotalDistanceTraveled > maxDistance)
                 {
                     maxDistance = enemy.TotalDistanceTraveled;
@@ -65,8 +49,7 @@ public class Slime : MonoBehaviour
 
     protected virtual bool CanAttack()
     {
-        // 타겟이 있고, 쿨타임이 지났으며, 드래그 중이 아닐 때만 공격 가능
-        return targetEnemy != null && Time.time >= lastAttackTime + slimeData.attackSpeed && !isDragging;
+        return targetEnemy != null && Time.time >= lastAttackTime + slimeData.attackSpeed;
     }
 
     public virtual void Attack()
@@ -79,6 +62,7 @@ public class Slime : MonoBehaviour
 
             if (projGO != null && projGO.TryGetComponent<Projectile>(out var projectile))
             {
+                // 투사체에 슬라임의 속성 데이터(데미지, 효과 등) 전달
                 projectile.Setup(targetEnemy, slimeData);
             }
         }

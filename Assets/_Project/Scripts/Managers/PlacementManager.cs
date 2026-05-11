@@ -97,25 +97,35 @@ public class PlacementManager : MonoBehaviour
 
     private void OnDragging()
     {
+        // 마우스 위치에서 레이를 쏩니다.
         Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
 
+        // 1. 슬롯 레이어 체크 (슬롯 위에 있으면 슬롯에 자석처럼 붙음)
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, slotLayer))
         {
             currentOverSlot = hit.collider.GetComponent<Slot>();
-
             if (currentOverSlot != null && currentOverSlot.IsEmpty)
             {
                 draggingSlime.transform.position = currentOverSlot.transform.position;
+                return; // 슬롯 위에 있으면 아래 바닥 로직은 실행 안 함
             }
-            else
-            {
-                MoveSlimeOnGround(ray);
-            }
+        }
+
+        // 2. 슬롯 위가 아닐 때: 바닥(Ground) 레이어를 따라 부드럽게 이동
+        currentOverSlot = null;
+        if (Physics.Raycast(ray, out RaycastHit groundHit, Mathf.Infinity, groundLayer))
+        {
+            draggingSlime.transform.position = groundHit.point;
         }
         else
         {
-            currentOverSlot = null;
-            MoveSlimeOnGround(ray);
+            // [보정] 만약 바닥 레이어를 놓쳤을 경우를 대비해 가상의 수평면(Y=0)을 계산
+            // 이 코드가 있으면 마우스가 화면 밖을 나가거나 하늘을 봐도 슬라임이 따라옵니다.
+            Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
+            if (groundPlane.Raycast(ray, out float entry))
+            {
+                draggingSlime.transform.position = ray.GetPoint(entry);
+            }
         }
     }
 

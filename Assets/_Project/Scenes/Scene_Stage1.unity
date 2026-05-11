@@ -2246,14 +2246,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PoolManager
   pools:
+  - id: 101
+    prefab: {fileID: 8089421381590851071, guid: 24885936a3d8d5f429e3c933cf167b2d, type: 3}
+    size: 5
   - id: 201
     prefab: {fileID: 482175167110020284, guid: 276d2e583ab68df478bd7c76c81c02a1, type: 3}
     size: 5
   - id: 901
     prefab: {fileID: 7487132749657365797, guid: e0d0be1bcb5e9ca44bbafc616d72737c, type: 3}
     size: 5
-  - id: 101
-    prefab: {fileID: 8089421381590851071, guid: 24885936a3d8d5f429e3c933cf167b2d, type: 3}
+  - id: 902
+    prefab: {fileID: 4749688299387629109, guid: ec0a879aad52e39478a433515e7f2261, type: 3}
     size: 5
   - id: 911
     prefab: {fileID: 7256291043516392524, guid: d39d67685db156d41b8290c16b743e92, type: 3}

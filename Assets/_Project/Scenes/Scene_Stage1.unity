@@ -4337,7 +4337,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a885650502bf7544ab0a6ef31385caf4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventoryCheat
-  inventoryPanel: {fileID: 0}
+  inventoryPanel: {fileID: 2015238100}
   itemSlotPoolID: 911
 --- !u!4 &1822540526
 Transform:

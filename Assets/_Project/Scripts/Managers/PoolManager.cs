@@ -14,11 +14,11 @@ public class PoolManager : MonoBehaviour
     }
 
     // ID 범위별로 그룹을 나누어 관리 (인스펙터에서 보기 편해집니다)
-    [Header("--- 1xx: Enemies ---")]
-    [SerializeField] private List<Pool> enemyPools;
+    [Header("--- 1xx: Slimes ---")]
+    [SerializeField] private List<Pool> slimePools;
 
-    [Header("--- 2xx: Currencies / Slimes ---")]
-    [SerializeField] private List<Pool> SlimePools;
+    [Header("--- 2xx: Enemies ---")]
+    [SerializeField] private List<Pool> enemyPools;
 
     [Header("--- 9xx: Others ---")]
     [SerializeField] private List<Pool> otherPools;
@@ -42,8 +42,8 @@ public class PoolManager : MonoBehaviour
         sourcePools = new Dictionary<int, Pool>();
 
         // 모든 리스트를 하나의 통합 리스트처럼 처리하여 초기화
+        AddPoolsToDictionary(slimePools);
         AddPoolsToDictionary(enemyPools);
-        AddPoolsToDictionary(SlimePools);
         AddPoolsToDictionary(otherPools);
     }
 

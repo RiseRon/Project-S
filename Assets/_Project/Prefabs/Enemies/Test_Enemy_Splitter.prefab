@@ -22,15 +22,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dd9f39c968d825540bbbb3d130aa7396, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.91914
+      value: 7.61698
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dd9f39c968d825540bbbb3d130aa7396, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.00001
+      value: 6.21269
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dd9f39c968d825540bbbb3d130aa7396, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -6.83493
+      value: -7.80708
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: dd9f39c968d825540bbbb3d130aa7396, type: 3}
       propertyPath: m_LocalRotation.w
@@ -90,8 +90,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: dd9f39c968d825540bbbb3d130aa7396, type: 3}
       propertyPath: m_Name
-      value: Test_Enemy
+      value: Test_Enemy_Splitter
       objectReference: {fileID: 0}
+    - target: {fileID: 1052162808187736484, guid: dd9f39c968d825540bbbb3d130aa7396, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: c80589062a7c07146b15e899c29db6da, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -104,7 +108,7 @@ PrefabInstance:
       addedObject: {fileID: -4812634830050184802}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: dd9f39c968d825540bbbb3d130aa7396, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5951280718224455290}
+      addedObject: {fileID: 4181678690372611925}
   m_SourcePrefab: {fileID: 100100000, guid: dd9f39c968d825540bbbb3d130aa7396, type: 3}
 --- !u!1 &482175167110020284 stripped
 GameObject:
@@ -161,7 +165,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &5951280718224455290
+--- !u!114 &4181678690372611925
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -170,7 +174,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 482175167110020284}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6ae93d831145584491033c48779e516, type: 3}
+  m_Script: {fileID: 11500000, guid: 25a550b619419f24f9aca90725380993, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  enemyData: {fileID: 11400000, guid: f0f8e545c2fc15640b9e3311e7eadbd2, type: 2}
+  m_EditorClassIdentifier: Assembly-CSharp::Splitter
+  enemyData: {fileID: 0}
+  rewardPopupID: 912

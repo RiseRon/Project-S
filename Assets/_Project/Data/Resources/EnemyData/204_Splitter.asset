@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SO_EnemyData
   id: 204
   enemyName: Splitter
-  enemyHP: 10
+  enemyHP: 30
   damage: 20
   moveSpeed: 20
   attackSpeed: 1
-  splitID: 1
+  splitID: 205
   splitSpawnCount: 2
   canMoveStun: 0
   canAtkStun: 0

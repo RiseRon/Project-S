@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SO_EnemyData
   id: 205
   enemyName: Splitter_Fragment
-  enemyHP: 5
+  enemyHP: 30
   damage: 10
   moveSpeed: 20
   attackSpeed: 1

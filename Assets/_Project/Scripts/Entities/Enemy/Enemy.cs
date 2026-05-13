@@ -13,6 +13,7 @@ public class Enemy : MonoBehaviour
     protected float currentHealth;
     protected float currentSpeed;
     protected float lastAttackTime;
+    protected float savedHpGrowthRate;
 
     // 상태 확인용 변수
     protected bool isDead = false;
@@ -20,7 +21,7 @@ public class Enemy : MonoBehaviour
     protected GameObject targetBarrier;
 
     // 타워가 타겟을 결정할 때 참조할 정보
-    public float TotalDistanceTraveled { get; private set; } // 누적 이동 거리
+    public float TotalDistanceTraveled { get; protected set; } // 누적 이동 거리
     public bool IsDead => isDead; // 사망 여부 확인용 프로퍼티
 
     protected virtual void Start()
@@ -35,6 +36,14 @@ public class Enemy : MonoBehaviour
             Debug.LogError("WaypointManager에 길이 설정되지 않았습니다!");
         }
     }
+    public void SetTotalDistance(float distance)
+    {
+        TotalDistanceTraveled = distance;
+    }
+    public void SetWaypointIndex(int index)
+    {
+        currentWaypointIndex = index;
+    }
 
     public virtual void Setup(Transform[] path, float hpGrowthRate, SO_EnemyData data)
     {
@@ -46,6 +55,7 @@ public class Enemy : MonoBehaviour
             return;
         }
         waypoints = path;
+        savedHpGrowthRate = hpGrowthRate;
 
         // 기본 체력 + (기본 체력 * 상승률 / 100)
         // 예: 기본체력 30, 상승률 10% -> 30 + (30 * 0.1) = 33
@@ -58,12 +68,6 @@ public class Enemy : MonoBehaviour
         isAtEnd = false;
         TotalDistanceTraveled = 0f;
         targetBarrier = null;
-
-        if (waypoints != null && waypoints.Length > 0)
-        {
-            transform.position = waypoints[0].position;
-            currentWaypointIndex = 1;
-        }
 
         //Debug.Log($"{gameObject.name} 생성 - 최종 체력: {currentHealth} (증가량: {hpGrowthRate}%)");
     }

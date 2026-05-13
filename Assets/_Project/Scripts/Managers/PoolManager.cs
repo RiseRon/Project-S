@@ -86,7 +86,7 @@ public class PoolManager : MonoBehaviour
 
         GameObject objectToSpawn;
 
-        if (poolDictionary[id].Count == 0)
+        if (poolDictionary[id].Count <= 0)
         {
             // sourcePools에서 원본 프리팹을 찾아 추가 생성
             objectToSpawn = CreateNewObject(sourcePools[id].prefab);

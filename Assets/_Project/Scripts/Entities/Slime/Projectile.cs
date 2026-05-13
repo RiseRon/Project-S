@@ -7,13 +7,14 @@ public class Projectile : MonoBehaviour
 
     private Vector3 startPosition;
     private Vector3 targetPosition;
-    private float progress = 0; // 이동 진행도 (0~1)
+    private float progress; // 이동 진행도 (0~1)
 
     public void Setup(Enemy target, SO_SlimeData slimeData)
     {
         targetEnemy = target;
         data = slimeData;
         startPosition = transform.position;
+        progress = 0;
 
         // [기획 반영] 포물선/장판형은 발사 시점의 위치를 고정 타겟으로 함
         // 직선/유도형은 나중에 Update에서 실시간 타겟 위치를 참조함
@@ -94,9 +95,10 @@ public class Projectile : MonoBehaviour
         // 2. 속성별 특수 효과 적용 (얼음-스턴)
         ApplyElementEffects();
 
-        if (PoolManager.Instance != null)
+        if (PoolManager.Instance != null && data.trajectoryType == TrajectoryType.Straight)
         {
             PoolManager.Instance.ReturnToPool(902, gameObject);
+            return;
         }
         else
         {
@@ -119,8 +121,16 @@ public class Projectile : MonoBehaviour
             }
         }
 
-        // 투사체 파괴
-        Destroy(gameObject);
+        if (PoolManager.Instance != null && data.trajectoryType == TrajectoryType.Parabolic)
+        {
+            PoolManager.Instance.ReturnToPool(901, gameObject);
+            return;
+        }
+        else
+        {
+            // 투사체 파괴
+            Destroy(gameObject);
+        }
     }
 
     private void ApplyElementEffects()

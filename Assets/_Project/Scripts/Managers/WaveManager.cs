@@ -14,6 +14,9 @@ public class WaveManager : MonoBehaviour
 
     private int currentWaveIndex = 0;   // 현재 진행 중인 웨이브 번호 (리스트 인덱스)
     private bool isWaveActive = false;  // 현재 웨이브가 동작 중인지 여부
+    public float CurrentWaitTime { get; private set; } // 현재 남은 시간
+    public float TotalWaitTime { get; private set; }  // 전체 설정된 대기 시간
+    public bool IsWaitingNextWave { get; private set; } // 대기 중인지 여부
 
     private void Awake()
     {
@@ -81,10 +84,22 @@ public class WaveManager : MonoBehaviour
     private IEnumerator WaveRoutine(SO_WaveData data)
     {
         isWaveActive = true;
+        IsWaitingNextWave = true;
 
-        // 1. 웨이브 시작 전 대기 (watingTime 사용)
-        Debug.Log($"[웨이브 {data.waveID}] 시작 전 대기 중... ({data.waitingTime}초)");
-        yield return new WaitForSeconds(data.waitingTime);
+        // 웨이브 시작 전 대기 (waitingTime)를 UI로 표현하기 위해 로직 변경
+        TotalWaitTime = data.waitingTime;
+        CurrentWaitTime = TotalWaitTime;
+
+        Debug.Log($"[웨이브 {data.waveID}] 시작 전 대기 중...");
+
+        // 단순히 yield return new WaitForSeconds 대신 시간을 깎으며 대기
+        while (CurrentWaitTime > 0)
+        {
+            CurrentWaitTime -= Time.deltaTime;
+            yield return null; // 매 프레임 대기
+        }
+        CurrentWaitTime = 0; // 정확히 0으로 맞춤
+        IsWaitingNextWave = false; // 대기 종료 (전투 시작)
 
         Debug.Log($"[웨이브 {data.waveID}] 전투 개시!");
 

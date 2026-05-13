@@ -3,27 +3,29 @@ using TMPro;
 
 public class CurrencyUI : MonoBehaviour
 {
-    [SerializeField] private CurrencyType targetType; // 인스펙터에서 FragmentCoin 또는 CompleteCoin 선택
+    [SerializeField] private CurrencyType targetType;
     [SerializeField] private TextMeshProUGUI amountText;
+
+    [Header("Popup Settings")]
+    [SerializeField] private int rewardPopupID = 912; // PoolManager에 등록된 팝업 ID
+    [SerializeField] private Transform popupSpawnPoint; // 재화 UI 밑의 생성 위치(Empty Object)
+
+    private GameObject activePopup; // 현재 화면에 떠 있는 팝업 관리
+    private int lastAmount; // 이전 잔액을 저장할 변수
 
     private void Start()
     {
-        // 1. 초기 UI 표시
+        // 초기 잔액 저장
+        if (CurrencyManager.Instance != null)
+        {
+            lastAmount = CurrencyManager.Instance.GetAmount(targetType);
+        }
         RefreshUI();
-
-        // 2. 이벤트 구독 (매니저가 있을 때만)
         if (CurrencyManager.Instance != null)
         {
             CurrencyManager.Instance.OnCurrencyChanged += HandleCurrencyChanged;
         }
     }
-
-    private void OnEnable()
-    {
-        // 씬이 바뀌거나 오브젝트가 활성화될 때 다시 한번 초기화
-        RefreshUI();
-    }
-
     private void RefreshUI()
     {
         if (CurrencyManager.Instance != null && amountText != null)
@@ -32,22 +34,61 @@ public class CurrencyUI : MonoBehaviour
             amountText.text = amount.ToString("N0");
         }
     }
-
     private void HandleCurrencyChanged(CurrencyType type, int newAmount)
     {
-        // 내가 관리하는 재화 타입이 맞을 때만 텍스트 변경
         if (type == targetType && amountText != null)
         {
+            // 1. 얻은 재화 양 계산 (현재 잔액 - 이전 잔액)
+            int diff = newAmount - lastAmount;
+
+            // 2. 텍스트 갱신
             amountText.text = newAmount.ToString("N0");
+
+            // 3. 재화가 늘어났을 때만 팝업 표시
+            if (diff > 0)
+            {
+                ShowCombinedPopup(type, diff);
+            }
+
+            // 4. 다음 계산을 위해 현재 잔액을 이전 잔액으로 업데이트
+            lastAmount = newAmount;
+        }
+    }
+
+    private void ShowCombinedPopup(CurrencyType type, int addedAmount)
+    {
+        if (PoolManager.Instance == null) return;
+
+        int totalDisplayAmount = addedAmount;
+
+        if (activePopup != null && activePopup.activeSelf)
+        {
+            RewardPopup oldPopup = activePopup.GetComponent<RewardPopup>();
+            if (oldPopup != null)
+                totalDisplayAmount += oldPopup.GetCurrentAmount();
+
+            PoolManager.Instance.ReturnToPool(rewardPopupID, activePopup);
+        }
+
+        activePopup = PoolManager.Instance.SpawnFromPool(rewardPopupID, popupSpawnPoint.position, Quaternion.identity);
+
+        if (activePopup != null)
+        {
+            activePopup.transform.SetParent(this.transform.parent);
+            activePopup.transform.localScale = Vector3.one;
+
+            RewardPopup newPopup = activePopup.GetComponent<RewardPopup>();
+            if (newPopup != null)
+            {
+                // 마지막 인자로 true를 넣어 "위로 올라가지 마라"고 명령함
+                newPopup.Setup(type, totalDisplayAmount, rewardPopupID, popupSpawnPoint.position, true);
+            }
         }
     }
 
     private void OnDestroy()
     {
-        // 중요: 오브젝트가 파괴될 때 이벤트 구독을 해제해야 에러가 안 남
         if (CurrencyManager.Instance != null)
-        {
             CurrencyManager.Instance.OnCurrencyChanged -= HandleCurrencyChanged;
-        }
     }
 }

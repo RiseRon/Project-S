@@ -18,33 +18,35 @@ public class RewardPopup : MonoBehaviour
 
     private float timer;
     private int poolID;
+    private int currentAmount;
+    private bool isStatic = false; // 위로 올라가는지 여부 제어
 
-    // Enemy에서 호출할 때 screenPos까지 받도록 구성
-    public void Setup(CurrencyType type, int amount, int id, Vector2 screenPos)
+    public void Setup(CurrencyType type, int amount, int id, Vector2 screenPos, bool isStatic = false)
     {
         poolID = id;
         timer = 0f;
+        currentAmount = amount;
+        this.isStatic = isStatic; // 설정값 저장
 
-        // 1. 위치 설정
         transform.position = screenPos;
 
-        // 2. 아이콘 설정 (삼항 연산자 오류 수정)
         if (currencyIcon != null)
-        {
             currencyIcon.sprite = (type == CurrencyType.FragmentCoin) ? fragmentIcon : completeIcon;
-        }
 
-        // 3. 텍스트 설정
         if (amountText != null)
-        {
             amountText.text = $"+{amount}";
-        }
     }
+
+    // 현재 팝업이 들고 있는 금액을 가져오는 함수
+    public int GetCurrentAmount() => currentAmount;
 
     private void Update()
     {
-        // 위로 이동 (Overlay이므로 RectTransform 기준 이동)
-        transform.Translate(Vector2.up * floatingSpeed * Time.deltaTime);
+        // isStatic이 false일 때만 위로 이동 (적 처치 시 등)
+        if (!isStatic)
+        {
+            transform.Translate(Vector2.up * floatingSpeed * Time.deltaTime);
+        }
 
         timer += Time.deltaTime;
         if (timer >= lifeTime)

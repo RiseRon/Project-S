@@ -241,7 +241,7 @@ public class Enemy : MonoBehaviour
 
         // 4. 캔버스 찾기 (가장 흔한 에러 지점)
         // "Canvas"라는 이름 대신 태그나 타입을 쓰는 것이 더 안전합니다.
-        Canvas mainCanvas = FindFirstObjectByType<Canvas>(); // 유니티 2023 이상 권장 (또는 FindObjectOfType)
+        Canvas mainCanvas = FindFirstObjectByType<Canvas>();
 
         if (mainCanvas != null)
         {

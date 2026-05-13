@@ -189,6 +189,11 @@ public class Enemy : MonoBehaviour
 
         GiveDeathReward();
 
+        if (WaveManager.Instance != null)
+        {
+            WaveManager.Instance.OnEnemyDefeated();
+        }
+
         // [회수 로직] Destroy 대신 PoolManager에 반납
         // enemyData.enemyID는 인스펙터나 데이터 테이블에서 설정된 int 값입니다.
         if (PoolManager.Instance != null)

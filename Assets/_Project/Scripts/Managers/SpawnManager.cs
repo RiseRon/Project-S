@@ -67,12 +67,16 @@ public class SpawnManager : MonoBehaviour
 
             if (enemyScript != null)
             {
+
+                enemyScript.SetWaypointIndex(0);
+
                 // 3. 적의 경로와 스탯(HP 증가율)을 설정하여 초기화
                 // 이미 WaypointManager에 저장된 배열 전체를 넘겨줍니다.
                 Transform[] path = WaypointManager.Waypoints;
 
                 // Enemy 클래스의 Setup 함수를 호출하여 적을 작동시킵니다.
                 enemyScript.Setup(path, hpBonus, finalData);
+                enemyObj.transform.position = WaypointManager.Waypoints[0].position;
 
                 Debug.Log($"[SpawnManager] ID {id} 소환 완료 (위치: 첫 번째 웨이포인트)");
             }

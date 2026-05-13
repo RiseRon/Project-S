@@ -67,6 +67,12 @@ public class Splitter : Enemy
                 {
                     newEnemy.Setup(waypoints, savedHpGrowthRate, splitData);
                     newEnemy.SetWaypointIndex(currentWaypointIndex);
+                    if (WaveManager.Instance != null)
+                    {
+                        // 자식이 태어났으므로 activeEnemies를 증가시켜야 
+                        // 얘네까지 다 잡아야 다음 웨이브가 시작됩니다.
+                        WaveManager.Instance.AddActiveEnemy(1);
+                    }
 
                     // 뒤로 밀려난 만큼 누적 이동 거리 차감
                     float distanceOffset = offset.magnitude;

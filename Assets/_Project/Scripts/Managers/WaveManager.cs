@@ -47,6 +47,10 @@ public class WaveManager : MonoBehaviour
     // 외부(StageManager)에서 스테이지 ID를 받아 로드하도록 변경
     public void LoadWaveDataFromResources(int stageID)
     {
+        currentWaveIndex = 0;
+        stageWaves.Clear();
+        activeEnemies = 0;
+        enemiesToSpawn = 0;
         // 1. Resources/WaveData 폴더의 모든 에셋 로드
         SO_WaveData[] loadedArray = Resources.LoadAll<SO_WaveData>("WaveData");
 
@@ -77,6 +81,11 @@ public class WaveManager : MonoBehaviour
     /// </summary>
     public void StartNextWave()
     {
+        if (stageWaves == null || stageWaves.Count == 0)
+        {
+            Debug.LogError("[WaveManager] 로드된 웨이브 데이터가 없어 시작할 수 없습니다.");
+            return;
+        }
         // 이미 진행 중이거나 모든 웨이브가 끝났으면 중단
         if (isWaveActive || currentWaveIndex >= stageWaves.Count)
         {
@@ -84,6 +93,7 @@ public class WaveManager : MonoBehaviour
                 Debug.Log("모든 웨이브가 완료되었습니다!");
             return;
         }
+        if (isWaveActive) return;
         enemiesToSpawn = 0;
         SO_WaveData data = stageWaves[currentWaveIndex];
 #if UNITY_EDITOR

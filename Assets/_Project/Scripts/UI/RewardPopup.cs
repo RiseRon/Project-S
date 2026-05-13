@@ -27,6 +27,16 @@ public class RewardPopup : MonoBehaviour
         timer = 0f;
         currentAmount = amount;
         this.isStatic = isStatic; // 설정값 저장
+        RectTransform rect = GetComponent<RectTransform>();
+
+        if (isStatic) // 재화 UI 밑에 붙을 때 (오른쪽 정렬)
+        {
+            rect.pivot = new Vector2(1f, 0.5f);
+        }
+        else // 적이 죽어서 월드에 뜰 때 (왼쪽 정렬)
+        {
+            rect.pivot = new Vector2(0f, 0.5f);
+        }
 
         transform.position = screenPos;
 

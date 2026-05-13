@@ -38,21 +38,14 @@ public class WaveManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
-        // 게임 시작 시 Resources 폴더에서 데이터를 자동으로 불러옴
-        LoadWaveDataFromResources();
     }
 
-    private void Start()
-    {
-        // 첫 번째 웨이브 실행
-        StartNextWave();
-    }
 
     /// <summary>
     /// Resources/WaveData 폴더에 있는 모든 SO_WaveData를 로드하고 정렬합니다.
     /// </summary>
-    private void LoadWaveDataFromResources()
+    // 외부(StageManager)에서 스테이지 ID를 받아 로드하도록 변경
+    public void LoadWaveDataFromResources(int stageID)
     {
         // 1. Resources/WaveData 폴더의 모든 에셋 로드
         SO_WaveData[] loadedArray = Resources.LoadAll<SO_WaveData>("WaveData");
@@ -63,19 +56,19 @@ public class WaveManager : MonoBehaviour
             return;
         }
 
-        // 2. stageID가 501인 데이터만 필터링하고 waveID 순으로 정렬
+        // 2. 전달받은 stageID인 데이터만 필터링하고 waveID 순으로 정렬
         stageWaves = loadedArray
-            .Where(w => w.stageID == 501) // <--- 이 부분이 501번 스테이지 전용 필터입니다.
+            .Where(w => w.stageID == stageID) // <--- 매개변수로 받은 ID 사용
             .OrderBy(w => w.waveID)
             .ToList();
 
         if (stageWaves.Count == 0)
         {
-            Debug.LogWarning("[WaveManager] stageID 501에 해당하는 데이터가 없습니다.");
+            Debug.LogWarning($"[WaveManager] stageID {stageID}에 해당하는 데이터가 없습니다.");
         }
         else
         {
-            Debug.Log($"[WaveManager] 501번 스테이지의 {stageWaves.Count}개 웨이브 로드 완료.");
+            Debug.Log($"[WaveManager] {stageID}번 스테이지의 {stageWaves.Count}개 웨이브 로드 완료.");
         }
     }
 

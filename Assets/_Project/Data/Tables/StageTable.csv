@@ -1,0 +1,7 @@
+﻿기본 정보,,,,,,,,,,,
+ID,이름,테마 이름,스테이지 단계,총 웨이브 수,초기 재화,맵,배경 음악,인벤토리 칸 수,슬롯 수,방벽 내구력,슬롯 이동 횟수
+ID,Name,ThemeName,Stage,TotalWave,StartCoin,Map,Bgm,Inv_Slots,Slots,BarrierHP,SlotMove
+int,string,string,int,int,int,string,string,int,int,int,int
+501,St_0,세계수 중심 마을,1,15,15,,,5,12,100,5
+502,St_1,황무지,2,20,15,,,5,12,100,5
+503,St_2,공허 구덩이,3,25,15,,,5,12,100,5

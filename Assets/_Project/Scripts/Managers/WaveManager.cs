@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq; // 데이터 정렬(OrderBy)을 위해 필요
@@ -17,10 +18,13 @@ public class WaveManager : MonoBehaviour
     public float TotalWaitTime { get; private set; }  // 전체 설정된 대기 시간
     public bool IsWaitingNextWave { get; private set; } // 대기 중인지 여부
 
+    public event Action OnWaveChanged;
+
     private int currentWaveIndex = 0;   // 현재 진행 중인 웨이브 번호 (리스트 인덱스)
     private int activeEnemies = 0; // 현재 필드에 살아있는 적 수
     private int enemiesToSpawn = 0; // 이번 웨이브에서 더 소환해야 할 적 수
     private Coroutine waveCoroutine;  // 실행 중인 코루틴을 제어하기 위함
+    public int CurrentWave => currentWaveIndex + 1;
 
     private void Awake()
     {
@@ -96,6 +100,7 @@ public class WaveManager : MonoBehaviour
         {
             enemiesToSpawn += data.enemyList[i].spawnCount ;  // 이번 웨이브 총 소환 수 설정
         }
+        OnWaveChanged?.Invoke();
 
         // 현재 순서의 데이터를 전달하여 루틴 시작
         if (waveCoroutine != null) StopCoroutine(waveCoroutine);
@@ -199,6 +204,7 @@ public class WaveManager : MonoBehaviour
 
         isWaveActive = false;
         currentWaveIndex++;
+        OnWaveChanged?.Invoke();
 
         // 코루틴 정리
         if (waveCoroutine != null) StopCoroutine(waveCoroutine);

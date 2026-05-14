@@ -21,6 +21,11 @@ public class GameManager : MonoBehaviour
     // 씬 이동이 필요할 때 이 함수를 호출
     public void ChangeScene(string sceneName)
     {
+        SceneManager.LoadScene(sceneName);
+    }
+
+    public void LoadStage(string sceneName)
+    {
         SceneLoader.LoadScene(sceneName);
     }
 }

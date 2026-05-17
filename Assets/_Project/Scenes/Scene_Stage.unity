@@ -119,6 +119,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &3844009 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4955981529715079314, guid: 709948c92b43a81449beeb69bcb9acd7, type: 3}
+  m_PrefabInstance: {fileID: 937815214}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &27480745
 GameObject:
   m_ObjectHideFlags: 0
@@ -2868,7 +2873,7 @@ MonoBehaviour:
     prefab: {fileID: 8089421381590851071, guid: 3f154dff8ef4731468f36995a683dc5f, type: 3}
     size: 10
   - id: 106
-    prefab: {fileID: 8089421381590851071, guid: 5fcb66d613b701c42a8d7f8328470204, type: 3}
+    prefab: {fileID: 8089421381590851071, guid: f7ccd55b339aef9459cdd1b7690847c7, type: 3}
     size: 10
   enemyPools:
   - id: 201
@@ -3391,6 +3396,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0f32a582ce1c5e49b9e603d4eda3065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StageManager
+  spawnedMap: {fileID: 3844009}
   testStageID: 501
 --- !u!4 &1031708813
 Transform:

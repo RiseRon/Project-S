@@ -19,7 +19,6 @@ public class PlacementManager : MonoBehaviour
 
     private Camera mainCam;
 
-    // 인벤토리 드래그 상태 관리
     private bool isDraggingFromInventory = false;
     private SO_SlimeData pendingSlimeData;
     private SlimeCard currentDraggingCard;
@@ -37,7 +36,6 @@ public class PlacementManager : MonoBehaviour
         HandleInput();
     }
 
-    // SlimeCard UI에서 드래그 시작 시 호출
     public void StartSummonDrag(SO_SlimeData data, SlimeCard card)
     {
         isDraggingFromInventory = true;
@@ -52,7 +50,10 @@ public class PlacementManager : MonoBehaviour
             if (draggingSlime != null)
             {
                 draggingSlime.SetData(data);
-                draggingSlime.isDragging = true; // 공격 중지 상태 활성화
+                draggingSlime.isDragging = true;
+
+                if (draggingSlime.GetComponent<Collider>() != null)
+                    draggingSlime.GetComponent<Collider>().enabled = false;
             }
             originalSlot = null;
         }
@@ -60,16 +61,20 @@ public class PlacementManager : MonoBehaviour
 
     private void HandleInput()
     {
+        // 마우스를 클릭했을 때 (필드 드래그 시작)
         if (Input.GetMouseButtonDown(0) && !isDraggingFromInventory)
         {
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
             BeginDrag();
         }
 
+        // 마우스를 누르고 움직이는 중 (실시간 드래그)
         if (Input.GetMouseButton(0) && draggingSlime != null)
         {
             OnDragging();
         }
 
+        // 마우스를 놓았을 때 (배치 확정 및 판정)
         if (Input.GetMouseButtonUp(0) && draggingSlime != null)
         {
             EndDrag();
@@ -86,89 +91,116 @@ public class PlacementManager : MonoBehaviour
             {
                 isDraggingFromInventory = false;
                 draggingSlime = slime;
-                draggingSlime.isDragging = true; // 드래그 중 공격 중지
+                draggingSlime.isDragging = true;
                 originalPos = draggingSlime.transform.position;
 
+                // 구체 범위 검출로 슬라임 발밑의 원래 슬롯을 정밀하게 백업합니다.
                 originalSlot = FindSlotUnderSlime(draggingSlime.transform.position);
-                if (originalSlot != null) originalSlot.placedSlime = null;
+
+                // 핵심 수정: 집어들는 즉시 originalSlot.ClearSlot()을 호왈하여 슬롯의 데이터를 비웁니다.
+                // 비우지 않으면 originalSlot.placedSlime 참조가 남아 IsDataEmpty 검증이 오염되어 중복 배치가 발생합니다.
+                if (originalSlot != null) originalSlot.ClearSlot();
+
+                // 드래그 중인 본인의 몸통 콜라이더가 레이캐스트를 방해하지 않도록 잠시 끕니다.
+                if (draggingSlime.GetComponent<Collider>() != null)
+                    draggingSlime.GetComponent<Collider>().enabled = false;
             }
         }
     }
 
     private void OnDragging()
     {
-        // 마우스 위치에서 레이를 쏩니다.
         Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
 
-        // 1. 슬롯 레이어 체크 (슬롯 위에 있으면 슬롯에 자석처럼 붙음)
-        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, slotLayer))
-        {
-            currentOverSlot = hit.collider.GetComponent<Slot>();
-            if (currentOverSlot != null && currentOverSlot.IsEmpty)
-            {
-                draggingSlime.transform.position = currentOverSlot.transform.position;
-                return; // 슬롯 위에 있으면 아래 바닥 로직은 실행 안 함
-            }
-        }
-
-        // 2. 슬롯 위가 아닐 때: 바닥(Ground) 레이어를 따라 부드럽게 이동
-        currentOverSlot = null;
+        // 슬라임 위치와 무관한 순수 마우스의 3D 바닥 좌표 연산
+        Vector3 mouseGroundPos = Vector3.zero;
         if (Physics.Raycast(ray, out RaycastHit groundHit, Mathf.Infinity, groundLayer))
         {
-            draggingSlime.transform.position = groundHit.point;
+            mouseGroundPos = groundHit.point;
         }
         else
         {
-            // [보정] 만약 바닥 레이어를 놓쳤을 경우를 대비해 가상의 수평면(Y=0)을 계산
-            // 이 코드가 있으면 마우스가 화면 밖을 나가거나 하늘을 봐도 슬라임이 따라옵니다.
             Plane groundPlane = new Plane(Vector3.up, Vector3.zero);
             if (groundPlane.Raycast(ray, out float entry))
             {
-                draggingSlime.transform.position = ray.GetPoint(entry);
+                mouseGroundPos = ray.GetPoint(entry);
             }
         }
-    }
 
-    private void MoveSlimeOnGround(Ray ray)
-    {
-        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, groundLayer))
+        // 이전 프레임의 슬롯 조준 찌꺼기 잔상을 매 프레임 초기화합니다.
+        currentOverSlot = null;
+
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, slotLayer))
         {
-            draggingSlime.transform.position = hit.point;
+            Slot slot = hit.collider.GetComponent<Slot>();
+            if (slot != null)
+            {
+                // 배치 가능한 슬롯일 때만 currentOverSlot에 등록합니다.
+                // 가득 찬 슬롯은 절대 currentOverSlot에 담지 않아 EndDrag에서 배치 시도를 차단합니다.
+                if (slot.IsDataEmpty || slot == originalSlot)
+                {
+                    currentOverSlot = slot;
+                    draggingSlime.transform.position = currentOverSlot.transform.position;
+                    return;
+                }
+            }
         }
+
+        // 꽉 찬 슬롯이거나 맨땅인 경우 마우스 포인터를 정직하게 따라다닙니다.
+        draggingSlime.transform.position = mouseGroundPos;
     }
 
     private void EndDrag()
     {
-        if (draggingSlime != null) draggingSlime.isDragging = false; // 드래그 종료로 공격 재개
+        // 배치가 판단되는 연산 순간이므로 조작 정지 상태로 전환 (콜라이더는 맨 마지막에 켭니다)
+        if (draggingSlime != null) draggingSlime.isDragging = false;
 
-        if (currentOverSlot != null && currentOverSlot.IsEmpty)
+        // OnDragging()이 매 프레임 currentOverSlot을 정확히 관리합니다.
+        // EndDrag에서 추가 레이캐스트를 하면 슬롯 콜라이더를 잘못 히트하여 중복 배치가 발생하므로 제거합니다.
+
+        // 최종 데이터 철벽 배치 검증
+        // ✅ 버그 수정: IsDataEmpty 대신 IsEmptyOrOccupiedBy(draggingSlime)로 검증하여
+        //    드래그 중인 슬라임 자신이 슬롯에 등록된 경우(= 제자리)도 빈 슬롯으로 정확히 판단합니다.
+        bool targetSlotAvailable = currentOverSlot != null &&
+            (currentOverSlot.IsEmptyOrOccupiedBy(draggingSlime) || currentOverSlot == originalSlot);
+
+        if (targetSlotAvailable)
         {
             bool isFromInventory = (originalSlot == null);
 
+            // 필드 이동인데 잔여 횟수가 소진된 경우 강제 튕김 처리
             if (!isFromInventory && remainingMoves <= 0)
             {
                 ReturnToOriginalPosition();
+                ResetDragState();
                 return;
             }
 
-            draggingSlime.transform.position = currentOverSlot.transform.position;
-            currentOverSlot.placedSlime = draggingSlime;
+            // 배치가 완벽히 확정되었으므로 원래 딛고 있던 슬롯을 안전하게 청소합니다.
+            if (originalSlot != null && originalSlot != currentOverSlot)
+            {
+                originalSlot.ClearSlot();
+            }
+
+            // 슬롯에게 직접 고정 처리를 지시하여 데이터와 물리 좌표를 동시에 완전히 동기화합니다.
+            currentOverSlot.AssignSlime(draggingSlime);
 
             if (!isFromInventory)
             {
-                remainingMoves--;
+                if (originalSlot != currentOverSlot) remainingMoves--;
             }
             else if (currentDraggingCard != null)
             {
-                Destroy(currentDraggingCard.gameObject); // 배치 성공 시 카드 제거
+                Destroy(currentDraggingCard.gameObject);
             }
         }
-        else if (currentOverSlot != null && currentOverSlot.CanMerge(draggingSlime))
+        else if (!targetSlotAvailable && currentOverSlot != null && currentOverSlot.CanMerge(draggingSlime))
         {
             // MergeManager.Instance.ExecuteMerge(draggingSlime, currentOverSlot);
         }
         else
         {
+            // 꽉 찬 슬롯에 던졌거나 맨땅에 놓아 배치가 실패한 경우 처리
             if (isDraggingFromInventory)
             {
                 PoolManager.Instance.ReturnToPool(pendingSlimeData.id, draggingSlime.gameObject);
@@ -180,22 +212,35 @@ public class PlacementManager : MonoBehaviour
             }
         }
 
+        ResetDragState();
+    }
+
+    private void ResetDragState()
+    {
+        // 배치가 완벽히 끝나 월드 상에 데이터가 안전 안착된 직후 콜라이더 스위치를 켭니다.
+        if (draggingSlime != null && draggingSlime.GetComponent<Collider>() != null)
+            draggingSlime.GetComponent<Collider>().enabled = true;
+
         draggingSlime = null;
         currentOverSlot = null;
+        originalSlot = null;
         isDraggingFromInventory = false;
     }
 
     private void ReturnToOriginalPosition()
     {
+        // 복귀할 때도 원래 백업 슬롯 데이터가 존재한다면 슬롯에게 완벽한 재고정을 지시합니다.
         draggingSlime.transform.position = originalPos;
-        if (originalSlot != null) originalSlot.placedSlime = draggingSlime;
+        if (originalSlot != null) originalSlot.AssignSlime(draggingSlime);
     }
 
     private Slot FindSlotUnderSlime(Vector3 position)
     {
-        if (Physics.Raycast(position + Vector3.up, Vector3.down, out RaycastHit hit, 2f, slotLayer))
+        // 바늘 같은 레이캐스트 대신, 구체 오버랩 범위를 활용하여 꼬인 배치 상태에서도 슬롯을 완벽 추적합니다.
+        Collider[] hitSlots = Physics.OverlapSphere(position, 0.4f, slotLayer);
+        if (hitSlots.Length > 0)
         {
-            return hit.collider.GetComponent<Slot>();
+            return hitSlots[0].GetComponent<Slot>();
         }
         return null;
     }

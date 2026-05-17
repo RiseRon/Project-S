@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6088376605698982141}
   - component: {fileID: 6301335165467688342}
   - component: {fileID: 5956790077582265539}
-  - component: {fileID: 8158799821785825717}
+  - component: {fileID: -5436026052369329871}
   m_Layer: 6
   m_Name: Test_Slot
   m_TagString: Slot
@@ -113,7 +113,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8158799821785825717
+--- !u!114 &-5436026052369329871
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -122,7 +122,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2286932846277117766}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 243dcf70899edec45b7d9ceff78338f4, type: 3}
+  m_Script: {fileID: 11500000, guid: f4cd04feb1dbc94449ac7d760f253998, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Slot
   placedSlime: {fileID: 0}
+  slimeLayer:
+    serializedVersion: 2
+    m_Bits: 0

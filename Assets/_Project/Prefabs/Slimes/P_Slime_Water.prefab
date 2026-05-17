@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6050719472562679660}
   - component: {fileID: 32373267481339518}
   - component: {fileID: 2617598179147714565}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: P_Slime_Water
   m_TagString: Untagged
   m_Icon: {fileID: 0}

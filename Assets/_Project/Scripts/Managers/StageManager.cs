@@ -11,7 +11,7 @@ public class StageManager : MonoBehaviour
     [Header("Stage Data")]
     private List<SO_StageData> allStageData = new List<SO_StageData>();
     private SO_StageData currentStageData;
-    private GameObject spawnedMap;
+    public GameObject spawnedMap;
 
     [Header("--- Debug Settings ---")]
     [SerializeField] private int testStageID = 501;   // 직접 실행 시 로드할 테스트 스테이지 ID

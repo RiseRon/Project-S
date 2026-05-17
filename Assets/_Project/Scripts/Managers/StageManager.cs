@@ -14,7 +14,6 @@ public class StageManager : MonoBehaviour
     private GameObject spawnedMap;
 
     [Header("--- Debug Settings ---")]
-    [SerializeField] private bool isDebugMode = true; // 에디터에서 바로 시작 허용 여부
     [SerializeField] private int testStageID = 501;   // 직접 실행 시 로드할 테스트 스테이지 ID
 
     [Header("Status")]
@@ -61,8 +60,8 @@ public class StageManager : MonoBehaviour
     {
         string currentSceneName = SceneManager.GetActiveScene().name;
 
-        // 현재 씬 이름에 "Stage"가 포함되어 있는데, ID가 설정되지 않았다면 직접 시작한 것으로 간주
-        if (currentSceneName.Contains("Stage1") && currentStageID == -1)
+        // 현재 씬 이름이 정확히 "Scene_Stage" 이고, ID가 설정되지 않았다면 직접 시작한 것으로 간주
+        if (currentSceneName == "Scene_Stage" && currentStageID == -1)
         {
             Debug.Log($"<color=orange>[StageManager]</color> 스테이지 직결 시작 감지: {currentSceneName}");
 

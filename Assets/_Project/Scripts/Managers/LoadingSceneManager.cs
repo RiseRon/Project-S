@@ -14,9 +14,8 @@ public class LoadingSceneManager : MonoBehaviour
     }
 
     // 로딩 씬으로 이동할 때 호출할 정적 함수
-    public static void LoadScene(string sceneName)
+    public static void LoadScene()
     {
-        nextSceneName = sceneName;
         SceneManager.LoadScene("Scene_Loading"); // 로딩 전용 씬 이름
     }
 
@@ -26,7 +25,7 @@ public class LoadingSceneManager : MonoBehaviour
         progressBar.value = 0f;
 
         // 1. 비동기 씬 로드 시작
-        AsyncOperation op = SceneManager.LoadSceneAsync(nextSceneName);
+        AsyncOperation op = SceneManager.LoadSceneAsync("Scene_Stage");
 
         // 씬이 다 불러와져도 바로 화면을 넘기지 않게 설정 (부드러운 연출을 위해)
         op.allowSceneActivation = false;

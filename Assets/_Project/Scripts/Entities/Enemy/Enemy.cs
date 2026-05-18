@@ -18,11 +18,13 @@ public class Enemy : MonoBehaviour
     // 상태 확인용 변수
     protected bool isDead = false;
     protected bool isAtEnd = false;
+    public bool isSturn = false;
     protected GameObject targetBarrier;
 
     // 타워가 타겟을 결정할 때 참조할 정보
     public float TotalDistanceTraveled { get; protected set; } // 누적 이동 거리
     public bool IsDead => isDead; // 사망 여부 확인용 프로퍼티
+    public bool IsSturn => isSturn; // 스턴 여부 확인용 프로퍼티
 
     protected virtual void Start()
     {
@@ -86,7 +88,7 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            if (CanAttack())
+            if (isSturn == false && CanAttack())
             {
                 Attack();
             }

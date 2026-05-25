@@ -185,6 +185,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
   enemyData: {fileID: 0}
   rewardPopupID: 912
+  isSturn: 0
 --- !u!95 &8192508187387968950
 Animator:
   serializedVersion: 7

@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75e45991235aa9844bfd23b8777dc3de, type: 3}
+  m_Name: MergeTable
+  m_EditorClassIdentifier: Assembly-CSharp::SO_MergeTableData
+  recipes:
+  - baseID: 101
+    materialID: 101
+    resultID: 111
+  - baseID: 102
+    materialID: 102
+    resultID: 112
+  - baseID: 103
+    materialID: 103
+    resultID: 113
+  - baseID: 104
+    materialID: 104
+    resultID: 114
+  - baseID: 105
+    materialID: 105
+    resultID: 115
+  - baseID: 106
+    materialID: 106
+    resultID: 116
+  - baseID: 111
+    materialID: 111
+    resultID: 121
+  - baseID: 112
+    materialID: 112
+    resultID: 122
+  - baseID: 113
+    materialID: 113
+    resultID: 123
+  - baseID: 114
+    materialID: 114
+    resultID: 124
+  - baseID: 115
+    materialID: 115
+    resultID: 125
+  - baseID: 116
+    materialID: 116
+    resultID: 126

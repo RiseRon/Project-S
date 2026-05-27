@@ -1,92 +1,119 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MergeManager : MonoBehaviour
 {
-    public static MergeManager Instance {  get; private set; }
+    public static MergeManager Instance { get; private set; }
+
+    [Header("Data Caches")]
+    // 1. 모든 슬라임 데이터를 미리 로드하여 보관 (성능 최적화)
+    private Dictionary<int, SO_SlimeData> slimeDataCache = new Dictionary<int, SO_SlimeData>();
+
+    // 2. 머지 조합식 딕셔너리 (Base ID, Material ID) -> Result ID
+    private Dictionary<(int, int), int> recipeCache = new Dictionary<(int, int), int>();
+
     private void Awake()
     {
-        if (Instance == null)
+        if (Instance == null) Instance = this;
+        else { Destroy(gameObject); return; }
+
+        InitializeData();
+    }
+
+    /// <summary>
+    /// 게임 시작 시 1회만 실행되어 모든 데이터와 레시피를 메모리에 올립니다.
+    /// </summary>
+    private void InitializeData()
+    {
+        // 1. 슬라임 데이터 캐싱 (기존과 동일)
+        SO_SlimeData[] allData = Resources.LoadAll<SO_SlimeData>("SlimeData");
+        foreach (var data in allData)
         {
-            Instance = this;
+            if (!slimeDataCache.ContainsKey(data.id))
+            {
+                slimeDataCache.Add(data.id, data);
+            }
+        }
+
+        // 2. [추가된 부분] 방금 임포트한 MergeTable을 Resources에서 불러와서 캐싱
+        SO_MergeTableData mergeTable = Resources.Load<SO_MergeTableData>("MergeTable");
+        if (mergeTable != null)
+        {
+            foreach (var recipe in mergeTable.recipes)
+            {
+                // Key: (베이스 ID, 재료 ID), Value: 결과 ID
+                if (!recipeCache.ContainsKey((recipe.baseID, recipe.materialID)))
+                {
+                    recipeCache.Add((recipe.baseID, recipe.materialID), recipe.resultID);
+                }
+            }
+            Debug.Log($"[MergeManager] 레시피 {recipeCache.Count}개 등록 완료.");
         }
         else
         {
-            Destroy(gameObject);
+            Debug.LogError("[MergeManager] Resources 폴더에 MergeTable.asset을 찾을 수 없습니다!");
         }
     }
 
+    /// <summary>
+    /// 캡슐화된 조건: 두 슬라임이 조합 가능한지 '미리' 확인합니다. (Slot.cs에서 호출)
+    /// </summary>
+    public bool CheckCanMerge(int baseID, int materialID)
+    {
+        // 순서가 상관없는 조합식 (불+물 이나 물+불 이나 같게 처리)
+        if (recipeCache.ContainsKey((baseID, materialID))) return true;
+        if (recipeCache.ContainsKey((materialID, baseID))) return true;
+
+        return false;
+    }
+
+    /// <summary>
+    /// 실제 머지 과정을 실행합니다. (PlacementManager에서 호출)
+    /// </summary>
     public void ExecuteMerge(Slime draggingSlime, Slot targetSlot)
     {
-        // 목표 슬롯에 있던 기존 슬라임 정보 가져오기
         Slime targetSlime = targetSlot.placedSlime;
-
-        // 안전 검사
         if (draggingSlime == null || targetSlime == null) return;
 
-        // 1. 다음 등급의 슬라임 ID 계산 (현재 ID + 10)
-        int nextSlimeID = GetNextRankPrefabID(targetSlime);
+        int baseID = targetSlime.SlimeID;
+        int materialID = draggingSlime.SlimeID;
+        int resultID = -1;
 
-        // 2. 기존 슬라임 2마리를 오브젝트 풀로 반납
-        PoolManager.Instance.ReturnToPool(draggingSlime.SlimeID, draggingSlime.gameObject);
-        PoolManager.Instance.ReturnToPool(targetSlime.SlimeID, targetSlime.gameObject);
+        // 1. 레시피 확인 (순서 무관 적용)
+        if (recipeCache.TryGetValue((baseID, materialID), out int result1)) resultID = result1;
+        else if (recipeCache.TryGetValue((materialID, baseID), out int result2)) resultID = result2;
 
-        // 3. Resources.Load를 사용하여 다음 등급 슬라임 프리팹 동적 로드
-        // 주의: 슬라임 프리팹들이 'Resources/Prefabs/Slimes/' 경로 안에 있어야 하며,
-        // 이름이 "Slime_101", "Slime_111"과 같은 규칙으로 저장되어 있어야 합니다.
-        string prefabPath = $"Prefabs/Slimes/Slime_{nextSlimeID}";
-        GameObject nextSlimePrefab = Resources.Load<GameObject>(prefabPath);
-
-        /*
-        =========================================================================================
-        [ DataManager 추가 시의 장점 및 변경 방향 ]
-        
-        현재 머지를 할 때마다 'Resources.Load'를 호출하고 있습니다. 
-        이 방식은 디스크(저장소)를 뒤져서 파일을 찾아오는 과정이 포함되어 있어, 
-        게임 후반부에 다수의 유저가 동시에 여러 마리를 머지하면 순간적으로 렉(프레임 드랍)이 걸릴 수 있습니다.
-
-        * 추후 DataManager를 도입하면 이렇게 바뀝니다:
-          1. 게임 시작(Awake) 시점에 'Resources.LoadAll()'을 통해 모든 슬라임 프리팹을 한 번만 불러옵니다.
-          2. 불러온 프리팹들을 DataManager 안의 Dictionary<int, GameObject>에 담아둡니다(캐싱).
-          3. 머지할 때는 아래 코드로 변경됩니다.
-             (변경 전) GameObject nextSlimePrefab = Resources.Load<GameObject>(prefabPath);
-             (변경 후) GameObject nextSlimePrefab = DataManager.Instance.GetSlimePrefab(nextSlimeID);
-          4. 이미 메모리에 올라가 있는 데이터를 즉시 꺼내오므로 렉이 전혀 발생하지 않게 됩니다!
-        =========================================================================================
-        */
-
-        if (nextSlimePrefab != null)
+        // 레시피가 없거나 캐싱된 데이터에 결과 슬라임이 없다면 취소 (안전장치)
+        if (resultID == -1 || !slimeDataCache.ContainsKey(resultID))
         {
-            // 4. 새로운 등급의 슬라임 스폰
-            // (추후 이 Instantiate 부분도 PoolManager의 동적 확장 기능과 연동하면 더 완벽해집니다)
-            GameObject newSlimeObj = Instantiate(nextSlimePrefab, targetSlot.transform.position, Quaternion.identity);
+            Debug.LogWarning($"[MergeManager] 유효하지 않은 조합이거나, 결과 ID({resultID})의 데이터가 없습니다!");
+            return;
+        }
+
+        // 2. 기존 슬라임 2마리 회수 (Destroy -> Pool 반납)
+        PoolManager.Instance.ReturnToPool(materialID, draggingSlime.gameObject);
+        PoolManager.Instance.ReturnToPool(baseID, targetSlime.gameObject);
+
+        // 3. 새로운 결과 슬라임 소환 (Instantiate -> Pool 소환)
+        // (주의: PoolManager의 그룹에 결과 슬라임 ID 프리팹이 미리 등록되어 있어야 합니다)
+        GameObject newSlimeObj = PoolManager.Instance.SpawnFromPool(resultID, targetSlot.transform.position, Quaternion.identity);
+
+        if (newSlimeObj != null)
+        {
             Slime newSlime = newSlimeObj.GetComponent<Slime>();
 
-            // 5. 슬롯 정보 갱신
-            targetSlot.placedSlime = newSlime;
+            // 4. 슬롯에 새로운 슬라임 장착 (캡슐화된 함수 사용)
+            targetSlot.AssignSlime(newSlime);
 
-            // 6. 합성 성공 이펙트 및 사운드 호출
-            PlayMergeEffect(targetSlot.transform.position);
-
-            Debug.Log($"머지 성공! 상위 등급 슬라임(ID: {nextSlimeID})이 소환되었습니다.");
-        }
-        else
-        {
-            // 프리팹을 찾지 못한 경우의 에러 처리
-            Debug.LogError($"[Merge Error] Resources 경로({prefabPath})에서 ID {nextSlimeID}의 슬라임을 찾을 수 없습니다!");
+            // 5. 이펙트 및 사운드 호출
+            PlayMergeEffect(targetSlot.transform.position, resultID);
+            Debug.Log($"[MergeManager] 머지 성공! (재료: {baseID} + {materialID} => 결과: {resultID})");
         }
     }
 
-    // 다음 등급 슬라임의 ID를 판별하는 함수
-    private int GetNextRankPrefabID(Slime baseSlime)
+    private void PlayMergeEffect(Vector3 position, int resultID)
     {
-        // 규칙: 현재 ID + 10 (예: 101 -> 111)
-        return baseSlime.SlimeID + 10;
-    }
-
-    // 머지 이펙트 재생
-    private void PlayMergeEffect(Vector3 position)
-    {
-        // PoolManager를 통해 파티클 이펙트 소환
-        Debug.Log("머지 파티클 이펙트 재생");
+        // 추후 이펙트도 PoolManager.Instance.SpawnFromPool(Effect_ID, ...) 로 소환하면 완벽합니다.
+        // 사운드: SoundManager.Instance.PlaySFX("MergeSuccess");
     }
 }

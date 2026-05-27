@@ -194,13 +194,37 @@ public class PlacementManager : MonoBehaviour
                 Destroy(currentDraggingCard.gameObject);
             }
         }
-        else if (!targetSlotAvailable && currentOverSlot != null && currentOverSlot.CanMerge(draggingSlime))
+        else if (!isDraggingFromInventory && currentOverSlot != null && currentOverSlot.CanMerge(draggingSlime))
         {
-            // MergeManager.Instance.ExecuteMerge(draggingSlime, currentOverSlot);
+            // 1. 머지 매니저를 통해 실제 합성 진행 (두 슬라임 파괴 및 새 슬라임 소환)
+            MergeManager.Instance.ExecuteMerge(draggingSlime, currentOverSlot);
+
+            // 2. 드래그해서 끌고 온 슬라임이 합성에 재료로 소모되었으므로, 원래 있던 자리는 확실하게 비워줍니다.
+            if (originalSlot != null)
+            {
+                originalSlot.ClearSlot();
+            }
         }
         else
         {
-            // 꽉 찬 슬롯에 던졌거나 맨땅에 놓아 배치가 실패한 경우 처리
+            // 🔴 여기가 실패했을 때 들어오는 곳입니다. 로그를 찍어봅니다. 🔴
+            Debug.Log($"<color=orange>--- 머지 실패 원인 분석 ---</color>");
+            Debug.Log($"1. 인벤토리에서 드래그했나? : {isDraggingFromInventory} (false여야 필드 머지 가능)");
+            Debug.Log($"2. 마우스 아래 슬롯이 있나? : {currentOverSlot != null} (true여야 함)");
+
+            if (currentOverSlot != null)
+            {
+                Debug.Log($"3. 슬롯이 비어있나? : {currentOverSlot.IsDataEmpty} (false여야 함)");
+                if (!currentOverSlot.IsDataEmpty)
+                {
+                    Debug.Log($"4. 자기 자신에게 놨나? : {currentOverSlot.placedSlime == draggingSlime} (false여야 함)");
+                    bool hasRecipe = MergeManager.Instance.CheckCanMerge(currentOverSlot.placedSlime.SlimeID, draggingSlime.SlimeID);
+                    Debug.Log($"5. 레시피가 존재하나? (ID {currentOverSlot.placedSlime.SlimeID} + {draggingSlime.SlimeID}) : {hasRecipe} (true여야 함)");
+                }
+            }
+            Debug.Log($"<color=orange>-----------------------------</color>");
+
+            // --- 기존 실패 처리 (그대로 유지) ---
             if (isDraggingFromInventory)
             {
                 PoolManager.Instance.ReturnToPool(pendingSlimeData.id, draggingSlime.gameObject);

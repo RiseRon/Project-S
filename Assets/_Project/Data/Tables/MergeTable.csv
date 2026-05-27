@@ -1,0 +1,22 @@
+﻿융합 조건,,,,,,융합 결과,,
+ID,속성,레벨,필요 ID,필요 속성,필요 레벨,ID 결과,속성,레벨
+ID,ElementType,Level,Required_ID,Required_Element,Required_Level,Result_ID,Result_ElementType,Result_Level
+int,string,int,int,string,int,int,string,int
+101,Fire,1,101,Fire,1,111,Fire,2
+102,Water,1,102,Water,1,112,Water,2
+103,Electric,1,103,Electric,1,113,Electric,2
+104,Ice,1,104,Ice,1,114,Ice,2
+105,Poison,1,105,Poison,1,115,Poison,2
+106,Earth,1,106,Earth,1,116,Earth,2
+111,Fire,2,111,Fire,2,121,Fire,3
+112,Water,2,112,Water,2,122,Water,3
+113,Electric,2,113,Electric,2,123,Electric,3
+114,Ice,2,114,Ice,2,124,Ice,3
+115,Poison,2,115,Poison,2,125,Poison,3
+116,Earth,2,116,Earth,2,126,Earth,3
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,
+,,,,,,,,

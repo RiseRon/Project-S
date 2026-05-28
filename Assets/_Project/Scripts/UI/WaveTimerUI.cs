@@ -7,7 +7,7 @@ public class WaveTimerUI : MonoBehaviour
     [Header("UI 연결")]
     [SerializeField] private Slider timerSlider;
     [SerializeField] private TextMeshProUGUI timerText;
-    [SerializeField] private GameObject visualRoot; // 대기 시간 아닐 때 숨길 부모 오브젝트
+    [SerializeField] private GameObject visualRoot;
 
     private void Update()
     {

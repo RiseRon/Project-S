@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using UnityEngine.EventSystems;
 
 public class PlacementManager : MonoBehaviour
@@ -10,7 +11,7 @@ public class PlacementManager : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
 
     [Header("Stage State")]
-    public int remainingMoves = 10;
+    public int remainingMoves = 5;
 
     private Slime draggingSlime;
     private Slot currentOverSlot;
@@ -22,6 +23,7 @@ public class PlacementManager : MonoBehaviour
     private bool isDraggingFromInventory = false;
     private SO_SlimeData pendingSlimeData;
     private SlimeCard currentDraggingCard;
+    public event Action OnSlimeMoved;
 
     private void Awake()
     {
@@ -166,6 +168,7 @@ public class PlacementManager : MonoBehaviour
 
             if (!isFromInventory && remainingMoves <= 0)
             {
+                Debug.Log("슬롯 이동 횟수가 없습니다.");
                 ReturnToOriginalPosition();
                 ResetDragState();
                 return;
@@ -180,11 +183,16 @@ public class PlacementManager : MonoBehaviour
 
             if (!isFromInventory)
             {
-                if (originalSlot != currentOverSlot) remainingMoves--;
+                if (originalSlot != currentOverSlot) 
+                {
+                    remainingMoves--;
+                    Debug.Log($"남은 슬롯 이동 횟수: {remainingMoves}");
+                    OnSlimeMoved?.Invoke();
+                }
             }
             else if (currentDraggingCard != null)
             {
-                Destroy(currentDraggingCard.gameObject);
+                PoolManager.Instance.ReturnToPool(911, currentDraggingCard.gameObject);
             }
         }
         // 2. 머지 로직 (빈 자리가 아닌 꽉 찬 자리이고, 조합식이 맞을 때)

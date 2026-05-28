@@ -1,12 +1,14 @@
 using UnityEngine;
+using System;
 
 public class Barrier : MonoBehaviour
 {
     public static Barrier Instance { get; private set; }
 
     [Header("Status")]
-    private float maxHealth;
-    private float currentHealth;
+    public float maxHealth;
+    public float currentHealth;
+    public event Action OnHealthChanged;
     public bool IsDestroyed { get; private set; }
 
     private void Awake()
@@ -29,7 +31,7 @@ public class Barrier : MonoBehaviour
         if (IsDestroyed) return;
 
         currentHealth -= damage;
-        // UI 연동 시 여기에 OnHealthChanged?.Invoke() 등을 넣으면 좋습니다.
+        OnHealthChanged?.Invoke();
 
         if (currentHealth <= 0)
         {

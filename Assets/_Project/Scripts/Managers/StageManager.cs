@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -181,6 +182,14 @@ public class StageManager : MonoBehaviour
         {
             // SO_StageData에 작성하신 barrierHP를 주입합니다.
             Barrier.Instance.InitBarrier(currentStageData.barrierHP);
+        }
+        else
+        {
+            Debug.LogWarning("[StageManager] 씬에 Barrier가 존재하지 않습니다.");
+        }
+        if (PlacementManager.Instance != null)
+        {
+            PlacementManager.Instance.remainingMoves = currentStageData.slotMove;
         }
         else
         {

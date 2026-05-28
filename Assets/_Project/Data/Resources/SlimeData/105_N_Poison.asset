@@ -29,5 +29,5 @@ MonoBehaviour:
   slowRate: 0
   dotDamage: 2
   dotDamageInterval: 1
-  areaPrefabID: 0
+  areaPrefabID: 901
   areaDuration: 5

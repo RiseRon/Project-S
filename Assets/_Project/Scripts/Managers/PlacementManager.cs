@@ -130,45 +130,40 @@ public class PlacementManager : MonoBehaviour
         // 이전 프레임의 슬롯 조준 찌꺼기 잔상을 매 프레임 초기화합니다.
         currentOverSlot = null;
 
-        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, slotLayer))
+        // [관통형 수정] Raycast -> RaycastAll 변경
+        // 슬라임이나 다른 장애물이 마우스를 가리고 있어도, 마우스 밑을 관통하여 모든 물체를 검사합니다.
+        RaycastHit[] hits = Physics.RaycastAll(ray, Mathf.Infinity, slotLayer);
+
+        foreach (RaycastHit hit in hits)
         {
             Slot slot = hit.collider.GetComponent<Slot>();
             if (slot != null)
             {
-                // 배치 가능한 슬롯일 때만 currentOverSlot에 등록합니다.
-                // 가득 찬 슬롯은 절대 currentOverSlot에 담지 않아 EndDrag에서 배치 시도를 차단합니다.
-                if (slot.IsDataEmpty || slot == originalSlot)
-                {
-                    currentOverSlot = slot;
-                    draggingSlime.transform.position = currentOverSlot.transform.position;
-                    return;
-                }
+                // [머지 로직 수정] 슬롯을 발견하면, 빈 슬롯이든 꽉 찬 슬롯이든 일단 잡습니다.
+                // 배치를 할지, 머지를 할지, 튕겨낼지는 EndDrag에서 판단합니다.
+                currentOverSlot = slot;
+                draggingSlime.transform.position = currentOverSlot.transform.position;
+                return; // 가장 먼저 찾은 슬롯(가장 가까운)에 스냅하고 함수 종료
             }
         }
 
-        // 꽉 찬 슬롯이거나 맨땅인 경우 마우스 포인터를 정직하게 따라다닙니다.
+        // 슬롯을 못 찾았거나 맨땅인 경우 마우스 포인터를 정직하게 따라다닙니다.
         draggingSlime.transform.position = mouseGroundPos;
     }
 
     private void EndDrag()
     {
-        // 배치가 판단되는 연산 순간이므로 조작 정지 상태로 전환 (콜라이더는 맨 마지막에 켭니다)
         if (draggingSlime != null) draggingSlime.isDragging = false;
 
-        // OnDragging()이 매 프레임 currentOverSlot을 정확히 관리합니다.
-        // EndDrag에서 추가 레이캐스트를 하면 슬롯 콜라이더를 잘못 히트하여 중복 배치가 발생하므로 제거합니다.
-
-        // 최종 데이터 철벽 배치 검증
-        // ✅ 버그 수정: IsDataEmpty 대신 IsEmptyOrOccupiedBy(draggingSlime)로 검증하여
-        //    드래그 중인 슬라임 자신이 슬롯에 등록된 경우(= 제자리)도 빈 슬롯으로 정확히 판단합니다.
+        // 최종 데이터 배치가 가능한 '빈 자리' 인지 검증
         bool targetSlotAvailable = currentOverSlot != null &&
             (currentOverSlot.IsEmptyOrOccupiedBy(draggingSlime) || currentOverSlot == originalSlot);
 
+        // 1. 단순 배치 로직 (빈 자리)
         if (targetSlotAvailable)
         {
             bool isFromInventory = (originalSlot == null);
 
-            // 필드 이동인데 잔여 횟수가 소진된 경우 강제 튕김 처리
             if (!isFromInventory && remainingMoves <= 0)
             {
                 ReturnToOriginalPosition();
@@ -176,13 +171,11 @@ public class PlacementManager : MonoBehaviour
                 return;
             }
 
-            // 배치가 완벽히 확정되었으므로 원래 딛고 있던 슬롯을 안전하게 청소합니다.
             if (originalSlot != null && originalSlot != currentOverSlot)
             {
                 originalSlot.ClearSlot();
             }
 
-            // 슬롯에게 직접 고정 처리를 지시하여 데이터와 물리 좌표를 동시에 완전히 동기화합니다.
             currentOverSlot.AssignSlime(draggingSlime);
 
             if (!isFromInventory)
@@ -194,37 +187,20 @@ public class PlacementManager : MonoBehaviour
                 Destroy(currentDraggingCard.gameObject);
             }
         }
+        // 2. 머지 로직 (빈 자리가 아닌 꽉 찬 자리이고, 조합식이 맞을 때)
         else if (!isDraggingFromInventory && currentOverSlot != null && currentOverSlot.CanMerge(draggingSlime))
         {
-            // 1. 머지 매니저를 통해 실제 합성 진행 (두 슬라임 파괴 및 새 슬라임 소환)
+            // 머지 성공
             MergeManager.Instance.ExecuteMerge(draggingSlime, currentOverSlot);
 
-            // 2. 드래그해서 끌고 온 슬라임이 합성에 재료로 소모되었으므로, 원래 있던 자리는 확실하게 비워줍니다.
             if (originalSlot != null)
             {
                 originalSlot.ClearSlot();
             }
         }
+        // 3. 실패 및 튕겨내기 (맨땅, 머지 실패, 남의 자리 등)
         else
         {
-            // 🔴 여기가 실패했을 때 들어오는 곳입니다. 로그를 찍어봅니다. 🔴
-            Debug.Log($"<color=orange>--- 머지 실패 원인 분석 ---</color>");
-            Debug.Log($"1. 인벤토리에서 드래그했나? : {isDraggingFromInventory} (false여야 필드 머지 가능)");
-            Debug.Log($"2. 마우스 아래 슬롯이 있나? : {currentOverSlot != null} (true여야 함)");
-
-            if (currentOverSlot != null)
-            {
-                Debug.Log($"3. 슬롯이 비어있나? : {currentOverSlot.IsDataEmpty} (false여야 함)");
-                if (!currentOverSlot.IsDataEmpty)
-                {
-                    Debug.Log($"4. 자기 자신에게 놨나? : {currentOverSlot.placedSlime == draggingSlime} (false여야 함)");
-                    bool hasRecipe = MergeManager.Instance.CheckCanMerge(currentOverSlot.placedSlime.SlimeID, draggingSlime.SlimeID);
-                    Debug.Log($"5. 레시피가 존재하나? (ID {currentOverSlot.placedSlime.SlimeID} + {draggingSlime.SlimeID}) : {hasRecipe} (true여야 함)");
-                }
-            }
-            Debug.Log($"<color=orange>-----------------------------</color>");
-
-            // --- 기존 실패 처리 (그대로 유지) ---
             if (isDraggingFromInventory)
             {
                 PoolManager.Instance.ReturnToPool(pendingSlimeData.id, draggingSlime.gameObject);

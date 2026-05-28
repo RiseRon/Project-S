@@ -142,7 +142,7 @@ public class PoolManager : MonoBehaviour
     {
         if (!poolDictionary.ContainsKey(id))
         {
-            Debug.LogError($"[PoolManager] ID {id}에 해당하는 풀이 없습니다!");
+            Debug.LogError($"[PoolManager] Projectile Prefab ID {id}에 해당하는 풀이 없습니다!");
             return null;
         }
 

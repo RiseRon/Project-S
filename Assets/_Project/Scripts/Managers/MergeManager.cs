@@ -36,7 +36,7 @@ public class MergeManager : MonoBehaviour
         }
 
         // 2. [추가된 부분] 방금 임포트한 MergeTable을 Resources에서 불러와서 캐싱
-        SO_MergeTableData mergeTable = Resources.Load<SO_MergeTableData>("MergeTable");
+        SO_MergeTableData mergeTable = Resources.Load<SO_MergeTableData>("MergeData/MergeTable");
         if (mergeTable != null)
         {
             foreach (var recipe in mergeTable.recipes)
@@ -101,6 +101,9 @@ public class MergeManager : MonoBehaviour
         if (newSlimeObj != null)
         {
             Slime newSlime = newSlimeObj.GetComponent<Slime>();
+
+            // [수정된 부분] 캐싱된 데이터에서 결과 ID에 맞는 SO를 찾아 새 슬라임에게 주입!
+            newSlime.SetData(slimeDataCache[resultID]);
 
             // 4. 슬롯에 새로운 슬라임 장착 (캡슐화된 함수 사용)
             targetSlot.AssignSlime(newSlime);

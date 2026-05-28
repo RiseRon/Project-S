@@ -18,8 +18,8 @@ MonoBehaviour:
   rank: 2
   damage: 30
   attackRange: 8
-  attackSpeed: 1
-  projectilePrefabID: 0
+  attackSpeed: 0.5
+  projectilePrefabID: 902
   projectileType: 0
   trajectoryType: 0
   projectileSpeed: 50

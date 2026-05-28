@@ -16,11 +16,14 @@ public class Projectile : MonoBehaviour
         startPosition = transform.position;
         progress = 0;
 
-        // [기획 반영] 포물선/장판형은 발사 시점의 위치를 고정 타겟으로 함
-        // 직선/유도형은 나중에 Update에서 실시간 타겟 위치를 참조함
         if (targetEnemy != null)
         {
             targetPosition = targetEnemy.transform.position;
+            // [버그 픽스] 포물선/장판형이 공중에 생성되지 않도록 목표 지점을 적의 '발 밑(바닥)'으로 고정
+            if (data.trajectoryType == TrajectoryType.Parabolic)
+            {
+                targetPosition.y = 0.2f; // 지형의 바닥 Y값으로 설정 (필요시 Raycast로 지형 높이 감지)
+            }
         }
     }
 
@@ -97,7 +100,7 @@ public class Projectile : MonoBehaviour
 
         if (PoolManager.Instance != null && data.trajectoryType == TrajectoryType.Straight)
         {
-            PoolManager.Instance.ReturnToPool(902, gameObject);
+            PoolManager.Instance.ReturnToPool(data.projectilePrefabID, gameObject);
             return;
         }
         else

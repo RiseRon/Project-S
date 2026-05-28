@@ -22,7 +22,7 @@ MonoBehaviour:
   projectilePrefabID: 902
   projectileType: 0
   trajectoryType: 0
-  projectileSpeed: 50
+  projectileSpeed: 150
   arcHeight: 0
   stunChance: 0
   stunDuration: 0

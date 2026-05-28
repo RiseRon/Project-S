@@ -17,12 +17,12 @@ MonoBehaviour:
   elementType: 2
   rank: 1
   damage: 10
-  attackRange: 5
+  attackRange: 20
   attackSpeed: 0.8
-  projectilePrefabID: 0
+  projectilePrefabID: 902
   projectileType: 0
   trajectoryType: 0
-  projectileSpeed: 50
+  projectileSpeed: 150
   arcHeight: 0
   stunChance: 0
   stunDuration: 0

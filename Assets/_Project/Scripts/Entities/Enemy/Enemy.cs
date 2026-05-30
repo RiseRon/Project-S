@@ -189,6 +189,8 @@ public class Enemy : MonoBehaviour
         if (isDead) return; // 이미 죽은 상태라면 중복 실행 방지
         isDead = true;
 
+        GameManager.AddKilledEnemyCount();
+
         GiveDeathReward();
 
         if (WaveManager.Instance != null)

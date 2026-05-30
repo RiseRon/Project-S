@@ -18,6 +18,7 @@ public class WaveManager : MonoBehaviour
     public float TotalWaitTime { get; private set; }  // 전체 설정된 대기 시간
     public bool IsWaitingNextWave { get; private set; } // 대기 중인지 여부
 
+    public event Action OnStageVictoryDetected;
     public event Action OnWaveChanged;
 
     private int currentWaveIndex = 0;   // 현재 진행 중인 웨이브 번호 (리스트 인덱스)
@@ -39,7 +40,17 @@ public class WaveManager : MonoBehaviour
             return;
         }
     }
+    private void Start()
+    {
+        if (GameManager.Instance != null)
+        {
+            // GameManager가 WaveManager의 승리 알림 함수를 안전하게 바라보도록 강제 역연결
+            this.OnStageVictoryDetected -= GameManager.Instance.HandleStageWin; // (HandleStageWin도 public 변경 필요)
+            this.OnStageVictoryDetected += GameManager.Instance.HandleStageWin;
 
+            Debug.Log("<color=lime>[WaveManager]</color> 안전하게 GameManager의 승리 이벤트 채널에 스스로를 등록했습니다!");
+        }
+    }
 
     /// <summary>
     /// Resources/WaveData 폴더에 있는 모든 SO_WaveData를 로드하고 정렬합니다.
@@ -152,7 +163,7 @@ public class WaveManager : MonoBehaviour
             }
             
         }
-
+        bool isLastWave = (currentWaveIndex == stageWaves.Count - 1);
         // 적을 다 잡지 못했더라도 이 시간이 지나면 EndWave로 넘어갑니다.
         float timer = 0;
         while (timer < data.waveTime)
@@ -168,9 +179,26 @@ public class WaveManager : MonoBehaviour
 
             yield return null;
         }
+        if (isLastWave)
+        {
+            // [마지막 웨이브일 때]
+            // EndWave()를 호출하지 않고 코루틴을 여기서 종료합니다.
+            // 대신 화면에 "FINAL WAVE - 모든 적을 처치하세요!" 같은 UI 문구를 띄우기 아주 좋은 타이밍입니다.
+            Debug.Log("<color=red>[WaveManager]</color> 마지막 웨이브의 스폰 단계가 끝났습니다! 남은 적 소탕 시작.");
+            isWaveActive = false;
 
-        // 4. 웨이브 종료 및 다음 대기 단계로 이동
-        EndWave();
+            // 만약 소환 시간이 다 되었을 때 이미 필드에 적이 없다면 즉시 승리 처리
+            if (activeEnemies <= 0)
+            {
+                PublishVictory();
+            }
+        }
+        else
+        {
+            // [일반 웨이브일 때]
+            // 기존처럼 정상적으로 웨이브 종료 문구를 띄우고 보상을 주며 다음 웨이브를 엽니다.
+            EndWave();
+        }
     }
 
     /// <summary>
@@ -226,6 +254,19 @@ public class WaveManager : MonoBehaviour
         {
             EndWave();
         }
+        // 마지막 웨이브 소탕전 중 최종 적이 죽었을 때
+        if (stageWaves.Count > 0 && currentWaveIndex >= stageWaves.Count && activeEnemies <= 0)
+        {
+            PublishVictory();
+        }
+    }
+    private void PublishVictory()
+    {
+        isWaveActive = false;
+        Debug.Log("<color=lime>[WaveManager]</color> 승리 조건 달성! 전 세상에 알림을 보냅니다.");
+
+        // 이 이벤트를 라디오 주파수처럼 쏘아 올립니다. 듣고 있는 자(구독자)들이 반응합니다.
+        OnStageVictoryDetected?.Invoke();
     }
 
     /// <summary>
@@ -290,6 +331,10 @@ public class WaveManager : MonoBehaviour
         else
         {
             Debug.Log("<color=red>[WaveManager]</color> 마지막 웨이브입니다. 더 이상 스킵할 수 없습니다.");
+            if (stageWaves.Count > 0 && currentWaveIndex >= stageWaves.Count && activeEnemies <= 0)
+            {
+                PublishVictory();
+            }
         }
     }
 #endif

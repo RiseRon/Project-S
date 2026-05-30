@@ -33,6 +33,8 @@ public class PoolManager : MonoBehaviour
     // 현재 맵에 나와 있는(활성화된) 객체들의 리스트 (스테이지 이동 시 일괄 회수용)
     private List<GameObject> activeObjects = new List<GameObject>();
 
+    private Dictionary<int, int> objectInstanceToPoolID = new Dictionary<int, int>();
+
     private void Awake()
     {
         // --- 싱글톤 및 DontDestroyOnLoad 설정 ---
@@ -162,6 +164,12 @@ public class PoolManager : MonoBehaviour
         objectToSpawn.transform.SetPositionAndRotation(position, rotation);
         objectToSpawn.SetActive(true);
 
+        int instanceID = objectToSpawn.GetInstanceID();
+        if (!objectInstanceToPoolID.ContainsKey(instanceID))
+        {
+            objectInstanceToPoolID.Add(instanceID, id);
+        }
+
         // 추적 리스트에 추가 (나중에 한꺼번에 끄기 위함)
         activeObjects.Add(objectToSpawn);
         return objectToSpawn;
@@ -193,10 +201,26 @@ public class PoolManager : MonoBehaviour
         // 역순 순회하여 안전하게 비활성화
         for (int i = activeObjects.Count - 1; i >= 0; i--)
         {
-            if (activeObjects[i] == null) continue;
+            GameObject obj = activeObjects[i];
+            if (obj == null) continue;
 
-            activeObjects[i].SetActive(false);
-            activeObjects[i].transform.SetParent(this.transform);
+            // 만약 적(Enemy) 컴포넌트가 있으면 컴포넌트만 꺼서 에러 방지
+            if (obj.TryGetComponent<Enemy>(out Enemy enemy)) enemy.enabled = false;
+
+            // [★핵심] 장부를 열어서 이 오브젝트가 몇 번 풀 출신이었는지 역추적합니다.
+            int instanceID = obj.GetInstanceID();
+            if (objectInstanceToPoolID.TryGetValue(instanceID, out int originalPoolID))
+            {
+                obj.SetActive(false);
+                obj.transform.SetParent(this.transform);
+
+                // 찾은 원본 풀 ID 큐에 쏙 집어넣습니다.
+                if (poolDictionary.ContainsKey(originalPoolID))
+                {
+                    poolDictionary[originalPoolID].Enqueue(obj);
+                }
+                Debug.Log($"<color=orange>[Enemy]</color> {(GameManager.IsGameWin? "승리 감지" : "패배 감지")} {obj.name}이(가) 풀로 퇴장합니다.");
+            }
         }
         activeObjects.Clear(); // 리스트 초기화
         Debug.Log("<color=yellow>[PoolManager]</color> 모든 활성 객체 회수 및 필드 정리 완료.");

@@ -26,7 +26,6 @@ public class SlotMoveUI : MonoBehaviour
     {
         if (slotMoveCountText == null) return;
 
-        Debug.Log("작동을 하는 중");
         slotMoveCountText.text = $"{PlacementManager.Instance.remainingMoves}";
     }
 }

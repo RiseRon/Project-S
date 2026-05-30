@@ -16,7 +16,7 @@ public class BarrierHPUI : MonoBehaviour
         if (barrierHPSlider != null)
         {
             barrierHPSlider.minValue = 0f;
-            barrierHPSlider.maxValue = Barrier.Instance.maxHealth;
+            barrierHPSlider.maxValue = Barrier.Instance.MaxHealth;
         }
         UpdateBarrierHPDisplay();
     }
@@ -33,7 +33,7 @@ public class BarrierHPUI : MonoBehaviour
         if (barrierHPText == null) return;
         if (barrierHPSlider == null) return;
 
-        barrierHPText.text = $"{Barrier.Instance.currentHealth}";
-        barrierHPSlider.value = Barrier.Instance.currentHealth;
+        barrierHPText.text = $"{Barrier.Instance.CurrentHealth}";
+        barrierHPSlider.value = Barrier.Instance.CurrentHealth;
     }
 }

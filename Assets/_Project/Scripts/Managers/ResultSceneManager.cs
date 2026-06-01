@@ -13,6 +13,11 @@ public class ResultSceneManager : MonoBehaviour
     [SerializeField] private GameObject winVisualGroup;   // 승리 시 활성화할 오브젝트 그룹
     [SerializeField] private GameObject defeatVisualGroup; // 패배 시 활성화할 오브젝트 그룹
 
+    [Header("=== Win Panel Sub Groups (Is Last Stage?)===")]
+    [SerializeField] private GameObject normalWinButtonGroup;
+    [SerializeField] private GameObject finalWinButtonGroup;
+
+    private const int MAX_STAGE_ID = 503;
     void Start()
     {
         // 씬이 켜지자마자 GameManager의 static 데이터들을 UI에 반영
@@ -40,6 +45,27 @@ public class ResultSceneManager : MonoBehaviour
 
         if (winVisualGroup != null) winVisualGroup.SetActive(isWin);
         if (defeatVisualGroup != null) defeatVisualGroup.SetActive(!isWin);
+
+        if (isWin)
+        {
+            // 마지막으로 플레이한 스테이지 ID가 MAX_STAGE_ID와 같거나 큰지 검사합니다.
+            bool isFinalStage = GameManager.LastPlayedStageID >= MAX_STAGE_ID;
+
+            if (isFinalStage)
+            {
+                // 마지막 스테이지를 이겼다면: 다음 스테이지 버튼 숨기고, 패배 시 버튼 구성을 켭니다.
+                if (normalWinButtonGroup != null) normalWinButtonGroup.SetActive(false);
+                if (finalWinButtonGroup != null) finalWinButtonGroup.SetActive(true);
+
+                Debug.Log($"<color=lime>[Result]</color> 최종 스테이지({GameManager.LastPlayedStageID - 500}탄) 클리어! 패배형 버튼 레이아웃을 표시합니다.");
+            }
+            else
+            {
+                // 일반 스테이지를 이겼다면: 원래대로 다음 스테이지 이동 버튼이 있는 그룹을 켭니다.
+                if (normalWinButtonGroup != null) normalWinButtonGroup.SetActive(true);
+                if (finalWinButtonGroup != null) finalWinButtonGroup.SetActive(false);
+            }
+        }
     }
 
     /// <summary>
@@ -64,6 +90,13 @@ public class ResultSceneManager : MonoBehaviour
     }
     public void OnNextStageButtonClicked()
     {
+        // 안전장치: 혹시라도 마지막 스테이지에서 이 함수가 예외적으로 눌리는 것을 방지
+        if (GameManager.LastPlayedStageID >= MAX_STAGE_ID)
+        {
+            Debug.LogWarning("[ResultSceneManager] 마지막 스테이지이므로 다음 스테이지로 진할 수 없습니다.");
+            return;
+        }
+
         if (StageManager.Instance != null)
         {
             StageManager.Instance.SetNextStage(GameManager.LastPlayedStageID + 1);

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,6 +13,7 @@ public class GameManager : MonoBehaviour
     public static bool IsGameWin { get; private set; }
     public static int KilledEnemyCount { get; private set; }
 
+    private List<int> clearedStageIDs = new List<int>();
     private void Awake()
     {
         if (Instance == null)
@@ -126,10 +128,14 @@ public class GameManager : MonoBehaviour
 
         if (PoolManager.Instance != null)
         {
-            PoolManager.Instance.ClearAllActiveObjects();
+            PoolManager.Instance.ClearAllPools();
         }
 
         SceneManager.LoadScene("Scene_Result");
+    }
+    public bool IsStageCleared(int stageID)
+    {
+        return clearedStageIDs.Contains(stageID);
     }
     public void HandleStageWin()
     {
@@ -140,6 +146,13 @@ public class GameManager : MonoBehaviour
         }
         Debug.Log($"<color=orange>[GameManager]</color> 승리 신호 감지! {currentStageID - 500} 스테이지 승리 정산을 시작합니다.");
 
+        // 클리어 스테이지 기록 (다음 스테이지 열기용)
+        if (!clearedStageIDs.Contains(currentStageID))
+        {
+            clearedStageIDs.Add(currentStageID);
+            Debug.Log($"<color=lime>[Memory Save]</color> {currentStageID - 500} 스테이지 클리어 정보가 GameManager에 기록되었습니다.");
+        }
+
         LastPlayedStageID = currentStageID;
         IsGameWin = true;
         TotalPlayTime = currentPlayTime;
@@ -149,7 +162,7 @@ public class GameManager : MonoBehaviour
 
         if (PoolManager.Instance != null)
         {
-            PoolManager.Instance.ClearAllActiveObjects();
+            PoolManager.Instance.ClearAllPools();
         }
 
         SceneManager.LoadScene("Scene_Result");

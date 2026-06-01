@@ -19,6 +19,7 @@ public class SO_EnemyData : ScriptableObject
     public bool canMoveStun; // 스턴시 이동 가능 여부
     public bool canAtkStun; // 스턴시 공격 가능 여부
     public int StunGrace; // 스턴 후 스턴 무적시간(s)
+    public int SkillID; // 스킬 ID
 
     [Header("보상")]
     public int dropID;      // 일반 재화

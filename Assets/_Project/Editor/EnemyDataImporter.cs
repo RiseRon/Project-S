@@ -34,7 +34,7 @@ public class EnemyDataImporter
             // CSV 컬럼 순서 매칭
             // 0:ID, 1:Name, 2:K_Name, 3:Damage, 4:MoveSpeed, 5:EnemyHP, 6:AttackSpeed, 
             // 7:SplitID, 8:SplitSpawnCount, 9:CanMoveStun, 
-            // 10:CanAtkStun, 11:StunGrace, 12:DropID, 13:Amount
+            // 10:CanAtkStun, 11:StunGrace, 13: SkillID, 13:DropID, 14:Amount
 
             int id = int.Parse(data[0]);
             string assetPath = $"{saveFolderPath}/{id}_{data[1]}.asset";
@@ -65,10 +65,11 @@ public class EnemyDataImporter
             asset.canMoveStun = (int.Parse(data[9]) == 1);
             asset.canMoveStun = (int.Parse(data[10]) == 1);
             asset.StunGrace = int.Parse(data[11]);
+            asset.SkillID = int.Parse(data[12]);
 
             // 보상
-            asset.dropID = int.Parse(data[12]);
-            asset.amount = int.Parse(data[13]);
+            asset.dropID = int.Parse(data[13]);
+            asset.amount = int.Parse(data[14]);
 
             // 에디터 변경사항 기록
             EditorUtility.SetDirty(asset);

@@ -134,7 +134,6 @@ public class StageManager : MonoBehaviour
 
         // 기존에 생성된 맵이 있다면 파괴
         if (spawnedMap != null) Destroy(spawnedMap);
-        if (PoolManager.Instance != null) PoolManager.Instance.ClearAllActiveObjects();
 
         // 1. 맵 생성 (Resources/MapPrefabs 경로에 프리팹이 있어야 함)
         GameObject mapPrefab = Resources.Load<GameObject>(currentStageData.mapPrefabPath);

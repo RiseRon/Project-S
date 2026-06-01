@@ -219,10 +219,38 @@ public class PoolManager : MonoBehaviour
                 {
                     poolDictionary[originalPoolID].Enqueue(obj);
                 }
-                Debug.Log($"<color=orange>[Enemy]</color> {(GameManager.IsGameWin? "승리 감지" : "패배 감지")} {obj.name}이(가) 풀로 퇴장합니다.");
+                Debug.Log($"<color=orange>[Enemy]</color> {(GameManager.IsGameWin ? "승리 감지" : "패배 감지")} {obj.name}이(가) 풀로 퇴장합니다.");
             }
         }
         activeObjects.Clear(); // 리스트 초기화
         Debug.Log("<color=yellow>[PoolManager]</color> 모든 활성 객체 회수 및 필드 정리 완료.");
+    }
+    public void ClearAllPools()
+    {
+        // 1. 혹시 필드에 미처 못 들어가고 활성화되어 있던 객체가 있다면 1차 정리
+        ClearAllActiveObjects();
+
+        // 2. 딕셔너리 내부의 모든 큐(Queue)를 순회하며 대기 중인 모든 복사본 파괴
+        foreach (var pair in poolDictionary)
+        {
+            Queue<GameObject> queue = pair.Value;
+
+            while (queue.Count > 0)
+            {
+                GameObject obj = queue.Dequeue();
+                if (obj != null)
+                {
+                    Destroy(obj); // 씬에 생성되어 있던 복사본 게임 오브젝트 삭제!
+                }
+            }
+        }
+
+        // 3. 인스턴스 ID 역추적용 장부도 깔끔하게 리셋
+        objectInstanceToPoolID.Clear();
+
+        // ※ 주의: poolDictionary 자체를 Clear() 해버리면 Key값(ID 장부)까지 날아가므로,
+        // 인스펙터 원본을 유지하기 위해 딕셔너리 내부의 '큐(Queue) 내부 물품만 비운 상태'를 유지합니다.
+
+        Debug.Log("<color=red>[PoolManager]</color> 스테이지 탈출: 모든 비활성 오브젝트 풀 파괴 및 메모리 반환 완료.");
     }
 }

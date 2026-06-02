@@ -88,4 +88,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcc608fd36b74004094dca530f879db5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SlimeCard
+  cardImage: {fileID: 1359043619868991484}
+  visualList:
+  - slimeID: 101
+    cardSprite: {fileID: 21300000, guid: 289de4d9afc41e643b97f44aaeb10a86, type: 3}
+  - slimeID: 102
+    cardSprite: {fileID: 21300000, guid: 336a66d668af1e54a9ebf4fac343559e, type: 3}
+  - slimeID: 103
+    cardSprite: {fileID: 21300000, guid: 5d6574afe03cae24abf1f904edb825a0, type: 3}
+  - slimeID: 104
+    cardSprite: {fileID: 21300000, guid: 68201c759bf2cc44fb6fe0e02e1ac8bc, type: 3}
+  - slimeID: 105
+    cardSprite: {fileID: 21300000, guid: ebb7e5590c0364f4c83e0aec4d6f1a54, type: 3}
+  - slimeID: 106
+    cardSprite: {fileID: 21300000, guid: d02f5a9baa5184c4dba19751108c0c22, type: 3}
   slimeData: {fileID: 0}

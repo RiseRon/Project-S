@@ -199,21 +199,11 @@ public class StageManager : MonoBehaviour
     {
         if (string.IsNullOrEmpty(currentStageData.bgmPath))
         {
-            Debug.LogWarning("[StageManager] BGM 경로가 비어있습니다.");
+            Debug.LogWarning("[StageManager] BGM 이름이 비어있습니다.");
             return;
         }
-
-        // Resources 폴더에서 오디오 클립 로드
-        AudioClip stageBgm = Resources.Load<AudioClip>(currentStageData.bgmPath);
-
-        /*if (stageBgm != null && SoundManager.Instance != null)
-        {
-            SoundManager.Instance.PlayBGM(stageBgm);
-        }
-        else
-        {
-            Debug.LogWarning($"[StageManager] BGM 로드 실패 또는 SoundManager 없음: {currentStageData.bgmPath}");
-        }*/
+        SoundManager.Instance.StopBGM();
+        SoundManager.Instance.PlayBGM(currentStageData.bgmPath);
     }
 
     /// <summary>

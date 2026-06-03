@@ -1,5 +1,4 @@
 using UnityEngine;
-using static UnityEditor.Rendering.CameraUI;
 
 public enum SlimeElementType { Fire, Water, Electric, Ice, Poison, Earth }
 public enum ProjectileType { Single, Area, Floor } // 투사체 타입 (단일, 범위, 장판)

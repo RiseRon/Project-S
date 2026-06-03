@@ -19,93 +19,87 @@ public class Projectile : MonoBehaviour
         if (targetEnemy != null)
         {
             targetPosition = targetEnemy.transform.position;
-            // [버그 픽스] 포물선/장판형이 공중에 생성되지 않도록 목표 지점을 적의 '발 밑(바닥)'으로 고정
-            if (data.trajectoryType == TrajectoryType.Parabolic)
+
+            // [버그 픽스] 포물선/장판형이 공중에 깔리지 않도록 타겟을 '발 밑(바닥)'으로 고정
+            if (data.trajectoryType == TrajectoryType.Parabolic || data.projectileType == ProjectileType.Floor)
             {
-                targetPosition.y = 0.2f; // 지형의 바닥 Y값으로 설정 (필요시 Raycast로 지형 높이 감지)
+                targetPosition.y = 0.2f;
             }
         }
     }
 
     void Update()
     {
-        // 진행도 계산: 속도에 따라 0에서 1까지 증가
-        // 실제 거리 대비 속도를 적용하기 위해 거리를 나눕니다.
         float distance = Vector3.Distance(startPosition, targetPosition);
         if (distance > 0)
         {
             progress += (data.projectileSpeed / distance) * Time.deltaTime;
         }
 
-        if (data.trajectoryType == TrajectoryType.Straight)
-        {
-            MoveStraight();
-        }
-        else
-        {
-            MoveParabolic();
-        }
+        if (data.trajectoryType == TrajectoryType.Straight) MoveStraight();
+        else MoveParabolic();
 
-        // 도착 체크
+        // 🎯 목표 지점 도달 시 타격 로직 실행
         if (progress >= 1.0f)
         {
-            if (data.trajectoryType == TrajectoryType.Straight)
-            {
-                Hit();
-            }
-            else
-            {
-                SpawnArea();
-            }
+            ExecuteHitLogic();
         }
     }
 
-    // 1. 직선 이동 (유도형)
     private void MoveStraight()
     {
-        // 타겟이 살아있다면 실시간으로 위치 업데이트 (유도)
+        // 유도탄: 적이 살아있으면 목표 지점을 계속 추적 (바닥 꽂힘 방지)
         if (targetEnemy != null && !targetEnemy.IsDead)
+        {
             targetPosition = targetEnemy.transform.position;
-
+        }
         transform.position = Vector3.Lerp(startPosition, targetPosition, progress);
-
-        // 진행 방향 바라보기
-        transform.LookAt(targetPosition);
     }
 
-    // 2. 포물선 이동 (지점 낙하)
     private void MoveParabolic()
     {
-        // 선형 보간 위치 계산
-        Vector3 linearPos = Vector3.Lerp(startPosition, targetPosition, progress);
-
-        // 이차 곡선(Parabola) 공식 적용: y = 4h * x * (1 - x)
-        // progress가 0.5일 때 최대 높이(data.arcHeight)에 도달합니다.
-        float height = 4 * data.arcHeight * progress * (1 - progress);
-
-        Vector3 finalPos = new Vector3(linearPos.x, linearPos.y + height, linearPos.z);
-
-        // 이동 및 회전 처리
-        transform.LookAt(finalPos + (finalPos - transform.position));
-        transform.position = finalPos;
+        Vector3 currentPos = Vector3.Lerp(startPosition, targetPosition, progress);
+        float parabola = 1.0f - 4.0f * (progress - 0.5f) * (progress - 0.5f);
+        currentPos.y += parabola * data.arcHeight;
+        transform.position = currentPos;
     }
 
-    private void Hit()
+    /// <summary> 단일/범위/장판을 모두 관장하는 핵심 히트 로직 </summary>
+    private void ExecuteHitLogic()
     {
-        // 1. 데미지 입히기
-        targetEnemy.TakeDamage(data.damage);
+        if (data.projectileType == ProjectileType.Single)
+        {
+            if (targetEnemy != null && !targetEnemy.IsDead)
+            {
+                targetEnemy.TakeDamage(data.damage);
+                ApplyElementEffects(targetEnemy);
+            }
+        }
+        else if (data.projectileType == ProjectileType.Area)
+        {
+            // 폭발 반경(attackRange) 내의 모든 적에게 범위 딜 및 효과 적용
+            Collider[] hits = Physics.OverlapSphere(targetPosition, data.attackRange, LayerMask.GetMask("Enemy"));
+            foreach (var hit in hits)
+            {
+                if (hit.TryGetComponent<Enemy>(out var enemy) && !enemy.IsDead)
+                {
+                    enemy.TakeDamage(data.damage);
+                    ApplyElementEffects(enemy);
+                }
+            }
+        }
+        else if (data.projectileType == ProjectileType.Floor)
+        {
+            SpawnArea();
+        }
 
-        // 2. 속성별 특수 효과 적용 (얼음-스턴)
-        ApplyElementEffects();
-
-        if (PoolManager.Instance != null && data.trajectoryType == TrajectoryType.Straight)
+        // 투사체 반납 (하드코딩 제거, ID 연동)
+        if (PoolManager.Instance != null)
         {
             PoolManager.Instance.ReturnToPool(data.projectilePrefabID, gameObject);
-            return;
         }
         else
         {
-            // 만약 매니저가 없다면 (테스트용) 삭제
             Destroy(gameObject);
         }
     }
@@ -114,35 +108,19 @@ public class Projectile : MonoBehaviour
     {
         if (PoolManager.Instance != null)
         {
-            // 1. Pool에서 장판 오브젝트 소환 (현재 투사체 위치)
             GameObject areaObj = PoolManager.Instance.SpawnFromPool(data.areaPrefabID, targetPosition, Quaternion.identity);
-
-            // 2. 장판 스크립트를 가져와서 유지 시간 및 ID 설정
             if (areaObj.TryGetComponent<AreaEffect>(out var area))
             {
                 area.Init(data.areaPrefabID, data);
             }
         }
-
-        if (PoolManager.Instance != null && data.trajectoryType == TrajectoryType.Parabolic)
-        {
-            PoolManager.Instance.ReturnToPool(901, gameObject);
-            return;
-        }
-        else
-        {
-            // 투사체 파괴
-            Destroy(gameObject);
-        }
     }
 
-    private void ApplyElementEffects()
+    private void ApplyElementEffects(Enemy target)
     {
-        // 타겟 Enemy의 상태를 변화시키는 로직 (기획서 데이터 기반)
         if (data.elementType == SlimeElementType.Ice)
         {
-            // float rand = Random.value * 100;
-            // if(rand <= data.stunChance) target.ApplyStun(data.effectDuration);
+            target.RequestStun(data.stunDuration);
         }
     }
 }

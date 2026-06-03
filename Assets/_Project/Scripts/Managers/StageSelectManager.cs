@@ -20,6 +20,10 @@ public class StageSelectManager : MonoBehaviour
     /// </summary>
     private void Start()
     {
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlayBGM("BGM_Title");
+        }
         // 씬이 켜질 때 GameManager 메모리를 확인해서 버튼 상호작용(Interactable) 처리
         CheckAndApplyStageLocks();
     }/// <summary>

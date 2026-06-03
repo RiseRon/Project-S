@@ -84,6 +84,10 @@ public class SlimeSummonManager : MonoBehaviour
     // 버튼 이벤트 연결 시 이 함수명을 확인하세요.
     public void OnClickSummonButton()
     {
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX("SFX_UI_Click");
+        }
         if (uiPanelTransform.childCount >= 5)
         {
             Debug.Log("<color=yellow>인벤토리가 가득 찼습니다.</color>");
@@ -108,6 +112,10 @@ public class SlimeSummonManager : MonoBehaviour
     // --- [ 확정 소환 ] ---
     public void SummonGuaranteedSlime(int targetID)
     {
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX("SFX_UI_Click");
+        }
         if (uiPanelTransform.childCount >= 5)
         {
             Debug.Log("<color=yellow>인벤토리가 가득 찼습니다.</color>");

@@ -19,6 +19,10 @@ public class MainMenuManager : MonoBehaviour
     /// </summary>
     public void OnClickStart()
     {
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX("SFX_UI_Click");
+        }
         // 빌드 세팅에 등록된 스테이지 선택 씬의 정확한 이름을 적어주세요.
         SceneManager.LoadScene("Scene_StageSelect");
     }
@@ -28,6 +32,10 @@ public class MainMenuManager : MonoBehaviour
     /// </summary>
     public void OnClickExitGame()
     {
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX("SFX_UI_Click");
+        }
         Debug.Log("게임 종료 요청");
 
 #if UNITY_EDITOR

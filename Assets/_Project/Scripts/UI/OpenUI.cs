@@ -12,6 +12,10 @@ public class OpenUI : MonoBehaviour
     {
         if (targetUI != null)
         {
+            if (SoundManager.Instance != null)
+            {
+                SoundManager.Instance.PlaySFX("SFX_UI_Click");
+            }
             // 대상 UI를 활성화
             targetUI.SetActive(true);
 

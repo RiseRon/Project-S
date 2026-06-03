@@ -81,6 +81,10 @@ public class ResultSceneManager : MonoBehaviour
     {
         if (StageManager.Instance != null)
         {
+            if (SoundManager.Instance != null)
+            {
+                SoundManager.Instance.PlaySFX("SFX_UI_Click");
+            }
             StageManager.Instance.SetNextStage(GameManager.LastPlayedStageID);
         }
         else
@@ -105,6 +109,10 @@ public class ResultSceneManager : MonoBehaviour
 
         if (StageManager.Instance != null)
         {
+            if (SoundManager.Instance != null)
+            {
+                SoundManager.Instance.PlaySFX("SFX_UI_Click");
+            }
             StageManager.Instance.SetNextStage(GameManager.LastPlayedStageID + 1);
         }
         else
@@ -126,6 +134,10 @@ public class ResultSceneManager : MonoBehaviour
     {
         if (GameManager.Instance != null)
         {
+            if (SoundManager.Instance != null)
+            {
+                SoundManager.Instance.PlaySFX("SFX_UI_Click");
+            }
             GameManager.Instance.ChangeScene("Scene_StageSelect"); // 프로젝트의 로비/메인 화면 씬 이름 입력
         }
         else

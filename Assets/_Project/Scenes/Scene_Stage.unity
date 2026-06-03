@@ -3037,6 +3037,17 @@ MonoBehaviour:
   timerSlider: {fileID: 289144328}
   timerText: {fileID: 1680074387}
   visualRoot: {fileID: 289144325}
+--- !u!114 &696409510 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4523912982820546359, guid: 1cf582a699f660443b09da67bd5af421, type: 3}
+  m_PrefabInstance: {fileID: 815521479}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!1 &712597498
 GameObject:
   m_ObjectHideFlags: 0
@@ -5367,6 +5378,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1210339512}
   m_CullTransparentMesh: 1
+--- !u!114 &1229029026 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 723211613090562070, guid: 1cf582a699f660443b09da67bd5af421, type: 3}
+  m_PrefabInstance: {fileID: 815521479}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!1 &1268204614
 GameObject:
   m_ObjectHideFlags: 0
@@ -5984,6 +6006,17 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &1478918180 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4617893997181464745, guid: 1cf582a699f660443b09da67bd5af421, type: 3}
+  m_PrefabInstance: {fileID: 815521479}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Slider
 --- !u!1 &1546939862
 GameObject:
   m_ObjectHideFlags: 0
@@ -7057,9 +7090,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 82188344416ab844d8b7ad296b6422f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SettingsManager
-  masterVolumeSlider: {fileID: 0}
-  bgmVolumeSlider: {fileID: 0}
-  sfxVolumeSlider: {fileID: 0}
+  masterVolumeSlider: {fileID: 1478918180}
+  bgmVolumeSlider: {fileID: 1229029026}
+  sfxVolumeSlider: {fileID: 696409510}
 --- !u!4 &1983799223
 Transform:
   m_ObjectHideFlags: 0

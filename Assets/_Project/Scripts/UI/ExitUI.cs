@@ -21,6 +21,10 @@ public class ExitUI : MonoBehaviour
     {
         if (targetUI != null)
         {
+            if (SoundManager.Instance != null)
+            {
+                SoundManager.Instance.PlaySFX("SFX_UI_Click");
+            }
             targetUI.SetActive(false);
             Debug.Log($"<color=orange>[UI]</color> {targetUI.name} 오브젝트가 비활성화되었습니다.");
         }

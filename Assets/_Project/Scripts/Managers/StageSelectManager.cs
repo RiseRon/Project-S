@@ -71,6 +71,10 @@ public class StageSelectManager : MonoBehaviour
     }
     public void OnStageSelect(int stageID)
     {
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX("SFX_UI_Click");
+        }
         selectedStageID = stageID;
         Debug.Log($"<color=yellow>[StageSelect]</color> 스테이지 {selectedStageID - 500}번이 선택되었습니다. (대기 중)");
     }
@@ -90,6 +94,10 @@ public class StageSelectManager : MonoBehaviour
         // 파괴되지 않는 StageManager에게 선택된 ID 주입
         if (StageManager.Instance != null)
         {
+            if (SoundManager.Instance != null)
+            {
+                SoundManager.Instance.PlaySFX("SFX_UI_Click");
+            }
             StageManager.Instance.SetNextStage(selectedStageID);
         }
         else
@@ -109,6 +117,10 @@ public class StageSelectManager : MonoBehaviour
     /// </summary>
     public void OnBackButtonClicked()
     {
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX("SFX_UI_Click");
+        }
         Debug.Log("<color=white>[StageSelect]</color> 뒤로가기 버튼 클릭. 메인 메뉴로 돌아갑니다.");
         SceneManager.LoadScene("Scene_Main");
     }

@@ -197,23 +197,24 @@ public class StageManager : MonoBehaviour
     }
     private void PlayStageBGM()
     {
-        if (string.IsNullOrEmpty(currentStageData.bgmPath))
+        if (currentStageData == null || string.IsNullOrEmpty(currentStageData.bgmPath))
         {
-            Debug.LogWarning("[StageManager] BGM 경로가 비어있습니다.");
+            Debug.LogWarning("[StageManager] BGM 이름이 비어있거나 스테이지 데이터가 없습니다.");
             return;
         }
 
-        // Resources 폴더에서 오디오 클립 로드
-        AudioClip stageBgm = Resources.Load<AudioClip>(currentStageData.bgmPath);
-
-        /*if (stageBgm != null && SoundManager.Instance != null)
+        // =========================================================================
+        // [★안전 가드 추가] 싱글톤 인스턴스가 존재할 때만 사운드 제어 명령을 하도록 예외 처리
+        // =========================================================================
+        if (SoundManager.Instance != null)
         {
-            SoundManager.Instance.PlayBGM(stageBgm);
+            SoundManager.Instance.StopBGM();
+            SoundManager.Instance.PlayBGM(currentStageData.bgmPath);
         }
         else
         {
-            Debug.LogWarning($"[StageManager] BGM 로드 실패 또는 SoundManager 없음: {currentStageData.bgmPath}");
-        }*/
+            Debug.LogWarning("[StageManager] 사운드를 재생하려 했으나 씬에 SoundManager가 아직 생성되지 않았습니다.");
+        }
     }
 
     /// <summary>

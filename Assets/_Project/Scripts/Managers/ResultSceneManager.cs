@@ -13,6 +13,10 @@ public class ResultSceneManager : MonoBehaviour
     [SerializeField] private GameObject winVisualGroup;   // 승리 시 활성화할 오브젝트 그룹
     [SerializeField] private GameObject defeatVisualGroup; // 패배 시 활성화할 오브젝트 그룹
 
+    [Header("=== Back Ground Image ===")]
+    [SerializeField] private GameObject winBackGroundImage;   // 승리 시 활성화할 오브젝트 그룹
+    [SerializeField] private GameObject defeatBackGroundImage; // 패배 시 활성화할 오브젝트 그룹
+
     [Header("=== Win Panel Sub Groups (Is Last Stage?)===")]
     [SerializeField] private GameObject normalWinButtonGroup;
     [SerializeField] private GameObject finalWinButtonGroup;
@@ -45,6 +49,8 @@ public class ResultSceneManager : MonoBehaviour
 
         if (winVisualGroup != null) winVisualGroup.SetActive(isWin);
         if (defeatVisualGroup != null) defeatVisualGroup.SetActive(!isWin);
+        if (winBackGroundImage != null) winBackGroundImage.SetActive(isWin);
+        if (defeatBackGroundImage != null) defeatBackGroundImage.SetActive(!isWin);
 
         if (isWin)
         {

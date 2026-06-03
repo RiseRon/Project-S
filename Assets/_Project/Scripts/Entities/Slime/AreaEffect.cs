@@ -6,66 +6,62 @@ public class AreaEffect : MonoBehaviour
     private int areaID;
     private SO_SlimeData data;
 
+    // 적별 '다음 도트 딜이 들어갈 시간'을 기록
     private Dictionary<Enemy, float> enemyTimers = new Dictionary<Enemy, float>();
 
-    public void Init(int id, SO_SlimeData slimeData) // 초기화 단계
+    public void Init(int id, SO_SlimeData slimeData)
     {
         areaID = id;
         data = slimeData;
 
-        // 지정된 시간 후 ReturnToPool 호출
-        CancelInvoke(); // 소환 직수 이전 기록 초기화
-        Invoke(nameof(Deactivate), data.areaDuration); // duration 초가 지난 후 Deactivate 함수 실행
+        CancelInvoke();
+        Invoke(nameof(Deactivate), data.areaDuration);
     }
 
-    private void Deactivate() // 반납
+    private void Deactivate()
     {
-        // 반납 전 남아있는 적의 상태 원복
         ClearAllEffects();
         if (PoolManager.Instance != null)
             PoolManager.Instance.ReturnToPool(areaID, gameObject);
     }
 
-    // 1. 적이 들어올 때: 슬로우 적용 및 데미지 타이머 초기화
+    // 1. 적이 들어올 때: 슬로우 요청 및 타이머 시작
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Enemy"))
         {
             if (other.TryGetComponent<Enemy>(out Enemy enemy))
             {
-                // 즉시 슬로우 적용
-                enemy.ApplySlow(data.slowRate);
+                // [수정] Enemy가 직접 관리하도록 '요청'
+                enemy.AddSlow(gameObject.GetInstanceID(), data.slowRate);
 
-                // 첫 데미지 시간 설정 (입장 즉시 혹은 1초 뒤)
                 if (!enemyTimers.ContainsKey(enemy))
                 {
+                    // 현재 밟은 시간 + 쿨타임(1초) 뒤에 첫 데미지 예약
                     enemyTimers.Add(enemy, Time.time + data.dotDamageInterval);
-                    // 만약 밟자마자 첫 틱 데미지를 주고 싶다면 여기서 TakeDamage 호출
                 }
             }
         }
     }
 
-    // 2. 적이 머무를 때: 1초 간격으로 도트 데미지 체크
+    // 2. 적이 머무를 때: 쿨타임 체크 후 도트 딜 적용
     private void OnTriggerStay(Collider other)
     {
         if (other.CompareTag("Enemy"))
         {
             if (other.TryGetComponent<Enemy>(out Enemy enemy))
             {
-                // 현재 시간이 저장된 다음 데미지 시간보다 크거나 같다면
                 if (enemyTimers.ContainsKey(enemy) && Time.time >= enemyTimers[enemy])
                 {
                     enemy.TakeDamage(data.dotDamage);
-
-                    // 다음 틱 시간 갱신: 현재 시간 + 1.0초
+                    // 다음 데미지 시간 갱신
                     enemyTimers[enemy] = Time.time + data.dotDamageInterval;
                 }
             }
         }
     }
 
-    // 3. 적이 나갈 때: 슬로우 해제 및 타이머 제거
+    // 3. 적이 나갈 때: 슬로우 해제 및 타이머 취소
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Enemy"))
@@ -79,15 +75,24 @@ public class AreaEffect : MonoBehaviour
 
     private void RemoveEnemyEffect(Enemy enemy)
     {
-        enemy.ResetSlow(); // 슬로우 해제
-        enemyTimers.Remove(enemy);
+        // [수정] 이 장판이 걸었던 슬로우만 '해제 요청'
+        enemy.RemoveSlow(gameObject.GetInstanceID());
+
+        if (enemyTimers.ContainsKey(enemy))
+        {
+            enemyTimers.Remove(enemy);
+        }
     }
 
     private void ClearAllEffects()
     {
+        // 장판이 수명이 다해 사라질 때 내부에 갇혀있던 적들의 슬로우 일괄 해제
         foreach (var enemy in enemyTimers.Keys)
         {
-            if (enemy != null) enemy.ResetSlow();
+            if (enemy != null)
+            {
+                enemy.RemoveSlow(gameObject.GetInstanceID());
+            }
         }
         enemyTimers.Clear();
     }

@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
@@ -26,6 +28,13 @@ public class Enemy : MonoBehaviour
     public bool IsDead => isDead; // 사망 여부 확인용 프로퍼티
     public bool IsSturn => isSturn; // 스턴 여부 확인용 프로퍼티
 
+    // [추가된 상태이상 통제 모듈 변수]
+    private Dictionary<int, float> activeSlows = new Dictionary<int, float>();
+    private float stunImmuneEndTime = 0f;
+
+    // 보스 여부 확인(SO_EnemyData의 이름을 기준으로 판별)
+    public bool IsBoss => enemyData.enemyName == "MidBoss" || enemyData.enemyName == "FinalBoss";
+
     protected virtual void Start()
     {
         // WaypointManager에서 경로 자동 할당
@@ -38,6 +47,7 @@ public class Enemy : MonoBehaviour
             Debug.LogError("WaypointManager에 길이 설정되지 않았습니다!");
         }
     }
+
     public void SetTotalDistance(float distance)
     {
         TotalDistanceTraveled = distance;
@@ -278,13 +288,73 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public void ApplySlow(float slowRate)
+    // =========================================================
+    // [상태이상: 슬로우 시스템 (기존 ApplySlow, ResetSlow 대체)]
+    // =========================================================
+
+    /// <summary> 장판이나 투사체가 슬로우를 '요청'할 때 호출 </summary>
+    public void AddSlow(int sourceID, float slowRate)
     {
-        currentSpeed = enemyData.moveSpeed * (1.0f - (slowRate / 100.0f));
+        if (!activeSlows.ContainsKey(sourceID))
+        {
+            activeSlows.Add(sourceID, slowRate);
+            RecalculateSpeed();
+        }
     }
 
-    public void ResetSlow()
+    /// <summary> 장판에서 벗어났을 때 슬로우 '제거' 요청 </summary>
+    public void RemoveSlow(int sourceID)
     {
-        currentSpeed = enemyData.moveSpeed;
+        if (activeSlows.ContainsKey(sourceID))
+        {
+            activeSlows.Remove(sourceID);
+            RecalculateSpeed();
+        }
+    }
+
+    /// <summary> 활성화된 슬로우 중 가장 수치가 높은 1개만 적용 (중복 방지) </summary>
+    private void RecalculateSpeed()
+    {
+        if (isSturn)
+        {
+            currentSpeed = 0f;
+            return;
+        }
+
+        float maxSlow = 0f;
+        foreach (var slow in activeSlows.Values)
+        {
+            if (slow > maxSlow) maxSlow = slow;
+        }
+
+        currentSpeed = enemyData.moveSpeed * (1.0f - (maxSlow / 100.0f));
+    }
+
+    // =========================================================
+    // [상태이상: 스턴 시스템]
+    // =========================================================
+
+    /// <summary> 투사체가 스턴을 '요청'할 때 호출 </summary>
+    public void RequestStun(float stunDuration)
+    {
+        if (IsBoss) return; // 보스는 스턴 면역
+        if (isSturn) return; // 이미 스턴 중이면 무시
+        if (Time.time < stunImmuneEndTime) return; // 면역 시간 중이면 무시
+
+        StartCoroutine(StunRoutine(stunDuration));
+    }
+
+    private IEnumerator StunRoutine(float duration)
+    {
+        isSturn = true;
+        RecalculateSpeed(); // 스턴 시 속도를 0으로 갱신
+
+        yield return new WaitForSeconds(duration);
+
+        isSturn = false;
+        // 스턴이 풀리면 데이터의 무적시간(StunGrace)만큼 쿨타임 가동
+        stunImmuneEndTime = Time.time + enemyData.StunGrace;
+
+        RecalculateSpeed(); // 원래 속도(혹은 슬로우 걸린 상태)로 복구
     }
 }

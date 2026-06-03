@@ -32,7 +32,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 2.5, z: 0}
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 5606255125931810676}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4061325622544141107
@@ -50,7 +51,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8089421381590851071}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -127,3 +128,77 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Slime
   slimeData: {fileID: 0}
   isDragging: 0
+--- !u!1001 &5352477751592728735
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2103400397138534855}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 50d4e91a2f25b044fafb3a8b6bd816ee, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 50d4e91a2f25b044fafb3a8b6bd816ee, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 50d4e91a2f25b044fafb3a8b6bd816ee, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 50d4e91a2f25b044fafb3a8b6bd816ee, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 50d4e91a2f25b044fafb3a8b6bd816ee, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 50d4e91a2f25b044fafb3a8b6bd816ee, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 50d4e91a2f25b044fafb3a8b6bd816ee, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 50d4e91a2f25b044fafb3a8b6bd816ee, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 50d4e91a2f25b044fafb3a8b6bd816ee, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 50d4e91a2f25b044fafb3a8b6bd816ee, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 798707701247535674, guid: 50d4e91a2f25b044fafb3a8b6bd816ee, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1960df8727b879149b1783894cbb9968, type: 2}
+    - target: {fileID: 919132149155446097, guid: 50d4e91a2f25b044fafb3a8b6bd816ee, type: 3}
+      propertyPath: m_Name
+      value: P_Poison_Slimes2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1386008584214262551, guid: 50d4e91a2f25b044fafb3a8b6bd816ee, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 6bd678b076a21f64f9951db2b0afcd87, type: 2}
+    - target: {fileID: 8372683216970484633, guid: 50d4e91a2f25b044fafb3a8b6bd816ee, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: cd31a993056bfe942893d0e232bd4aeb, type: 2}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 50d4e91a2f25b044fafb3a8b6bd816ee, type: 3}
+--- !u!4 &5606255125931810676 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 50d4e91a2f25b044fafb3a8b6bd816ee, type: 3}
+  m_PrefabInstance: {fileID: 5352477751592728735}
+  m_PrefabAsset: {fileID: 0}

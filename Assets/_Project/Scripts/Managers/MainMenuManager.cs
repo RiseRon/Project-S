@@ -17,7 +17,14 @@ public class MainMenuManager : MonoBehaviour
         }
 
         // 게임 시작 시 오디오 볼륨 슬라이더들을 항상 기본값(1.0f 즉, 최대 볼륨)으로 초기화합니다.
-        InitVolumeSliders();
+        if(SoundManager.Instance != null)
+        {
+            if (SoundManager.Instance.IsNewStart)
+            {
+                InitVolumeSliders();
+                SoundManager.Instance.IsNewStart = false;
+            }
+        }
     }
 
     #region [1. 씬 전환 및 게임 종료 기능]

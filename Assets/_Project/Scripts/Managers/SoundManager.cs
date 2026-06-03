@@ -34,6 +34,7 @@ public class SoundManager : MonoBehaviour
     public float BgmVolume { get; private set; } = 1.0f;
     public float SfxVolume { get; private set; } = 1.0f;
 
+    public bool IsNewStart { get; set; } = true;
     private void Awake()
     {
         // --- ½Ì±ÛÅæ ¹× DontDestroyOnLoad ¼¼ÆÃ ---

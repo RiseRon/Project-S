@@ -166,32 +166,37 @@ public class PlacementManager : MonoBehaviour
         {
             bool isFromInventory = (originalSlot == null);
 
+            // [1] 필드 이동일 경우 남은 이동 횟수 검사
             if (!isFromInventory && remainingMoves <= 0)
             {
                 Debug.Log("슬롯 이동 횟수가 없습니다.");
-                ReturnToOriginalPosition();
+                ReturnToOriginalPosition(); // 횟수 없으면 원래 자리로 돌려보냄
                 ResetDragState();
                 return;
             }
 
+            // [2] 다른 자리로 이동하는 것이라면, 원래 있던 슬롯의 데이터를 완전히 비움
             if (originalSlot != null && originalSlot != currentOverSlot)
             {
                 originalSlot.ClearSlot();
             }
 
+            // [3] 실제 배치가 이루어지는 가장 핵심적인 코드 
             currentOverSlot.AssignSlime(draggingSlime);
 
+            // [4] 배치 완료 후 후처리 (이동 횟수 차감 및 UI 정리)
             if (!isFromInventory)
             {
                 if (originalSlot != currentOverSlot) 
                 {
-                    remainingMoves--;
+                    remainingMoves--; // 필드 이동 횟수 1 감소
                     Debug.Log($"남은 슬롯 이동 횟수: {remainingMoves}");
-                    OnSlimeMoved?.Invoke();
+                    OnSlimeMoved?.Invoke(); // 이동 완료 이벤트 발생
                 }
             }
             else if (currentDraggingCard != null)
             {
+                // 인벤토리에서 방금 뽑은 거라면, UI 카드 객체를 풀로 반납
                 PoolManager.Instance.ReturnToPool(911, currentDraggingCard.gameObject);
             }
         }

@@ -33,6 +33,8 @@ public class Slime : MonoBehaviour
 
         Targeting();
 
+        LookAtTarget();
+
         if (CanAttack())
         {
             Attack();
@@ -63,6 +65,25 @@ public class Slime : MonoBehaviour
         }
     }
 
+    private void LookAtTarget()
+    {
+        // 타겟이 없거나 이미 죽었다면 회전하지 않음
+        if (targetEnemy == null || targetEnemy.IsDead) return;
+
+        // 1. 타겟을 향한 방향 벡터 계산
+        Vector3 direction = targetEnemy.transform.position - transform.position;
+
+        // 2. y축(높이) 차이를 0으로 만들어 위아래로 기울어지는 것을 방지
+        direction.y = 0f;
+
+        // 3. 방향 벡터가 0이 아닐 때만 회전 처리
+        if (direction != Vector3.zero)
+        {
+            // Slerp(부드러운 회전)를 제거하고 목표 회전값을 즉시 덮어씌웁니다.
+            transform.rotation = Quaternion.LookRotation(direction);
+        }
+    }
+    
     protected virtual bool CanAttack()
     {
         // 타겟이 있고, 쿨타임이 지났으며, 드래그 중이 아닐 때만 공격 가능

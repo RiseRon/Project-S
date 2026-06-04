@@ -28,6 +28,10 @@ public class Enemy : MonoBehaviour
     public bool IsDead => isDead; // 사망 여부 확인용 프로퍼티
     public bool IsSturn => isSturn; // 스턴 여부 확인용 프로퍼티
 
+    // 예측 사격을 위해 투사체가 참조할 적의 속도와 방향
+    public float CurrentSpeed => currentSpeed;
+    public Vector3 MoveDirection => transform.forward;
+
     // [추가된 상태이상 통제 모듈 변수]
     private Dictionary<int, float> activeSlows = new Dictionary<int, float>();
     private float stunImmuneEndTime = 0f;
@@ -356,5 +360,49 @@ public class Enemy : MonoBehaviour
         stunImmuneEndTime = Time.time + enemyData.StunGrace;
 
         RecalculateSpeed(); // 원래 속도(혹은 슬로우 걸린 상태)로 복구
+    }
+
+    // =========================================================
+    // [경로 기반 예측 사격 시스템]
+    // =========================================================
+
+    /// <summary> 
+    /// 투사체가 지정된 시간(초) 뒤에 이 적이 웨이포인트를 따라 어디에 있을지 물어볼 때 위치를 반환합니다.
+    /// </summary>
+    public Vector3 GetPredictedPosition(float timeInFuture)
+    {
+        // 1. 해당 시간 동안 이동할 총 예상 거리
+        float distanceToTravel = currentSpeed * timeInFuture;
+
+        // 2. 이미 죽었거나, 스턴 상태라서 이동 거리가 없으면 현재 위치 반환
+        if (distanceToTravel <= 0f || isDead || isSturn)
+            return transform.position;
+
+        Vector3 currentPos = transform.position;
+        int tempWpIndex = currentWaypointIndex;
+
+        // 3. 웨이포인트를 따라가며 가상으로 이동 시뮬레이션
+        while (tempWpIndex < waypoints.Length)
+        {
+            Vector3 targetWpPos = waypoints[tempWpIndex].position;
+            float distToTarget = Vector3.Distance(currentPos, targetWpPos);
+
+            // 남은 이동 거리가 다음 웨이포인트까지의 거리보다 짧다면 (이 구간 안에서 멈춤)
+            if (distanceToTravel <= distToTarget)
+            {
+                Vector3 dir = (targetWpPos - currentPos).normalized;
+                return currentPos + (dir * distanceToTravel);
+            }
+            else
+            {
+                // 다음 웨이포인트를 지나쳐버림 -> 거리를 깎고 다음 웨이포인트로 가상 이동
+                distanceToTravel -= distToTarget;
+                currentPos = targetWpPos;
+                tempWpIndex++;
+            }
+        }
+
+        // 경로의 끝에 도달했다면 마지막 위치 반환
+        return currentPos;
     }
 }

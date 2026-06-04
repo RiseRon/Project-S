@@ -16,13 +16,14 @@ MonoBehaviour:
   enemyName: Basic
   enemyHP: 30
   damage: 10
-  moveSpeed: 30
+  moveSpeed: 15
   attackSpeed: 1
   splitID: 0
   splitSpawnCount: 0
   canMoveStun: 0
   canAtkStun: 0
   StunGrace: 1
+  SkillID: 0
   dropID: 301
   amount: 5
   rotationSpeed: 10

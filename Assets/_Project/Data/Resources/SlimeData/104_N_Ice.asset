@@ -24,7 +24,7 @@ MonoBehaviour:
   trajectoryType: 0
   projectileSpeed: 150
   arcHeight: 0
-  stunChance: 20
+  stunChance: 100
   stunDuration: 1
   slowRate: 0
   dotDamage: 0

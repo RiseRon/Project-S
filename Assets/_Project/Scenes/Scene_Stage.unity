@@ -3706,6 +3706,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: SettingUI
       objectReference: {fileID: 0}
+    - target: {fileID: 4236048863771529770, guid: 1cf582a699f660443b09da67bd5af421, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1983799222}
+    - target: {fileID: 4236048863771529770, guid: 1cf582a699f660443b09da67bd5af421, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetFullScreen
+      objectReference: {fileID: 0}
+    - target: {fileID: 4236048863771529770, guid: 1cf582a699f660443b09da67bd5af421, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: SettingsManager, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 5728606414465248372, guid: 1cf582a699f660443b09da67bd5af421, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -3785,6 +3797,18 @@ PrefabInstance:
     - target: {fileID: 5728606414465248372, guid: 1cf582a699f660443b09da67bd5af421, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7692420400156560681, guid: 1cf582a699f660443b09da67bd5af421, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1983799222}
+    - target: {fileID: 7692420400156560681, guid: 1cf582a699f660443b09da67bd5af421, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetWindowedMode
+      objectReference: {fileID: 0}
+    - target: {fileID: 7692420400156560681, guid: 1cf582a699f660443b09da67bd5af421, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: SettingsManager, Assembly-CSharp
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

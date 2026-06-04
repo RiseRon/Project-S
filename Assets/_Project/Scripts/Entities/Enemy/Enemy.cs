@@ -344,7 +344,10 @@ public class Enemy : MonoBehaviour
         if (IsBoss) return; // 보스는 스턴 면역
         if (isSturn) return; // 이미 스턴 중이면 무시
         if (Time.time < stunImmuneEndTime) return; // 면역 시간 중이면 무시
-
+        if (isDead || !gameObject.activeInHierarchy)
+        {
+            return;
+        }
         StartCoroutine(StunRoutine(stunDuration));
     }
 

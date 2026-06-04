@@ -144,7 +144,7 @@ public class PlacementManager : MonoBehaviour
                 // [머지 로직 수정] 슬롯을 발견하면, 빈 슬롯이든 꽉 찬 슬롯이든 일단 잡습니다.
                 // 배치를 할지, 머지를 할지, 튕겨낼지는 EndDrag에서 판단합니다.
                 currentOverSlot = slot;
-                draggingSlime.transform.position = currentOverSlot.transform.position;
+                draggingSlime.transform.position = currentOverSlot.transform.position + new Vector3(0, 2, 0);
                 return; // 가장 먼저 찾은 슬롯(가장 가까운)에 스냅하고 함수 종료
             }
         }

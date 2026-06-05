@@ -51,6 +51,7 @@ public class ResultSceneManager : MonoBehaviour
         if (defeatVisualGroup != null) defeatVisualGroup.SetActive(!isWin);
         if (winBackGroundImage != null) winBackGroundImage.SetActive(isWin);
         if (defeatBackGroundImage != null) defeatBackGroundImage.SetActive(!isWin);
+        if (SoundManager.Instance != null) SoundManager.Instance.PlayBGM(isWin ? "BGM_Victory" : "BGM_Defeat");
 
         if (isWin)
         {

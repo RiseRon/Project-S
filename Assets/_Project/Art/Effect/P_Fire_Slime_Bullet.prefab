@@ -4920,6 +4920,7 @@ GameObject:
   - component: {fileID: 199005194757666432}
   - component: {fileID: 108618263527844168}
   - component: {fileID: 26159633409032542}
+  - component: {fileID: -1178581413710890597}
   m_Layer: 0
   m_Name: P_Fire_Slime_Bullet
   m_TagString: Untagged
@@ -9923,6 +9924,18 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!114 &-1178581413710890597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390970239964818}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6ebbdd8078e6be4284081ddc3bf56d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AutoReturnEffect
 --- !u!1 &1922939188070712
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Enemy : MonoBehaviour
 {
@@ -196,6 +198,7 @@ public class Enemy : MonoBehaviour
         if (isDead) return;
         currentHealth -= damage;
         if (currentHealth <= 0) Die();
+        EffectPoolManager.Instance.SpawnEffect("P_Enemy_hit", gameObject.transform.position, Quaternion.identity);
     }
 
     protected virtual void Die()

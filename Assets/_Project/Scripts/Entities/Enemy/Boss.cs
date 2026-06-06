@@ -102,6 +102,12 @@ public class Boss : Enemy
 
                     isSkillLoaded = true;
                     Debug.Log($"<color=lime>[Boss Skill Link]</color> SO 스킬 ID [{targetSkillID}] 검출 및 CSV 연동 완료! 패턴명: {activeSkillData.name}");
+
+                    if (BossUIManager.Instance != null && enemyData != null)
+                    {
+                        BossUIManager.Instance.TurnOnBossUI(enemyData.enemyName, enemyData.enemyHP, activeSkillData.coolTime, cooldownTimer);
+                    }
+
                     return; // 최적화를 위해 데이터를 매칭시킨 순간 루프 완전 종료
                 }
             }
@@ -122,6 +128,11 @@ public class Boss : Enemy
         if (!isSkillLoaded || isDead || isSturn) return;
 
         HandleSkillLoop();
+
+        if (BossUIManager.Instance != null && enemyData != null)
+        {
+            BossUIManager.Instance.UpdateCoolTime(enemyData.enemyName, cooldownTimer);
+        }
     }
 
     /// <summary>
@@ -135,6 +146,7 @@ public class Boss : Enemy
         {
 
             Debug.Log($"[Boss] 쿨타임 도달! 패턴 작동 시도 코드: {activeSkillData.id}");
+            SoundManager.Instance.PlaySFX("SFX_Boss_Skill");
             // [지능형 분기점] 로드된 스킬 ID 분기점에 따라 실시간으로 행동 메커니즘을 결정합니다.
             if (activeSkillData.id == 2001)
             {
@@ -159,7 +171,7 @@ public class Boss : Enemy
 
         if (activeShieldEffect == null)
         {
-            activeShieldEffect = EffectPoolManager.Instance.SpawnEffect("", transform.position, transform.rotation);
+            activeShieldEffect = EffectPoolManager.Instance.SpawnEffect("P_MidBoss_Shield", transform.position, transform.rotation);
 
             if (activeShieldEffect != null)
             {
@@ -204,6 +216,10 @@ public class Boss : Enemy
 
                     // 📜 [치유 정산 영역] 부모 체력 변수에 안전하게 힐 가산
                     targetEnemy.Heal(activeSkillData.amount);
+                    if (BossUIManager.Instance != null && enemyData != null)
+                    {
+                        BossUIManager.Instance.UpdateHP(enemyData.enemyName, currentHealth);
+                    }
                     Debug.Log($"치유 오라 전달 -> [{hit.name}] 체력 {activeSkillData.amount} 회복");
                 }
             }
@@ -246,6 +262,10 @@ public class Boss : Enemy
         if (damage > 0f)
         {
             base.TakeDamage(damage);
+            if (BossUIManager.Instance != null && enemyData != null)
+            {
+                BossUIManager.Instance.UpdateHP(enemyData.enemyName, currentHealth);
+            }
         }
     }
 
@@ -253,8 +273,9 @@ public class Boss : Enemy
     {
         if (activeShieldEffect != null)
         {
-            activeShieldEffect.transform.SetParent(null);
-            // EffectPoolManager.Instance.ReturnToPool("");
+            activeShieldEffect.transform.SetParent(null); // 부모 관계 끊고
+            // 💡 매니저에게 강제 회수 명령 전달!
+            EffectPoolManager.Instance.ReturnEffect("P_MidBoss_Shield", activeShieldEffect);
             activeShieldEffect = null;
         }
     }
@@ -267,6 +288,11 @@ public class Boss : Enemy
 
         // 시전 중이던 모든 코루틴 패턴(힐 장판 도트 타이머) 전면 강제 종료
         StopAllCoroutines();
+
+        if (BossUIManager.Instance != null && enemyData != null)
+        {
+            BossUIManager.Instance.TurnOffBossUI(enemyData.enemyName);
+        }
 
         Debug.Log("<color=orange>[Boss 시스템]</color> 스킬 스택 릴리즈 완료. 부모 클래스의 풀 매니저 소멸 연산을 인보크합니다.");
         base.Die();

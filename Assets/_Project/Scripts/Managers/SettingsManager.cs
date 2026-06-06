@@ -33,8 +33,8 @@ public class SettingsManager : MonoBehaviour
         // 1. 마스터 볼륨 슬라이더 초기화
         if (masterVolumeSlider != null)
         {
-            masterVolumeSlider.value = 1.0f;
-            AudioListener.volume = 1.0f; // 오디오 리스너 자체도 기본값 세팅
+            masterVolumeSlider.value = 0.5f;
+            AudioListener.volume = 0.5f; // 오디오 리스너 자체도 기본값 세팅
 
             masterVolumeSlider.onValueChanged.RemoveAllListeners(); // 중복 등록 방지 안전장치
             masterVolumeSlider.onValueChanged.AddListener(SetMasterVolume);
@@ -43,8 +43,8 @@ public class SettingsManager : MonoBehaviour
         // 2. BGM 볼륨 슬라이더 초기화
         if (bgmVolumeSlider != null)
         {
-            bgmVolumeSlider.value = 1.0f;
-            if (SoundManager.Instance != null) SoundManager.Instance.SetBGMVolume(1.0f);
+            bgmVolumeSlider.value = 0.5f;
+            if (SoundManager.Instance != null) SoundManager.Instance.SetBGMVolume(0.5f);
 
             bgmVolumeSlider.onValueChanged.RemoveAllListeners(); // 중복 등록 방지 안전장치
             bgmVolumeSlider.onValueChanged.AddListener(SetBGMVolume);
@@ -53,8 +53,8 @@ public class SettingsManager : MonoBehaviour
         // 3. SFX 볼륨 슬라이더 초기화
         if (sfxVolumeSlider != null)
         {
-            sfxVolumeSlider.value = 1.0f;
-            if (SoundManager.Instance != null) SoundManager.Instance.SetSFXVolume(1.0f);
+            sfxVolumeSlider.value = 0.5f;
+            if (SoundManager.Instance != null) SoundManager.Instance.SetSFXVolume(0.5f);
 
             sfxVolumeSlider.onValueChanged.RemoveAllListeners(); // 중복 등록 방지 안전장치
             sfxVolumeSlider.onValueChanged.AddListener(SetSFXVolume);

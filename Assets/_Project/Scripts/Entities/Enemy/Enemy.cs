@@ -168,6 +168,7 @@ public class Enemy : MonoBehaviour
         // GetComponent도 매번 하면 느리므로, Barrier 컴포넌트를 직접 참조하는 게 더 좋습니다.
         if (Barrier.Instance != null)
         {
+            SoundManager.Instance.PlaySFX("SFX_Enemy_Attack");
             Barrier.Instance.TakeDamage(enemyData.damage);
             Debug.Log($"{enemyData.name}이(가) 방벽을 공격!");
         }

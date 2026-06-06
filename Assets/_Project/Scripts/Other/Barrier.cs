@@ -52,6 +52,7 @@ public class Barrier : MonoBehaviour
         if (currentHealth <= 0)
         {
             DestroyBarrier();
+            SoundManager.Instance.PlaySFX("SFX_Barrier_Destroyed");
         }
 
         OnHealthChanged?.Invoke();

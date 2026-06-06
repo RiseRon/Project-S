@@ -10,6 +10,8 @@ public class EffectPoolManager : MonoBehaviour
     // 원본 프리팹을 빠르게 찾기 위한 딕셔너리
     private Dictionary<string, GameObject> prefabDictionary = new Dictionary<string, GameObject>();
 
+    [SerializeField] private int prewarmCount = 10;
+
     private void Awake()
     {
         // 씬이 전환되면(메인메뉴로 나가면) 자동으로 파괴되게 합니다.
@@ -28,12 +30,32 @@ public class EffectPoolManager : MonoBehaviour
     private void InitializeEffectPrefabs()
     {
         GameObject[] targetPrefabs = Resources.LoadAll<GameObject>("Effects");
+
         foreach (var prefab in targetPrefabs)
         {
             prefabDictionary[prefab.name] = prefab;
-            poolDictionary[prefab.name] = new Queue<GameObject>();
+
+            Queue<GameObject> newPool = new Queue<GameObject>();
+            poolDictionary[prefab.name] = newPool;
+
+            // 💡 [핵심 추가] 각 이펙트 종류마다 설정된 개수(5개)만큼 루프를 돌며 선배치
+            for (int i = 0; i < prewarmCount; i++)
+            {
+                GameObject effectInstance = Instantiate(prefab, this.transform);
+
+                // 안전장치: 자동 반환 스크립트 누락 방지
+                if (effectInstance.GetComponent<AutoReturnEffect>() == null)
+                {
+                    effectInstance.AddComponent<AutoReturnEffect>();
+                }
+
+                // ★ 중요: 미리 만들어두는 것이므로 꺼진 상태(비활성화)로 풀에 저장합니다.
+                effectInstance.SetActive(false);
+                newPool.Enqueue(effectInstance);
+            }
         }
-        Debug.Log($"[EffectPool] 총 {targetPrefabs.Length}개의 이펙트 프리팹 로드 완료.");
+
+        Debug.Log($"[EffectPool] 총 {targetPrefabs.Length}종류의 이펙트 등록 및 각 {prewarmCount}개씩 사전 생성(Prewarm) 완료.");
     }
 
     // 2. 외부에서 이펙트를 띄우고 싶을 때 호출하는 핵심 함수
@@ -76,5 +98,25 @@ public class EffectPoolManager : MonoBehaviour
         objectPool.Enqueue(effectInstance);
 
         return effectInstance;
+    }
+    public void ReturnEffect(string effectName, GameObject effectInstance)
+    {
+        if (effectInstance == null) return;
+
+        // 이미 꺼져있다면 중복 처리 방지
+        if (!effectInstance.activeSelf) return;
+
+        // 이펙트를 강제로 비활성화 (꺼지는 순간 AutoReturnEffect의 OnDisable이 켜지며 Invoke도 취소됨)
+        effectInstance.SetActive(false);
+
+        // 장부에 안전하게 다시 줄 세우기 (혹시 모를 중복 Enqueue 방지 검사)
+        if (poolDictionary.ContainsKey(effectName))
+        {
+            Queue<GameObject> objectPool = poolDictionary[effectName];
+            if (!objectPool.Contains(effectInstance))
+            {
+                objectPool.Enqueue(effectInstance);
+            }
+        }
     }
 }

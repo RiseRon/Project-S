@@ -23,6 +23,7 @@ MonoBehaviour:
   canMoveStun: 1
   canAtkStun: 0
   StunGrace: 1
+  SkillID: 2001
   dropID: 302
   amount: 1
   rotationSpeed: 10

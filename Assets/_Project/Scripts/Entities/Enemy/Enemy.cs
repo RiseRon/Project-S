@@ -97,10 +97,6 @@ public class Enemy : MonoBehaviour
         if (!isAtEnd)
         {
             Move();
-            /*if (Time.frameCount % 60 == 0) // 약 1초(60프레임)마다 한 번씩 출력
-            {
-                Debug.Log($"[{gameObject.name}] 현재 누적 이동 거리: {TotalDistanceTraveled:F2}");
-            }*/
         }
         else
         {
@@ -199,6 +195,32 @@ public class Enemy : MonoBehaviour
         currentHealth -= damage;
         if (currentHealth <= 0) Die();
         EffectPoolManager.Instance.SpawnEffect("P_Enemy_hit", gameObject.transform.position, Quaternion.identity);
+    }
+
+    public virtual void Heal(float healAmount)
+    {
+        // 1. 이미 죽어있는 적이라면 치유 정산 예외 패스
+        if (isDead) return;
+
+        // 2. 현재 적의 웨이브 배율이 적용된 '진짜 최대 체력' 실시간 계산
+        // (Setup 함수에서 정의된 방식인 [기본 체력 + 상승 배율 분율] 공식을 그대로 복사)
+        float bonusHealth = enemyData.enemyHP * (savedHpGrowthRate / 100f);
+        float maxHealth = enemyData.enemyHP + bonusHealth;
+
+        // 3. 체력 가산 및 최대 체력 클램핑(오버힐 방지)
+        currentHealth += healAmount;
+        if (currentHealth > maxHealth)
+        {
+            currentHealth = maxHealth;
+        }
+
+        // 4. 피격 이펙트와 구별되는 치유 성공 이펙트 팝업 연동
+        // (만약 초록색 힐 이펙트가 따로 있다면 "P_Enemy_Heal" 등으로 이름을 교체하세요)
+        if (EffectPoolManager.Instance != null)
+        {
+            EffectPoolManager.Instance.SpawnEffect("P_Enemy_Heal", gameObject.transform.position, Quaternion.identity);
+        }
+        Debug.Log($"[{enemyData.enemyName}] 치유 발생! 현재 체력: {currentHealth} / {maxHealth}");
     }
 
     protected virtual void Die()

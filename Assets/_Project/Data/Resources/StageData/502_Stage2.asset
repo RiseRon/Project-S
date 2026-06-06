@@ -15,7 +15,7 @@ MonoBehaviour:
   stageID: 502
   stage: 2
   mapPrefabPath: 
-  bgmPath: 
+  bgmPath: BGM_Stage_02
   startCoin: 15
   barrierHP: 100
   slotMove: 5

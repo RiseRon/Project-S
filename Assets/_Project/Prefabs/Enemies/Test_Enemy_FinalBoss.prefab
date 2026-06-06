@@ -116,10 +116,10 @@ PrefabInstance:
       addedObject: {fileID: -4812634830050184802}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: dd9f39c968d825540bbbb3d130aa7396, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5951280718224455290}
+      addedObject: {fileID: 3168398230153904717}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: dd9f39c968d825540bbbb3d130aa7396, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3168398230153904717}
+      addedObject: {fileID: -7446933591303499873}
   m_SourcePrefab: {fileID: 100100000, guid: dd9f39c968d825540bbbb3d130aa7396, type: 3}
 --- !u!1 &482175167110020284 stripped
 GameObject:
@@ -176,21 +176,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &5951280718224455290
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 482175167110020284}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6ae93d831145584491033c48779e516, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  enemyData: {fileID: 0}
-  rewardPopupID: 912
-  isSturn: 0
 --- !u!95 &3168398230153904717
 Animator:
   serializedVersion: 7
@@ -213,6 +198,21 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-7446933591303499873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 482175167110020284}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd4241904fe9d644aaca22cd21adae29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Boss
+  enemyData: {fileID: 0}
+  rewardPopupID: 912
+  isSturn: 0
 --- !u!4 &1007354334547748358 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: dd9f39c968d825540bbbb3d130aa7396, type: 3}

@@ -1,0 +1,6 @@
+﻿기본,,조건,,,파라미터,,
+ID,이름,쿨타임(s),지속 시간(s),타겟종류,수치,범위,발동 간격(s)
+ID,Name,CoolTime,Duration,TargetType,Amount,Range,Interval
+int,string,float,float,string,int,int,float
+2001,MidBossShield,20,-1,Self,60,0,-1
+2002,BossHeal,30,8,Ally_Area,10,15,1

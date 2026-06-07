@@ -278,7 +278,7 @@ public class PlacementController : MonoBehaviour
         }
     }
 
-    private Slot FindSlotUnderSlime(Vector3 position)
+    public Slot FindSlotUnderSlime(Vector3 position)
     {
         Collider[] hitSlots = Physics.OverlapSphere(position, 0.4f, slotLayer);
         if (hitSlots.Length > 0) return hitSlots[0].GetComponent<Slot>();

@@ -2672,7 +2672,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
-  yOffset: 0.5
+  yOffset: 2
   remainingMoves: 5
 --- !u!4 &400881823
 Transform:

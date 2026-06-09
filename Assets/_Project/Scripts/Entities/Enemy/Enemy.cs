@@ -196,6 +196,7 @@ public class Enemy : MonoBehaviour
         currentHealth -= damage;
         if (currentHealth <= 0) Die();
         EffectPoolManager.Instance.SpawnEffect("P_Enemy_hit", gameObject.transform.position, Quaternion.identity);
+        Debug.Log("ÀÌÆÑÆ® ÆË¾÷");
     }
 
     public virtual void Heal(float healAmount)

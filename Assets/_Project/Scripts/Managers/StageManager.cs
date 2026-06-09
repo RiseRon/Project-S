@@ -185,9 +185,9 @@ public class StageManager : MonoBehaviour
         {
             Debug.LogWarning("[StageManager] 씬에 Barrier가 존재하지 않습니다.");
         }
-        if (PlacementManager.Instance != null)
+        if (PlacementController.Instance != null)
         {
-            PlacementManager.Instance.remainingMoves = currentStageData.slotMove;
+            PlacementController.Instance.remainingMoves = currentStageData.slotMove;
         }
         else
         {

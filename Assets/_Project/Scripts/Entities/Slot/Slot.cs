@@ -1,17 +1,8 @@
 using UnityEngine;
 
-public enum SlotState
-{
-    None,  // 평상시
-    Placeable,  // 배치가능
-    Mergeable,  // 합성가능
-    Invalid  // 배치불가능
-}
-
 public class Slot : MonoBehaviour
 {
     public Slime placedSlime;
-    public SlotState CurrentState { get; private set; } = SlotState.None;
 
     [Header("물리 검증용 레이어")]
     [SerializeField] private LayerMask slimeLayer;
@@ -55,12 +46,22 @@ public class Slot : MonoBehaviour
         placedSlime = slime;
     }
 
-    /// <summary> 드래그 시작 시 컨트롤러가 이 슬롯의 상태를 판별하여 주입합니다. </summary>
-    public void SetState(SlotState newState)
+    /// <summary>
+    /// 드래그 중인 슬라임과 이 슬롯에 있는 슬라임이 머지(합성) 가능한지 판별합니다.
+    /// </summary>
+    public bool CanMerge(Slime draggingSlime)
     {
-        CurrentState = newState;
+        if (IsDataEmpty) return false;
+        if (this.placedSlime == draggingSlime) return false;
 
-        // 나중에 이 부분에 상태(newState)에 따라 하이라이트 색상이나 밝기를 바꾸는 시각 효과 코드를 넣으시면 됩니다!
-        // 예: if (newState == SlotState.Placeable) ChangeColor(Green);
+        int baseID = this.placedSlime.SlimeID;
+        int materialID = draggingSlime.SlimeID;
+
+        if (MergeManager.Instance != null)
+        {
+            return MergeManager.Instance.CheckCanMerge(baseID, materialID);
+        }
+
+        return false;
     }
 }

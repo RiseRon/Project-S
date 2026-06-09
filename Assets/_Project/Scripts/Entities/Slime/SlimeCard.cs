@@ -41,51 +41,41 @@ public class SlimeCard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
             }
         }
     }
-
     private Sprite GetSpriteBySlimeID(int id)
     {
         foreach (var info in visualList)
         {
-            if (info.slimeID == id) return info.cardSprite;
+            if (info.slimeID == id)
+            {
+                return info.cardSprite;
+            }
         }
         return null;
     }
 
-    // ==========================================
-    // [드래그 이벤트 연동 구간]
-    // ==========================================
-
     public void OnBeginDrag(PointerEventData eventData)
     {
-        // 1. 사령탑에게 슬라임 소환을 요청합니다.
-        PlacementController.Instance.StartSummonDrag(slimeData, this);
+        // PlacementManager에 카드 자신(this)을 함께 넘겨줍니다.
+        PlacementManager.Instance.StartSummonDrag(slimeData, this);
 
-        //  [핵심 수정] SetActive(false) 대신 투명도(Alpha)를 0으로 만들어 이벤트를 유지합니다!
-        if (cardImage != null)
-        {
-            cardImage.color = new Color(1f, 1f, 1f, 0f);
-        }
+        // 드래그 시작 시 카드는 숨깁니다.
+        gameObject.SetActive(false);
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        // 2. 마우스를 움직일 때마다 3D 사령탑의 이동 로직을 강제로 실행시킵니다.
-        PlacementController.Instance.HandleDragging();
+        // 3D 슬라임 이동은 PlacementManager에서 처리하므로 비워둡니다.
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        // 3. 마우스를 놓았을 때 사령탑에게 배치/머지 확정 명령을 내립니다.
-        PlacementController.Instance.HandleDragEnd();
+        // 배치가 끝나면 PlacementManager에서 처리하도록 유도하거나 
+        // 로직에 따라 여기서 추가 처리를 합니다.
     }
 
     // 배치 실패 시 다시 카드를 보여주는 함수
     public void OnPlacementFailed()
     {
-        //  투명도를 다시 100%로 되돌려 카드가 보이게 합니다.
-        if (cardImage != null)
-        {
-            cardImage.color = new Color(1f, 1f, 1f, 1f);
-        }
+        gameObject.SetActive(true);
     }
 }

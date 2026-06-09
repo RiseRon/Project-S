@@ -32,13 +32,20 @@ public class AreaEffect : MonoBehaviour
         {
             if (other.TryGetComponent<Enemy>(out Enemy enemy))
             {
-                // [수정] Enemy가 직접 관리하도록 '요청'
-                enemy.AddSlow(gameObject.GetInstanceID(), data.slowRate);
-
-                if (!enemyTimers.ContainsKey(enemy))
+                // [수정] 슬로우 수치가 0보다 클 때만 슬로우 적용
+                if (data.slowRate > 0)
                 {
-                    // 현재 밟은 시간 + 쿨타임(1초) 뒤에 첫 데미지 예약
-                    enemyTimers.Add(enemy, Time.time + data.dotDamageInterval);
+                    enemy.AddSlow(gameObject.GetInstanceID(), data.slowRate);
+                }
+
+                // [핵심 수정] 도트 데미지가 있을 때만 타이머에 등록!
+                if (data.dotDamage > 0)
+                {
+                    if (!enemyTimers.ContainsKey(enemy))
+                    {
+                        // 현재 밟은 시간 + 쿨타임 뒤에 첫 데미지 예약
+                        enemyTimers.Add(enemy, Time.time + data.dotDamageInterval);
+                    }
                 }
             }
         }
@@ -47,6 +54,9 @@ public class AreaEffect : MonoBehaviour
     // 2. 적이 머무를 때: 쿨타임 체크 후 도트 딜 적용
     private void OnTriggerStay(Collider other)
     {
+        // [핵심 수정] 도트 데미지가 아예 없으면 Stay 연산을 즉시 중단합니다. (최적화 및 버그 방지)
+        if (data.dotDamage <= 0) return;
+
         if (other.CompareTag("Enemy"))
         {
             if (other.TryGetComponent<Enemy>(out Enemy enemy))
@@ -75,8 +85,11 @@ public class AreaEffect : MonoBehaviour
 
     private void RemoveEnemyEffect(Enemy enemy)
     {
-        // [수정] 이 장판이 걸었던 슬로우만 '해제 요청'
-        enemy.RemoveSlow(gameObject.GetInstanceID());
+        // [수정] 슬로우를 걸었을 때만 해제 요청
+        if (data.slowRate > 0)
+        {
+            enemy.RemoveSlow(gameObject.GetInstanceID());
+        }
 
         if (enemyTimers.ContainsKey(enemy))
         {
@@ -86,7 +99,8 @@ public class AreaEffect : MonoBehaviour
 
     private void ClearAllEffects()
     {
-        // 장판이 수명이 다해 사라질 때 내부에 갇혀있던 적들의 슬로우 일괄 해제
+        // 장판이 사라질 때 안에 있던 모든 적의 효과 해제
+        List<Enemy> currentEnemies = new List<Enemy>(enemyTimers.Keys);
         foreach (var enemy in enemyTimers.Keys)
         {
             if (enemy != null)

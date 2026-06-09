@@ -4,8 +4,8 @@ using System.Collections.Generic;
 public class Slime : MonoBehaviour
 {
     [SerializeField] protected SO_SlimeData slimeData;
-
     public int SlimeID => slimeData != null ? slimeData.id : -1;
+    public SO_SlimeData Data => slimeData;
 
     private float lastAttackTime;
     private Enemy targetEnemy;

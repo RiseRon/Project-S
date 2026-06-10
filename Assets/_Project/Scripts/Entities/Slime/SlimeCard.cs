@@ -50,6 +50,14 @@ public class SlimeCard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
         }
         return null;
     }
+    private void OnDisable()
+    {
+        if (cardImage != null)
+        {
+            cardImage.color = new Color(1f, 1f, 1f, 1f);
+        }
+        cardImage.sprite = null;
+    }
 
     // ==========================================
     // [드래그 이벤트 연동 구간]

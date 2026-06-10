@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -166,6 +167,16 @@ public class GameManager : MonoBehaviour
         }
 
         SceneManager.LoadScene("Scene_Result");
+    }
+
+    public void ExitSetting()
+    {
+        StopTimer();
+        UnsubscribeEvent();
+        if (PoolManager.Instance != null)
+        {
+            PoolManager.Instance.ClearAllPools();
+        }
     }
 
     public void ChangeScene(string sceneName)

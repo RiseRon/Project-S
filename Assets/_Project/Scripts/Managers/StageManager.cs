@@ -88,7 +88,7 @@ public class StageManager : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // 1. 로딩 씬이나 메뉴 씬이 아닐 때만 작동
-        if (scene.name.StartsWith("Scene_Stage"))
+        if (scene.name == "Scene_Stage")
         {
             if (currentStageID != -1 && spawnedMap == null)
             {

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI; // UI 컴포넌트(Slider) 제어를 위해 필수
 
 public class SettingsManager : MonoBehaviour
@@ -125,6 +126,10 @@ public class SettingsManager : MonoBehaviour
     /// </summary>
     public void SetFullScreen()
     {
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX("SFX_UI_Click");
+        }
         // 현재 모니터 해상도를 가져와 전체 화면으로 변경
         Screen.SetResolution(Screen.currentResolution.width, Screen.currentResolution.height, FullScreenMode.FullScreenWindow);
         Debug.Log("화면 모드 변경: 전체 화면");
@@ -135,10 +140,27 @@ public class SettingsManager : MonoBehaviour
     /// </summary>
     public void SetWindowedMode()
     {
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX("SFX_UI_Click");
+        }
         // 1280 x 720 해상도의 창 모드로 전환
         Screen.SetResolution(1280, 720, FullScreenMode.Windowed);
         Debug.Log("화면 모드 변경: 창 모드 (1280x720)");
     }
 
+    #endregion
+
+    #region [디스플레이 화면 모드 전환 기능]
+
+    public void ExitInGame()
+    {
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX("SFX_UI_Click");
+        }
+        GameManager.Instance.ExitSetting();
+        SceneManager.LoadScene("Scene_StageSelect");
+    }
     #endregion
 }

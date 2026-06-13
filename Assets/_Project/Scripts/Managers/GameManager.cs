@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     public int currentStageID;
     private float currentPlayTime = 0f;
     private bool isTimerRunning = false;
+    private float sceneDelayTime = 0.5f;
     public static float TotalPlayTime { get; private set; }
     public static int LastPlayedStageID { get; private set; }
     public static bool IsGameWin { get; private set; }
@@ -110,8 +111,11 @@ public class GameManager : MonoBehaviour
     {
         isTimerRunning = false;
     }
-
     public void HandlePlayerDefeat()
+    {
+        StartCoroutine(CoHandlePlayerDefeat());
+    }
+    public System.Collections.IEnumerator CoHandlePlayerDefeat()
     {
         // 스테이지 데이터 백업
         if (StageManager.Instance != null && StageManager.Instance.GetCurrentStageData() != null)
@@ -120,10 +124,16 @@ public class GameManager : MonoBehaviour
         }
         Debug.Log($"<color=orange>[GameManager]</color> ☠ 배리어 파괴 감지! {currentStageID - 500} 스테이지 패배 정산을 시작합니다.");
 
+        Time.timeScale = 0f;
         LastPlayedStageID = currentStageID;
         IsGameWin = false;
         TotalPlayTime = currentPlayTime;
         StopTimer();
+        yield return new WaitForSecondsRealtime(sceneDelayTime);
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX("SFX_Game_Lose");
+        }
         // 패배 처리가 되었으니 안전하게 이벤트를 끊어줍니다.
         UnsubscribeEvent();
 
@@ -132,6 +142,8 @@ public class GameManager : MonoBehaviour
             PoolManager.Instance.ClearAllPools();
         }
 
+        Time.timeScale = 1f;
+
         SceneManager.LoadScene("Scene_Result");
     }
     public bool IsStageCleared(int stageID)
@@ -139,6 +151,10 @@ public class GameManager : MonoBehaviour
         return clearedStageIDs.Contains(stageID);
     }
     public void HandleStageWin()
+    {
+        StartCoroutine(CoHandleStageWin());
+    }
+    public System.Collections.IEnumerator CoHandleStageWin()
     {
         // 스테이지 데이터 백업
         if (StageManager.Instance != null && StageManager.Instance.GetCurrentStageData() != null)
@@ -154,10 +170,16 @@ public class GameManager : MonoBehaviour
             Debug.Log($"<color=lime>[Memory Save]</color> {currentStageID - 500} 스테이지 클리어 정보가 GameManager에 기록되었습니다.");
         }
 
+        Time.timeScale = 0f;
         LastPlayedStageID = currentStageID;
         IsGameWin = true;
         TotalPlayTime = currentPlayTime;
         StopTimer();
+        yield return new WaitForSecondsRealtime(sceneDelayTime);
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX("SFX_Game_Win");
+        }
         // 승리 처리가 되었으니 안전하게 이벤트를 끊어줍니다.
         UnsubscribeEvent();
 
@@ -165,6 +187,8 @@ public class GameManager : MonoBehaviour
         {
             PoolManager.Instance.ClearAllPools();
         }
+
+        Time.timeScale = 1f;
 
         SceneManager.LoadScene("Scene_Result");
     }

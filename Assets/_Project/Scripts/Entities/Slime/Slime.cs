@@ -94,6 +94,11 @@ public class Slime : MonoBehaviour
     {
         lastAttackTime = Time.time;
 
+        if(SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX("SFX_Slime_Attack");
+        }
+
         if (PoolManager.Instance != null)
         {
             GameObject projGO = PoolManager.Instance.SpawnFromPool(slimeData.projectilePrefabID, transform.position, Quaternion.identity);

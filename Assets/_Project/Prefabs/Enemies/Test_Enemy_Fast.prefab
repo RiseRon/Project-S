@@ -204,8 +204,8 @@ Animator:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 482175167110020284}
   m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: e62fbb1b04efba842bcd862cef01b592, type: 3}
-  m_Controller: {fileID: 9100000, guid: 901ab29f4134be1459fa3f413c99e619, type: 2}
+  m_Avatar: {fileID: 9000000, guid: a68b9df67a681704da64c9f991347a47, type: 3}
+  m_Controller: {fileID: 9100000, guid: 2dd43c5551c26744391b0881714846a1, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -445,6 +445,18 @@ PrefabInstance:
     - target: {fileID: 4549111882529890269, guid: e62fbb1b04efba842bcd862cef01b592, type: 3}
       propertyPath: m_Layer
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: e62fbb1b04efba842bcd862cef01b592, type: 3}
+      propertyPath: m_Avatar
+      value: 
+      objectReference: {fileID: 9000000, guid: a68b9df67a681704da64c9f991347a47, type: 3}
+    - target: {fileID: 5866666021909216657, guid: e62fbb1b04efba842bcd862cef01b592, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 2dd43c5551c26744391b0881714846a1, type: 2}
+    - target: {fileID: 5866666021909216657, guid: e62fbb1b04efba842bcd862cef01b592, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7363479242261063072, guid: e62fbb1b04efba842bcd862cef01b592, type: 3}
       propertyPath: m_Layer

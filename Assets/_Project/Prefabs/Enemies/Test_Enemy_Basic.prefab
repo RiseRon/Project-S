@@ -1,71 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &2781506164686021903
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4667799105570444852}
-  - component: {fileID: 106382136825261651}
-  - component: {fileID: 6914096735152437062}
-  m_Layer: 0
-  m_Name: Detection_Trigger
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4667799105570444852
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2781506164686021903}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.639, z: 0.485}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1007354334547748358}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &106382136825261651
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2781506164686021903}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 1.81
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &6914096735152437062
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2781506164686021903}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f03f182645f445e4b8c91a54cfb68bde, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::TriggerParameterSetter
 --- !u!1001 &752222167383818733
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -181,9 +115,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dd9f39c968d825540bbbb3d130aa7396, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2235606251837115399}
-    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dd9f39c968d825540bbbb3d130aa7396, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 4667799105570444852}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: dd9f39c968d825540bbbb3d130aa7396, type: 3}
       insertIndex: -1
@@ -278,7 +209,7 @@ Animator:
   m_GameObject: {fileID: 482175167110020284}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: a68b9df67a681704da64c9f991347a47, type: 3}
-  m_Controller: {fileID: 9100000, guid: e79678194c09d4c4a86d2f738b1aa046, type: 2}
+  m_Controller: {fileID: 9100000, guid: 2dd43c5551c26744391b0881714846a1, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

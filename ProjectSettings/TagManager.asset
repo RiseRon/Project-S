@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Slot
   - Enemy
+  - Barrier
   layers:
   - Default
   - TransparentFX

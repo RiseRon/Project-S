@@ -1,35 +1,35 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq; // µ¥ÀÌÅÍ Á¤·Ä(OrderBy)À» À§ÇØ ÇÊ¿ä
+using System.Linq; // ë°ì´í„° ì •ë ¬(OrderBy)ì„ ìœ„í•´ í•„ìš”
 
 public class WaveManager : MonoBehaviour
 {
-    // ¾îµğ¼­µç Á¢±Ù °¡´ÉÇÑ ½Ì±ÛÅæ ÀÎ½ºÅÏ½º
+    // ì–´ë””ì„œë“  ì ‘ê·¼ ê°€ëŠ¥í•œ ì‹±ê¸€í†¤ ì¸ìŠ¤í„´ìŠ¤
     public static WaveManager Instance { get; private set; }
 
     [Header("Wave Data Settings")]
-    // ÀÚµ¿À¸·Î ·ÎµåµÈ ¿şÀÌºê µ¥ÀÌÅÍµéÀÌ ÀúÀåµÉ ¸®½ºÆ®
+    // ìë™ìœ¼ë¡œ ë¡œë“œëœ ì›¨ì´ë¸Œ ë°ì´í„°ë“¤ì´ ì €ì¥ë  ë¦¬ìŠ¤íŠ¸
     [SerializeField] private List<SO_WaveData> stageWaves = new List<SO_WaveData>();
 
-    private bool isWaveActive = false;  // ÇöÀç ¿şÀÌºê°¡ µ¿ÀÛ ÁßÀÎÁö ¿©ºÎ
-    public float CurrentWaitTime { get; private set; } // ÇöÀç ³²Àº ½Ã°£
-    public float TotalWaitTime { get; private set; }  // ÀüÃ¼ ¼³Á¤µÈ ´ë±â ½Ã°£
-    public bool IsWaitingNextWave { get; private set; } // ´ë±â ÁßÀÎÁö ¿©ºÎ
+    private bool isWaveActive = false;  // í˜„ì¬ ì›¨ì´ë¸Œê°€ ë™ì‘ ì¤‘ì¸ì§€ ì—¬ë¶€
+    public float CurrentWaitTime { get; private set; } // í˜„ì¬ ë‚¨ì€ ì‹œê°„
+    public float TotalWaitTime { get; private set; }  // ì „ì²´ ì„¤ì •ëœ ëŒ€ê¸° ì‹œê°„
+    public bool IsWaitingNextWave { get; private set; } // ëŒ€ê¸° ì¤‘ì¸ì§€ ì—¬ë¶€
 
     public event Action OnStageVictoryDetected;
     public event Action OnWaveChanged;
 
-    private int currentWaveIndex = 0;   // ÇöÀç ÁøÇà ÁßÀÎ ¿şÀÌºê ¹øÈ£ (¸®½ºÆ® ÀÎµ¦½º)
-    private int activeEnemies = 0; // ÇöÀç ÇÊµå¿¡ »ì¾ÆÀÖ´Â Àû ¼ö
-    private int enemiesToSpawn = 0; // ÀÌ¹ø ¿şÀÌºê¿¡¼­ ´õ ¼ÒÈ¯ÇØ¾ß ÇÒ Àû ¼ö
-    private Coroutine waveCoroutine;  // ½ÇÇà ÁßÀÎ ÄÚ·çÆ¾À» Á¦¾îÇÏ±â À§ÇÔ
+    private int currentWaveIndex = 0;   // í˜„ì¬ ì§„í–‰ ì¤‘ì¸ ì›¨ì´ë¸Œ ë²ˆí˜¸ (ë¦¬ìŠ¤íŠ¸ ì¸ë±ìŠ¤)
+    private int activeEnemies = 0; // í˜„ì¬ í•„ë“œì— ì‚´ì•„ìˆëŠ” ì  ìˆ˜
+    private int enemiesToSpawn = 0; // ì´ë²ˆ ì›¨ì´ë¸Œì—ì„œ ë” ì†Œí™˜í•´ì•¼ í•  ì  ìˆ˜
+    private Coroutine waveCoroutine;  // ì‹¤í–‰ ì¤‘ì¸ ì½”ë£¨í‹´ì„ ì œì–´í•˜ê¸° ìœ„í•¨
     public int CurrentWave => currentWaveIndex + 1;
 
     private void Awake()
     {
-        // ½Ì±ÛÅæ ÃÊ±âÈ­
+        // ì‹±ê¸€í†¤ ì´ˆê¸°í™”
         if (Instance == null)
         {
             Instance = this;
@@ -44,64 +44,64 @@ public class WaveManager : MonoBehaviour
     {
         if (GameManager.Instance != null)
         {
-            // GameManager°¡ WaveManagerÀÇ ½Â¸® ¾Ë¸² ÇÔ¼ö¸¦ ¾ÈÀüÇÏ°Ô ¹Ù¶óº¸µµ·Ï °­Á¦ ¿ª¿¬°á
-            this.OnStageVictoryDetected -= GameManager.Instance.HandleStageWin; // (HandleStageWinµµ public º¯°æ ÇÊ¿ä)
+            // GameManagerê°€ WaveManagerì˜ ìŠ¹ë¦¬ ì•Œë¦¼ í•¨ìˆ˜ë¥¼ ì•ˆì „í•˜ê²Œ ë°”ë¼ë³´ë„ë¡ ê°•ì œ ì—­ì—°ê²°
+            this.OnStageVictoryDetected -= GameManager.Instance.HandleStageWin; // (HandleStageWinë„ public ë³€ê²½ í•„ìš”)
             this.OnStageVictoryDetected += GameManager.Instance.HandleStageWin;
 
-            Debug.Log("<color=lime>[WaveManager]</color> ¾ÈÀüÇÏ°Ô GameManagerÀÇ ½Â¸® ÀÌº¥Æ® Ã¤³Î¿¡ ½º½º·Î¸¦ µî·ÏÇß½À´Ï´Ù!");
+            Debug.Log("<color=lime>[WaveManager]</color> ì•ˆì „í•˜ê²Œ GameManagerì˜ ìŠ¹ë¦¬ ì´ë²¤íŠ¸ ì±„ë„ì— ìŠ¤ìŠ¤ë¡œë¥¼ ë“±ë¡í–ˆìŠµë‹ˆë‹¤!");
         }
     }
 
     /// <summary>
-    /// Resources/WaveData Æú´õ¿¡ ÀÖ´Â ¸ğµç SO_WaveData¸¦ ·ÎµåÇÏ°í Á¤·ÄÇÕ´Ï´Ù.
+    /// Resources/WaveData í´ë”ì— ìˆëŠ” ëª¨ë“  SO_WaveDataë¥¼ ë¡œë“œí•˜ê³  ì •ë ¬í•©ë‹ˆë‹¤.
     /// </summary>
-    // ¿ÜºÎ(StageManager)¿¡¼­ ½ºÅ×ÀÌÁö ID¸¦ ¹Ş¾Æ ·ÎµåÇÏµµ·Ï º¯°æ
+    // ì™¸ë¶€(StageManager)ì—ì„œ ìŠ¤í…Œì´ì§€ IDë¥¼ ë°›ì•„ ë¡œë“œí•˜ë„ë¡ ë³€ê²½
     public void LoadWaveDataFromResources(int stageID)
     {
         currentWaveIndex = 0;
         stageWaves.Clear();
         activeEnemies = 0;
         enemiesToSpawn = 0;
-        // 1. Resources/WaveData Æú´õÀÇ ¸ğµç ¿¡¼Â ·Îµå
+        // 1. Resources/WaveData í´ë”ì˜ ëª¨ë“  ì—ì…‹ ë¡œë“œ
         SO_WaveData[] loadedArray = Resources.LoadAll<SO_WaveData>("WaveData");
 
         if (loadedArray == null || loadedArray.Length == 0)
         {
-            Debug.LogError("[WaveManager] µ¥ÀÌÅÍ ¿¡¼ÂÀÌ ¾ø½À´Ï´Ù!");
+            Debug.LogError("[WaveManager] ë°ì´í„° ì—ì…‹ì´ ì—†ìŠµë‹ˆë‹¤!");
             return;
         }
 
-        // 2. Àü´Ş¹ŞÀº stageIDÀÎ µ¥ÀÌÅÍ¸¸ ÇÊÅÍ¸µÇÏ°í waveID ¼øÀ¸·Î Á¤·Ä
+        // 2. ì „ë‹¬ë°›ì€ stageIDì¸ ë°ì´í„°ë§Œ í•„í„°ë§í•˜ê³  waveID ìˆœìœ¼ë¡œ ì •ë ¬
         stageWaves = loadedArray
-            .Where(w => w.stageID == stageID) // <--- ¸Å°³º¯¼ö·Î ¹ŞÀº ID »ç¿ë
+            .Where(w => w.stageID == stageID) // <--- ë§¤ê°œë³€ìˆ˜ë¡œ ë°›ì€ ID ì‚¬ìš©
             .OrderBy(w => w.waveID)
             .ToList();
 
         if (stageWaves.Count == 0)
         {
-            Debug.LogWarning($"[WaveManager] stageID {stageID}¿¡ ÇØ´çÇÏ´Â µ¥ÀÌÅÍ°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning($"[WaveManager] stageID {stageID}ì— í•´ë‹¹í•˜ëŠ” ë°ì´í„°ê°€ ì—†ìŠµë‹ˆë‹¤.");
         }
         else
         {
-            Debug.Log($"[WaveManager] {stageID}¹ø ½ºÅ×ÀÌÁöÀÇ {stageWaves.Count}°³ ¿şÀÌºê ·Îµå ¿Ï·á.");
+            Debug.Log($"[WaveManager] {stageID}ë²ˆ ìŠ¤í…Œì´ì§€ì˜ {stageWaves.Count}ê°œ ì›¨ì´ë¸Œ ë¡œë“œ ì™„ë£Œ.");
         }
     }
 
     /// <summary>
-    /// ´ÙÀ½ ¿şÀÌºê¸¦ ½ÇÇàÇÏ´Â °ø¿ë ÇÔ¼ö
+    /// ë‹¤ìŒ ì›¨ì´ë¸Œë¥¼ ì‹¤í–‰í•˜ëŠ” ê³µìš© í•¨ìˆ˜
     /// </summary>
     public void StartNextWave()
     {
         if (stageWaves == null || stageWaves.Count == 0)
         {
-            Debug.LogError("[WaveManager] ·ÎµåµÈ ¿şÀÌºê µ¥ÀÌÅÍ°¡ ¾ø¾î ½ÃÀÛÇÒ ¼ö ¾ø½À´Ï´Ù.");
+            Debug.LogError("[WaveManager] ë¡œë“œëœ ì›¨ì´ë¸Œ ë°ì´í„°ê°€ ì—†ì–´ ì‹œì‘í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
-        // ÀÌ¹Ì ÁøÇà ÁßÀÌ°Å³ª ¸ğµç ¿şÀÌºê°¡ ³¡³µÀ¸¸é Áß´Ü
+        // ì´ë¯¸ ì§„í–‰ ì¤‘ì´ê±°ë‚˜ ëª¨ë“  ì›¨ì´ë¸Œê°€ ëë‚¬ìœ¼ë©´ ì¤‘ë‹¨
         if (isWaveActive || currentWaveIndex >= stageWaves.Count)
         {
             if (currentWaveIndex >= stageWaves.Count)
-                Debug.Log("¸ğµç ¿şÀÌºê°¡ ¿Ï·áµÇ¾ú½À´Ï´Ù!");
+                Debug.Log("ëª¨ë“  ì›¨ì´ë¸Œê°€ ì™„ë£Œë˜ì—ˆìŠµë‹ˆë‹¤!");
             return;
         }
         if (isWaveActive) return;
@@ -112,11 +112,11 @@ public class WaveManager : MonoBehaviour
 #endif
         for (int i = 0;  i < data.enemyList.Count; i++)
         {
-            enemiesToSpawn += data.enemyList[i].spawnCount ;  // ÀÌ¹ø ¿şÀÌºê ÃÑ ¼ÒÈ¯ ¼ö ¼³Á¤
+            enemiesToSpawn += data.enemyList[i].spawnCount ;  // ì´ë²ˆ ì›¨ì´ë¸Œ ì´ ì†Œí™˜ ìˆ˜ ì„¤ì •
         }
         OnWaveChanged?.Invoke();
 
-        // ÇöÀç ¼ø¼­ÀÇ µ¥ÀÌÅÍ¸¦ Àü´ŞÇÏ¿© ·çÆ¾ ½ÃÀÛ
+        // í˜„ì¬ ìˆœì„œì˜ ë°ì´í„°ë¥¼ ì „ë‹¬í•˜ì—¬ ë£¨í‹´ ì‹œì‘
         if (waveCoroutine != null) StopCoroutine(waveCoroutine);
         waveCoroutine = StartCoroutine(WaveRoutine(data));
     }
@@ -126,54 +126,54 @@ public class WaveManager : MonoBehaviour
         isWaveActive = true;
         IsWaitingNextWave = true;
 
-        // ¿şÀÌºê ½ÃÀÛ Àü ´ë±â (waitingTime)¸¦ UI·Î Ç¥ÇöÇÏ±â À§ÇØ ·ÎÁ÷ º¯°æ
+        // ì›¨ì´ë¸Œ ì‹œì‘ ì „ ëŒ€ê¸° (waitingTime)ë¥¼ UIë¡œ í‘œí˜„í•˜ê¸° ìœ„í•´ ë¡œì§ ë³€ê²½
         TotalWaitTime = data.waitingTime;
         CurrentWaitTime = TotalWaitTime;
 
-        Debug.Log($"[¿şÀÌºê {data.waveID}] ½ÃÀÛ Àü ´ë±â Áß...");
+        Debug.Log($"[ì›¨ì´ë¸Œ {data.waveID}] ì‹œì‘ ì „ ëŒ€ê¸° ì¤‘...");
 
-        // ´Ü¼øÈ÷ yield return new WaitForSeconds ´ë½Å ½Ã°£À» ±ğÀ¸¸ç ´ë±â
+        // ë‹¨ìˆœíˆ yield return new WaitForSeconds ëŒ€ì‹  ì‹œê°„ì„ ê¹ìœ¼ë©° ëŒ€ê¸°
         while (CurrentWaitTime > 0)
         {
             CurrentWaitTime -= Time.deltaTime;
-            yield return null; // ¸Å ÇÁ·¹ÀÓ ´ë±â
+            yield return null; // ë§¤ í”„ë ˆì„ ëŒ€ê¸°
         }
-        CurrentWaitTime = 0; // Á¤È®È÷ 0À¸·Î ¸ÂÃã
-        IsWaitingNextWave = false; // ´ë±â Á¾·á (ÀüÅõ ½ÃÀÛ)
+        CurrentWaitTime = 0; // ì •í™•íˆ 0ìœ¼ë¡œ ë§ì¶¤
+        IsWaitingNextWave = false; // ëŒ€ê¸° ì¢…ë£Œ (ì „íˆ¬ ì‹œì‘)
 
-        Debug.Log($"[¿şÀÌºê {data.waveID}] ÀüÅõ °³½Ã!");
+        Debug.Log($"[ì›¨ì´ë¸Œ {data.waveID}] ì „íˆ¬ ê°œì‹œ!");
 
-        // 2. Àû ¼ÒÈ¯ (Enemy List ¼øÈ¸)
+        // 2. ì  ì†Œí™˜ (Enemy List ìˆœíšŒ)
         foreach (var group in data.enemyList)
         {
-            // °¢ ¸ó½ºÅÍ ±×·ìÀÇ ¸¶¸´¼ö¸¸Å­ ¼ÒÈ¯
+            // ê° ëª¬ìŠ¤í„° ê·¸ë£¹ì˜ ë§ˆë¦¿ìˆ˜ë§Œí¼ ì†Œí™˜
             for (int i = 0; i < group.spawnCount; i++)
             {
-                // Enemy.csÀÇ HP °è»ê ¹æ½Ä°ú ¸ÂÃß±â À§ÇØ CSV ¼öÄ¡(0, 10, 20...)¸¦ ±×´ë·Î ³Ñ±è
+                // Enemy.csì˜ HP ê³„ì‚° ë°©ì‹ê³¼ ë§ì¶”ê¸° ìœ„í•´ CSV ìˆ˜ì¹˜(0, 10, 20...)ë¥¼ ê·¸ëŒ€ë¡œ ë„˜ê¹€
                 SpawnEnemy(group.enemyID, (float)data.hpGrowthRate);
 
-                // ¸¶¸®´ç ¼ÒÈ¯ °£°İ ´ë±â
+                // ë§ˆë¦¬ë‹¹ ì†Œí™˜ ê°„ê²© ëŒ€ê¸°
                 yield return new WaitForSeconds(group.spawnInterval);
             }
             if (group != data.enemyList.Last())
             {
-                // ±×·ì °£ ´ë±â ½Ã°£ (nextGroupCycle »ç¿ë)
-                Debug.Log($"[¿şÀÌºê {data.waveID}] ´ÙÀ½ ±×·ì ¼ÒÈ¯±îÁö ´ë±â ({data.nextGroupCycle}ÃÊ)");
+                // ê·¸ë£¹ ê°„ ëŒ€ê¸° ì‹œê°„ (nextGroupCycle ì‚¬ìš©)
+                Debug.Log($"[ì›¨ì´ë¸Œ {data.waveID}] ë‹¤ìŒ ê·¸ë£¹ ì†Œí™˜ê¹Œì§€ ëŒ€ê¸° ({data.nextGroupCycle}ì´ˆ)");
                 yield return new WaitForSeconds(data.nextGroupCycle);
             }
             
         }
         bool isLastWave = (currentWaveIndex == stageWaves.Count - 1);
-        // ÀûÀ» ´Ù ÀâÁö ¸øÇß´õ¶óµµ ÀÌ ½Ã°£ÀÌ Áö³ª¸é EndWave·Î ³Ñ¾î°©´Ï´Ù.
+        // ì ì„ ë‹¤ ì¡ì§€ ëª»í–ˆë”ë¼ë„ ì´ ì‹œê°„ì´ ì§€ë‚˜ë©´ EndWaveë¡œ ë„˜ì–´ê°‘ë‹ˆë‹¤.
         float timer = 0;
         while (timer < data.waveTime)
         {
             timer += Time.deltaTime;
 
-            // ¸¸¾à ½Ã°£ ³»¿¡ ÀûÀ» ´Ù Àâ¾Ò´Ù¸é ·çÇÁ Å»Ãâ
+            // ë§Œì•½ ì‹œê°„ ë‚´ì— ì ì„ ë‹¤ ì¡ì•˜ë‹¤ë©´ ë£¨í”„ íƒˆì¶œ
             if (activeEnemies <= 0 && enemiesToSpawn <= 0)
             {
-                Debug.Log("½Ã°£ Á¾·á Àü ¸ğµç Àû Ã³Ä¡ ¿Ï·á!");
+                Debug.Log("ì‹œê°„ ì¢…ë£Œ ì „ ëª¨ë“  ì  ì²˜ì¹˜ ì™„ë£Œ!");
                 break;
             }
 
@@ -181,13 +181,13 @@ public class WaveManager : MonoBehaviour
         }
         if (isLastWave)
         {
-            // [¸¶Áö¸· ¿şÀÌºêÀÏ ¶§]
-            // EndWave()¸¦ È£ÃâÇÏÁö ¾Ê°í ÄÚ·çÆ¾À» ¿©±â¼­ Á¾·áÇÕ´Ï´Ù.
-            // ´ë½Å È­¸é¿¡ "FINAL WAVE - ¸ğµç ÀûÀ» Ã³Ä¡ÇÏ¼¼¿ä!" °°Àº UI ¹®±¸¸¦ ¶ç¿ì±â ¾ÆÁÖ ÁÁÀº Å¸ÀÌ¹ÖÀÔ´Ï´Ù.
-            Debug.Log("<color=red>[WaveManager]</color> ¸¶Áö¸· ¿şÀÌºêÀÇ ½ºÆù ´Ü°è°¡ ³¡³µ½À´Ï´Ù! ³²Àº Àû ¼ÒÅÁ ½ÃÀÛ.");
+            // [ë§ˆì§€ë§‰ ì›¨ì´ë¸Œì¼ ë•Œ]
+            // EndWave()ë¥¼ í˜¸ì¶œí•˜ì§€ ì•Šê³  ì½”ë£¨í‹´ì„ ì—¬ê¸°ì„œ ì¢…ë£Œí•©ë‹ˆë‹¤.
+            // ëŒ€ì‹  í™”ë©´ì— "FINAL WAVE - ëª¨ë“  ì ì„ ì²˜ì¹˜í•˜ì„¸ìš”!" ê°™ì€ UI ë¬¸êµ¬ë¥¼ ë„ìš°ê¸° ì•„ì£¼ ì¢‹ì€ íƒ€ì´ë°ì…ë‹ˆë‹¤.
+            Debug.Log("<color=red>[WaveManager]</color> ë§ˆì§€ë§‰ ì›¨ì´ë¸Œì˜ ìŠ¤í° ë‹¨ê³„ê°€ ëë‚¬ìŠµë‹ˆë‹¤! ë‚¨ì€ ì  ì†Œíƒ• ì‹œì‘.");
             isWaveActive = false;
 
-            // ¸¸¾à ¼ÒÈ¯ ½Ã°£ÀÌ ´Ù µÇ¾úÀ» ¶§ ÀÌ¹Ì ÇÊµå¿¡ ÀûÀÌ ¾ø´Ù¸é Áï½Ã ½Â¸® Ã³¸®
+            // ë§Œì•½ ì†Œí™˜ ì‹œê°„ì´ ë‹¤ ë˜ì—ˆì„ ë•Œ ì´ë¯¸ í•„ë“œì— ì ì´ ì—†ë‹¤ë©´ ì¦‰ì‹œ ìŠ¹ë¦¬ ì²˜ë¦¬
             if (activeEnemies <= 0)
             {
                 PublishVictory();
@@ -195,38 +195,38 @@ public class WaveManager : MonoBehaviour
         }
         else
         {
-            // [ÀÏ¹İ ¿şÀÌºêÀÏ ¶§]
-            // ±âÁ¸Ã³·³ Á¤»óÀûÀ¸·Î ¿şÀÌºê Á¾·á ¹®±¸¸¦ ¶ç¿ì°í º¸»óÀ» ÁÖ¸ç ´ÙÀ½ ¿şÀÌºê¸¦ ¿±´Ï´Ù.
+            // [ì¼ë°˜ ì›¨ì´ë¸Œì¼ ë•Œ]
+            // ê¸°ì¡´ì²˜ëŸ¼ ì •ìƒì ìœ¼ë¡œ ì›¨ì´ë¸Œ ì¢…ë£Œ ë¬¸êµ¬ë¥¼ ë„ìš°ê³  ë³´ìƒì„ ì£¼ë©° ë‹¤ìŒ ì›¨ì´ë¸Œë¥¼ ì—½ë‹ˆë‹¤.
             EndWave();
         }
     }
 
     /// <summary>
-    /// SpawnManager¸¦ ÅëÇØ ½ÇÁ¦·Î ÀûÀ» ¾À¿¡ µîÀå½ÃÅ°´Â ÇÔ¼ö
+    /// SpawnManagerë¥¼ í†µí•´ ì‹¤ì œë¡œ ì ì„ ì”¬ì— ë“±ì¥ì‹œí‚¤ëŠ” í•¨ìˆ˜
     /// </summary>
     private void SpawnEnemy(int id, float hpGrowthRate)
     {
         if (SpawnManager.Instance != null)
         {
-            // hpGrowthRate´Â 10, 20 °°Àº Á¤¼ö°ªÀ¸·Î Àü´ŞµÊ (Enemy.cs¿¡¼­ ¹éºĞÀ² °è»ê)
+            // hpGrowthRateëŠ” 10, 20 ê°™ì€ ì •ìˆ˜ê°’ìœ¼ë¡œ ì „ë‹¬ë¨ (Enemy.csì—ì„œ ë°±ë¶„ìœ¨ ê³„ì‚°)
             SpawnManager.Instance.Spawn(id, hpGrowthRate);
-            activeEnemies++; // »ıÁ¸ Àû ¼ö Áõ°¡
-            enemiesToSpawn--; // ³²Àº ¼ÒÈ¯ È½¼ö °¨¼Ò
+            activeEnemies++; // ìƒì¡´ ì  ìˆ˜ ì¦ê°€
+            enemiesToSpawn--; // ë‚¨ì€ ì†Œí™˜ íšŸìˆ˜ ê°ì†Œ
         }
         else
         {
-            Debug.LogError("SpawnManager¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù!");
+            Debug.LogError("SpawnManagerë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤!");
         }
     }
 
     /// <summary>
-    /// ¿şÀÌºê Á¾·á ½Ã º¸»ó Áö±Ş ¹× ´ÙÀ½ ÁØºñ
+    /// ì›¨ì´ë¸Œ ì¢…ë£Œ ì‹œ ë³´ìƒ ì§€ê¸‰ ë° ë‹¤ìŒ ì¤€ë¹„
     /// </summary>
     private void EndWave()
     {
         if (!isWaveActive) return;
 
-        Debug.Log($"[¿şÀÌºê {stageWaves[currentWaveIndex].waveID}] Á¾·á.");
+        Debug.Log($"[ì›¨ì´ë¸Œ {stageWaves[currentWaveIndex].waveID}] ì¢…ë£Œ.");
 
         if (currentWaveIndex < stageWaves.Count)
         {
@@ -237,7 +237,7 @@ public class WaveManager : MonoBehaviour
         currentWaveIndex++;
         OnWaveChanged?.Invoke();
 
-        // ÄÚ·çÆ¾ Á¤¸®
+        // ì½”ë£¨í‹´ ì •ë¦¬
         if (waveCoroutine != null) StopCoroutine(waveCoroutine);
 
         StartNextWave();
@@ -249,12 +249,12 @@ public class WaveManager : MonoBehaviour
 
         if (activeEnemies < 0) activeEnemies = 0;
 
-        // ¸ğµç ÀûÀ» ´Ù ¼ÒÈ¯Çß°í, ÇÊµå¿¡ ÀûÀÌ ÇÏ³ªµµ ¾ø´Ù¸é
+        // ëª¨ë“  ì ì„ ë‹¤ ì†Œí™˜í–ˆê³ , í•„ë“œì— ì ì´ í•˜ë‚˜ë„ ì—†ë‹¤ë©´
         if (activeEnemies <= 0 && enemiesToSpawn <= 0 && isWaveActive)
         {
             EndWave();
         }
-        // ¸¶Áö¸· ¿şÀÌºê ¼ÒÅÁÀü Áß ÃÖÁ¾ ÀûÀÌ Á×¾úÀ» ¶§
+        // ë§ˆì§€ë§‰ ì›¨ì´ë¸Œ ì†Œíƒ•ì „ ì¤‘ ìµœì¢… ì ì´ ì£½ì—ˆì„ ë•Œ
         if (stageWaves.Count > 0 && currentWaveIndex >= stageWaves.Count && activeEnemies <= 0)
         {
             PublishVictory();
@@ -263,43 +263,76 @@ public class WaveManager : MonoBehaviour
     private void PublishVictory()
     {
         isWaveActive = false;
-        Debug.Log("<color=lime>[WaveManager]</color> ½Â¸® Á¶°Ç ´Ş¼º! Àü ¼¼»ó¿¡ ¾Ë¸²À» º¸³À´Ï´Ù.");
+        Debug.Log("<color=lime>[WaveManager]</color> ìŠ¹ë¦¬ ì¡°ê±´ ë‹¬ì„±! ì „ ì„¸ìƒì— ì•Œë¦¼ì„ ë³´ëƒ…ë‹ˆë‹¤.");
 
-        // ÀÌ ÀÌº¥Æ®¸¦ ¶óµğ¿À ÁÖÆÄ¼öÃ³·³ ½î¾Æ ¿Ã¸³´Ï´Ù. µè°í ÀÖ´Â ÀÚ(±¸µ¶ÀÚ)µéÀÌ ¹İÀÀÇÕ´Ï´Ù.
+        // ì´ ì´ë²¤íŠ¸ë¥¼ ë¼ë””ì˜¤ ì£¼íŒŒìˆ˜ì²˜ëŸ¼ ì˜ì•„ ì˜¬ë¦½ë‹ˆë‹¤. ë“£ê³  ìˆëŠ” ì(êµ¬ë…ì)ë“¤ì´ ë°˜ì‘í•©ë‹ˆë‹¤.
         OnStageVictoryDetected?.Invoke();
     }
 
     /// <summary>
-    /// SO µ¥ÀÌÅÍ¿¡ Á¤ÀÇµÈ º¸»óÀ» ÇÃ·¹ÀÌ¾î¿¡°Ô Áö±ŞÇÕ´Ï´Ù.
+    /// SO ë°ì´í„°ì— ì •ì˜ëœ ë³´ìƒì„ í”Œë ˆì´ì–´ì—ê²Œ ì§€ê¸‰í•©ë‹ˆë‹¤.
     /// </summary>
     private void GiveRewards(SO_WaveData data)
     {
-        // 1. ¾ÆÀÌÅÛ/ÀçÈ­ º¸»ó
+        // 1. ì•„ì´í…œ/ì¬í™” ë³´ìƒ
         if (data.rewardID <= 0 || data.rewardAmount <= 0) return;
 
-        // int ID¸¦ EnumÀ¸·Î Çüº¯È¯
+        // int IDë¥¼ Enumìœ¼ë¡œ í˜•ë³€í™˜
         CurrencyType rewardType = (CurrencyType)data.rewardID;
 
-        if (rewardType == CurrencyType.FragmentCoin || rewardType == CurrencyType.CompleteCoin)
+        // ğŸ’¡ ë°°ë¦¬ì–´ ì²´ë ¥ ê¸°ë°˜ ì¶”ê°€ ë³´ìƒ ê³„ì‚°
+        int finalAmount = data.rewardAmount;
+
+        if (Barrier.Instance != null)
         {
-            CurrencyManager.Instance.AddCurrency(rewardType, data.rewardAmount);
+            // í˜„ì¬ ë°°ë¦¬ì–´ ì²´ë ¥ ë¹„ìœ¨ ê³„ì‚° (0% ~ 100%)
+            // â€» Barrier í´ë˜ìŠ¤ì— CurrentHPì™€ MaxHP(í˜¹ì€ InitHP)ê°€ ìˆë‹¤ê³  ê°€ì •í•©ë‹ˆë‹¤.
+            // â€» ë§Œì•½ í”„ë¡œí¼í‹° ì´ë¦„ì´ ë‹¤ë¥´ë‹¤ë©´ í”„ë¡œì íŠ¸ì— ë§ê²Œ ìˆ˜ì •í•´ì£¼ì„¸ìš” (ì˜ˆ: currentHealth ë“±).
+            float hpPercent = (Barrier.Instance.CurrentHealth / Barrier.Instance.MaxHealth) * 100f;
+
+            // ì²´ë ¥ì´ 80% ì´ìƒì¼ ë•Œë§Œ ë³´ë„ˆìŠ¤ ì—°ì‚° ì§„í–‰
+            if (hpPercent >= 80f)
+            {
+                // 80%ë¥¼ ì´ˆê³¼í•œ ìˆ˜ì¹˜ ê³„ì‚° (ì˜ˆ: 85%ë©´ 5%, 100%ë©´ 20%)
+                float excessPercent = hpPercent - 80f;
+
+                // ìµœëŒ€ 20%ë¡œ ì œí•œ (Clamping)
+                float bonusRatePercent = Mathf.Clamp(excessPercent, 0f, 20f);
+
+                // ì†Œìˆ˜ì  ë²„ë¦¼ ì²˜ë¦¬í•˜ì—¬ ìµœì¢… ì •ìˆ˜ ë³´ë„ˆìŠ¤ í¼ì„¼íŠ¸ í™•ì •
+                int bonusRate = Mathf.FloorToInt(bonusRatePercent);
+
+                if (bonusRate > 0)
+                {
+                    // ì›ë˜ ë³´ìƒì— (1 + ë³´ë„ˆìŠ¤ ë¹„ìœ¨)ì„ ê³±í•´ì¤ë‹ˆë‹¤. 
+                    // ì˜ˆ: bonusRateê°€ 20ì´ë©´ 1 + 0.2 = 1.2ë°°
+                    finalAmount = Mathf.RoundToInt(data.rewardAmount * (1f + (bonusRate / 100f)));
+                    Debug.Log($"<color=lime>[ë³´ìƒ ë³´ë„ˆìŠ¤]</color> ë°°ë¦¬ì–´ ì²´ë ¥ {hpPercent:F1}% (80% ì´ìƒ)! ë³´ìƒ {bonusRate}% ì¦ê°€ (ìµœì¢…: {finalAmount})");
+                }
+            }
         }
 
-        // 2. ½½·Ô ÀÌµ¿ È½¼ö È¸º¹
+        // ê³„ì‚°ëœ finalAmountë¡œ ì¬í™” ì§€ê¸‰
+        if (rewardType == CurrencyType.FragmentCoin || rewardType == CurrencyType.CompleteCoin)
+        {
+            CurrencyManager.Instance.AddCurrency(rewardType, finalAmount);
+        }
+
+        // 2. ìŠ¬ë¡¯ ì´ë™ íšŸìˆ˜ íšŒë³µ
         if (data.slotMoveRecovery > 0)
         {
-            Debug.Log($"½½·Ô ÀÌµ¿ È½¼ö {data.slotMoveRecovery}È¸ È¸º¹!");
-            // ¿¹: PlayerStatus.Instance.RecoverMoveCount(data.slotMoveRecovery);
+            Debug.Log($"ìŠ¬ë¡¯ ì´ë™ íšŸìˆ˜ {data.slotMoveRecovery}íšŒ íšŒë³µ!");
+            PlacementController.Instance.remainingMoves += data.slotMoveRecovery;
         }
     }
 #if UNITY_EDITOR
     public int ActiveEnemyCount => activeEnemies;
-    private float waveRemainingTime = 0f; // ¿şÀÌºê ³²Àº ½Ã°£ ÃøÁ¤¿ë
+    private float waveRemainingTime = 0f; // ì›¨ì´ë¸Œ ë‚¨ì€ ì‹œê°„ ì¸¡ì •ìš©
     public float WaveRemainingTime => waveRemainingTime;
 
     private void Update()
     {
-        // ÀüÅõ ÁßÀÏ ¶§¸¸ ½Ã°£À» °¨¼Ò½ÃÅ´ (IsWaitingNextWave°¡ ¾Æ´Ò ¶§)
+        // ì „íˆ¬ ì¤‘ì¼ ë•Œë§Œ ì‹œê°„ì„ ê°ì†Œì‹œí‚´ (IsWaitingNextWaveê°€ ì•„ë‹ ë•Œ)
         if (isWaveActive && !IsWaitingNextWave && waveRemainingTime > 0)
         {
             waveRemainingTime -= Time.deltaTime;
@@ -308,29 +341,29 @@ public class WaveManager : MonoBehaviour
     }
     public void ForceSkipToNextWave()
     {
-        // 1. ÇöÀç ½ÇÇà ÁßÀÎ ¿şÀÌºê ÄÚ·çÆ¾ Áß´Ü (¼ÒÈ¯/´ë±â µî)
+        // 1. í˜„ì¬ ì‹¤í–‰ ì¤‘ì¸ ì›¨ì´ë¸Œ ì½”ë£¨í‹´ ì¤‘ë‹¨ (ì†Œí™˜/ëŒ€ê¸° ë“±)
         if (waveCoroutine != null)
         {
             StopCoroutine(waveCoroutine);
             waveCoroutine = null;
         }
 
-        // 2. ¿şÀÌºê »óÅÂ ÇÃ·¡±× ÃÊ±âÈ­
+        // 2. ì›¨ì´ë¸Œ ìƒíƒœ í”Œë˜ê·¸ ì´ˆê¸°í™”
         isWaveActive = false;
         IsWaitingNextWave = false;
 
-        // 3. ÀÎµ¦½º Áõ°¡
+        // 3. ì¸ë±ìŠ¤ ì¦ê°€
         currentWaveIndex++;
 
-        // 4. ´ÙÀ½ ¿şÀÌºê ½ÇÇà (´õ ÀÌ»ó µ¥ÀÌÅÍ°¡ ¾øÀ¸¸é Á¾·á ·Î±×)
+        // 4. ë‹¤ìŒ ì›¨ì´ë¸Œ ì‹¤í–‰ (ë” ì´ìƒ ë°ì´í„°ê°€ ì—†ìœ¼ë©´ ì¢…ë£Œ ë¡œê·¸)
         if (currentWaveIndex < stageWaves.Count)
         {
-            Debug.Log($"<color=cyan>[WaveManager]</color> ¿şÀÌºê {currentWaveIndex + 1}·Î °­Á¦ ÀÌµ¿ÇÕ´Ï´Ù.");
+            Debug.Log($"<color=cyan>[WaveManager]</color> ì›¨ì´ë¸Œ {currentWaveIndex + 1}ë¡œ ê°•ì œ ì´ë™í•©ë‹ˆë‹¤.");
             StartNextWave();
         }
         else
         {
-            Debug.Log("<color=red>[WaveManager]</color> ¸¶Áö¸· ¿şÀÌºêÀÔ´Ï´Ù. ´õ ÀÌ»ó ½ºÅµÇÒ ¼ö ¾ø½À´Ï´Ù.");
+            Debug.Log("<color=red>[WaveManager]</color> ë§ˆì§€ë§‰ ì›¨ì´ë¸Œì…ë‹ˆë‹¤. ë” ì´ìƒ ìŠ¤í‚µí•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
             if (stageWaves.Count > 0 && currentWaveIndex >= stageWaves.Count && activeEnemies <= 0)
             {
                 PublishVictory();

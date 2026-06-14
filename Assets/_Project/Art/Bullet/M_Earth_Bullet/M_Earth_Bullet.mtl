@@ -1,0 +1,6 @@
+newmtl tripo_material_96ac6940_7165_4a84_a2f0_b1e20d21375d
+Kd 1.000000000 1.000000000 1.000000000
+d 1.000000000
+illum 2
+map_Kd M_Earth_Bullet_basecolor.jpg
+

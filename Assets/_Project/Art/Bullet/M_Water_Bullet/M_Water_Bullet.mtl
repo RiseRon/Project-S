@@ -1,0 +1,6 @@
+newmtl tripo_material_bc0d0f86_df1b_48f5_a408_9f6486bdb8c7
+Kd 1.000000000 1.000000000 1.000000000
+d 1.000000000
+illum 2
+map_Kd M_Water_Bullet_basecolor.jpg
+

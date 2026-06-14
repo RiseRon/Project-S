@@ -1,0 +1,6 @@
+newmtl tripo_material_d35ca5a5_45f2_43fa_ae3a_aa396b16b14d
+Kd 1.000000000 1.000000000 1.000000000
+d 1.000000000
+illum 2
+map_Kd M_Ice_Bullet_basecolor.jpg
+

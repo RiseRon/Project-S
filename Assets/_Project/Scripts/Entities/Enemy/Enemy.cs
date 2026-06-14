@@ -38,8 +38,18 @@ public class Enemy : MonoBehaviour
     private Dictionary<int, float> activeSlows = new Dictionary<int, float>();
     private float stunImmuneEndTime = 0f;
 
+    private Animator animator;
+
     // 보스 여부 확인(SO_EnemyData의 이름을 기준으로 판별)
     public bool IsBoss => enemyData.enemyName == "MidBoss" || enemyData.enemyName == "FinalBoss";
+
+    protected virtual void Awake()
+    {
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
+        }
+    }
 
     protected virtual void Start()
     {
@@ -86,6 +96,10 @@ public class Enemy : MonoBehaviour
         isAtEnd = false;
         TotalDistanceTraveled = 0f;
         targetBarrier = null;
+        if(animator != null)
+        {
+            animator.SetBool("IsAtEnd", isAtEnd);
+        }
 
         //Debug.Log($"{gameObject.name} 생성 - 최종 체력: {currentHealth} (증가량: {hpGrowthRate}%)");
     }
@@ -164,11 +178,14 @@ public class Enemy : MonoBehaviour
     public virtual void Attack()
     {
         lastAttackTime = Time.time;
-
         // GetComponent도 매번 하면 느리므로, Barrier 컴포넌트를 직접 참조하는 게 더 좋습니다.
         if (Barrier.Instance != null)
         {
             // EffectPoolManager.Instance.SpawnEffect("P_Enemy_Attack", Barrier.Instance.transform.position, Barrier.Instance.transform.rotation);
+            if (animator != null)
+            {
+                animator.SetTrigger("Attack");
+            }
             SoundManager.Instance.PlaySFX("SFX_Enemy_Attack");
             Barrier.Instance.TakeDamage(enemyData.damage);
             Debug.Log($"{enemyData.name}이(가) 방벽을 공격!");
@@ -178,6 +195,10 @@ public class Enemy : MonoBehaviour
     protected virtual void ReachEnd()
     {
         isAtEnd = true;
+        if (animator != null)
+        {
+            animator.SetBool("IsAtEnd", isAtEnd);
+        }
 
         // [수정] 씬 전체를 뒤지는 대신, 미리 등록된 Instance를 바로 가져옴 (성능 소모 0)
         if (Barrier.Instance != null)

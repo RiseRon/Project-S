@@ -278,10 +278,18 @@ public class PlacementController : MonoBehaviour
         }
     }
 
+    // ==========================================
+    // 높이(yOffset) 오차를 무시하고 무조건 바닥의 슬롯을 찾아내는 함수
+    // ==========================================
     public Slot FindSlotUnderSlime(Vector3 position)
     {
-        Collider[] hitSlots = Physics.OverlapSphere(position, 0.4f, slotLayer);
-        if (hitSlots.Length > 0) return hitSlots[0].GetComponent<Slot>();
+        // 슬라임의 위치에서 살짝 위(Vector3.up)로 올린 다음, 아래(Vector3.down)로 레이저를 쏩니다.
+        // slotLayer(슬롯 레이어)만 감지하므로 슬라임 본인에게 레이저가 막힐 일도 없습니다.
+        if (Physics.Raycast(position + Vector3.up * 1.0f, Vector3.down, out RaycastHit hit, 3.0f, slotLayer))
+        {
+            return hit.collider.GetComponent<Slot>();
+        }
+
         return null;
     }
 }

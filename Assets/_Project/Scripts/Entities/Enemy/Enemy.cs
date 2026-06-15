@@ -403,6 +403,7 @@ public class Enemy : MonoBehaviour
         {
             return;
         }
+        animator.speed = 0f;
         StartCoroutine(StunRoutine(stunDuration));
     }
 
@@ -417,6 +418,7 @@ public class Enemy : MonoBehaviour
         // 스턴이 풀리면 데이터의 무적시간(StunGrace)만큼 쿨타임 가동
         stunImmuneEndTime = Time.time + enemyData.StunGrace;
 
+        animator.speed = 1f;
         RecalculateSpeed(); // 원래 속도(혹은 슬로우 걸린 상태)로 복구
     }
 

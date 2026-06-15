@@ -25,48 +25,40 @@ public class AreaEffect : MonoBehaviour
             PoolManager.Instance.ReturnToPool(areaID, gameObject);
     }
 
-    // 1. 적이 들어올 때: 슬로우 요청 및 타이머 시작
+    // 1. 적이 들어올 때
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy") && other.TryGetComponent<Enemy>(out Enemy enemy))
         {
-            if (other.TryGetComponent<Enemy>(out Enemy enemy))
+            if (data.slowRate > 0)
             {
-                // [수정] 슬로우 수치가 0보다 클 때만 슬로우 적용
-                if (data.slowRate > 0)
-                {
-                    enemy.AddSlow(gameObject.GetInstanceID(), data.slowRate);
-                }
+                enemy.AddSlow(gameObject.GetInstanceID(), data.slowRate);
+            }
 
-                // [핵심 수정] 도트 데미지가 있을 때만 타이머에 등록!
-                if (data.dotDamage > 0)
+            // [수정] Interval이 0보다 크면 도트 딜이 있는 장판(독)으로 간주합니다!
+            if (data.dotDamageInterval > 0 && data.damage > 0)
+            {
+                if (!enemyTimers.ContainsKey(enemy))
                 {
-                    if (!enemyTimers.ContainsKey(enemy))
-                    {
-                        // 현재 밟은 시간 + 쿨타임 뒤에 첫 데미지 예약
-                        enemyTimers.Add(enemy, Time.time + data.dotDamageInterval);
-                    }
+                    enemyTimers.Add(enemy, Time.time + data.dotDamageInterval);
                 }
             }
         }
     }
 
-    // 2. 적이 머무를 때: 쿨타임 체크 후 도트 딜 적용
+    // 2. 적이 머무를 때
     private void OnTriggerStay(Collider other)
     {
-        // [핵심 수정] 도트 데미지가 아예 없으면 Stay 연산을 즉시 중단합니다. (최적화 및 버그 방지)
-        if (data.dotDamage <= 0) return;
+        // [수정] Interval이 없거나 데미지가 없으면(순수 슬로우 물장판) 즉시 패스!
+        if (data.dotDamageInterval <= 0 || data.damage <= 0) return;
 
-        if (other.CompareTag("Enemy"))
+        if (other.CompareTag("Enemy") && other.TryGetComponent<Enemy>(out Enemy enemy))
         {
-            if (other.TryGetComponent<Enemy>(out Enemy enemy))
+            if (enemyTimers.ContainsKey(enemy) && Time.time >= enemyTimers[enemy])
             {
-                if (enemyTimers.ContainsKey(enemy) && Time.time >= enemyTimers[enemy])
-                {
-                    enemy.TakeDamage(data.dotDamage);
-                    // 다음 데미지 시간 갱신
-                    enemyTimers[enemy] = Time.time + data.dotDamageInterval;
-                }
+                // [수정] dotDamage 대신 기본 damage 변수를 사용합니다.
+                enemy.TakeDamage(data.damage);
+                enemyTimers[enemy] = Time.time + data.dotDamageInterval;
             }
         }
     }

@@ -72,7 +72,6 @@ public class SlimeDataImporter
             asset.areaPrefabID = ParseInt(data[15], "장판 프리팹 ID", id);
             asset.areaDuration = ParseFloat(data[16], "장판 유지 시간", id);
             asset.slowRate = ParseFloat(data[17], "슬로우 비율", id);
-            asset.dotDamage = ParseFloat(data[18], "지속 데미지", id);
             asset.dotDamageInterval = ParseFloat(data[19], "도트 주기", id);
 
             EditorUtility.SetDirty(asset);

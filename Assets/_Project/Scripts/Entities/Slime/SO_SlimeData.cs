@@ -30,7 +30,6 @@ public class SO_SlimeData : ScriptableObject
     public float stunChance;
     public float stunDuration;
     public float slowRate;
-    public float dotDamage;
     public float dotDamageInterval;
 
     [Header("장판 설정")]

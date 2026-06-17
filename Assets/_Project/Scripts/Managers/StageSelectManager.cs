@@ -1,22 +1,22 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class StageSelectManager : MonoBehaviour
 {
-    // ÇöÀç ¼±ÅÃµÈ ½ºÅ×ÀÌÁö Á¤º¸¸¦ ÀÓ½Ã·Î ÀúÀåÇÒ º¯¼ö
+    // í˜„ì¬ ì„ íƒëœ ìŠ¤í…Œì´ì§€ ì •ë³´ë¥¼ ì„ì‹œë¡œ ì €ì¥í•  ë³€ìˆ˜
     private int selectedStageID = -1;
-    
-    [Header("--- Stage UI Lists (¼ø¼­´ë·Î µî·ÏÇØÁÖ¼¼¿ä) ---")]
-    [Tooltip("1½ºÅ×ÀÌÁö, 2½ºÅ×ÀÌÁö, 3½ºÅ×ÀÌÁö ¼ø¼­´ë·Î Button ÄÄÆ÷³ÍÆ®¸¦ ³Ö¾îÁÖ¼¼¿ä.")]
+    private bool isFirstCheck = true;
+    [Header("--- Stage UI Lists (ìˆœì„œëŒ€ë¡œ ë“±ë¡í•´ì£¼ì„¸ìš”) ---")]
+    [Tooltip("1ìŠ¤í…Œì´ì§€, 2ìŠ¤í…Œì´ì§€, 3ìŠ¤í…Œì´ì§€ ìˆœì„œëŒ€ë¡œ Button ì»´í¬ë„ŒíŠ¸ë¥¼ ë„£ì–´ì£¼ì„¸ìš”.")]
     [SerializeField] private List<Button> stageButtons = new List<Button>();
 
-    [Tooltip("2½ºÅ×ÀÌÁö, 3½ºÅ×ÀÌÁö ¹öÆ°¿¡ µé¾îÀÖ´Â ÀÚ¹°¼è ¿ÀºêÁ§Æ®µéÀ» ¼ø¼­´ë·Î ³Ö¾îÁÖ¼¼¿ä. (1½ºÅ×ÀÌÁö´Â ¾øÀ¸¹Ç·Î Element 0¹ø¿¡ 2½ºÅ×ÀÌÁö ÀÚ¹°¼è ¹èÄ¡)")]
+    [Tooltip("2ìŠ¤í…Œì´ì§€, 3ìŠ¤í…Œì´ì§€ ë²„íŠ¼ì— ë“¤ì–´ìˆëŠ” ìë¬¼ì‡  ì˜¤ë¸Œì íŠ¸ë“¤ì„ ìˆœì„œëŒ€ë¡œ ë„£ì–´ì£¼ì„¸ìš”. (1ìŠ¤í…Œì´ì§€ëŠ” ì—†ìœ¼ë¯€ë¡œ Element 0ë²ˆì— 2ìŠ¤í…Œì´ì§€ ìë¬¼ì‡  ë°°ì¹˜)")]
     [SerializeField] private List<GameObject> lockIcons = new List<GameObject>();
     /// <summary>
-    /// 1. °³º° ½ºÅ×ÀÌÁö ¹öÆ°À» ´­·¶À» ¶§ È£ÃâÇÒ ÇÔ¼ö
-    /// À¯´ÏÆ¼ ÀÎ½ºÆåÅÍ OnClick()¿¡¼­ ÀÌ ÇÔ¼ö¸¦ ¼±ÅÃÇÏ°í Stage ID(Á¤¼ö)¸¦ ÀÔ·ÂÇÏ¼¼¿ä.
+    /// 1. ê°œë³„ ìŠ¤í…Œì´ì§€ ë²„íŠ¼ì„ ëˆŒë €ì„ ë•Œ í˜¸ì¶œí•  í•¨ìˆ˜
+    /// ìœ ë‹ˆí‹° ì¸ìŠ¤í™í„° OnClick()ì—ì„œ ì´ í•¨ìˆ˜ë¥¼ ì„ íƒí•˜ê³  Stage ID(ì •ìˆ˜)ë¥¼ ì…ë ¥í•˜ì„¸ìš”.
     /// </summary>
     private void Start()
     {
@@ -24,50 +24,64 @@ public class StageSelectManager : MonoBehaviour
         {
             SoundManager.Instance.PlayBGM("BGM_Title");
         }
-        // ¾ÀÀÌ ÄÑÁú ¶§ GameManager ¸Ş¸ğ¸®¸¦ È®ÀÎÇØ¼­ ¹öÆ° »óÈ£ÀÛ¿ë(Interactable) Ã³¸®
+        // ì”¬ì´ ì¼œì§ˆ ë•Œ GameManager ë©”ëª¨ë¦¬ë¥¼ í™•ì¸í•´ì„œ ë²„íŠ¼ ìƒí˜¸ì‘ìš©(Interactable) ì²˜ë¦¬
         CheckAndApplyStageLocks();
     }/// <summary>
-     /// GameManagerÀÇ ¸Ş¸ğ¸®¸¦ ±â¹İÀ¸·Î ¹öÆ°ÀÇ È°¼ºÈ­/Àá±İ »óÅÂ¸¦ Á¦¾îÇÕ´Ï´Ù.
+     /// GameManagerì˜ ë©”ëª¨ë¦¬ë¥¼ ê¸°ë°˜ìœ¼ë¡œ ë²„íŠ¼ì˜ í™œì„±í™”/ì ê¸ˆ ìƒíƒœë¥¼ ì œì–´í•©ë‹ˆë‹¤.
      /// </summary>
     private void CheckAndApplyStageLocks()
     {
-        // ¿¹¿Ü ¹æÁö: µî·ÏµÈ ¹öÆ°ÀÌ ¾ø´Ù¸é ¸®ÅÏ
+        // ì˜ˆì™¸ ë°©ì§€: ë“±ë¡ëœ ë²„íŠ¼ì´ ì—†ë‹¤ë©´ ë¦¬í„´
         if (stageButtons == null || stageButtons.Count == 0) return;
 
         for (int i = 0; i < stageButtons.Count; i++)
         {
             if (stageButtons[i] == null) continue;
 
-            // 1. Ã¹ ¹øÂ° ¹öÆ°(ÀÎµ¦½º 0 = 1½ºÅ×ÀÌÁö)Àº ¹«Á¶°Ç Å¬¸¯ °¡´ÉÇÏ°Ô ¿­¾îµÓ´Ï´Ù.
             if (i == 0)
             {
                 stageButtons[i].interactable = true;
                 continue;
             }
 
-            // 2. µÎ ¹øÂ° ¹öÆ°(ÀÎµ¦½º 1 = 2½ºÅ×ÀÌÁö)ºÎÅÍ´Â 'Á÷Àü ½ºÅ×ÀÌÁö ID'¸¦ ¿ªÃßÀûÇÕ´Ï´Ù.
-            // ÀÎµ¦½º 1ÀÏ ¶§ Á÷Àü ½ºÅ×ÀÌÁö ID´Â 501¹ø(500 + i)ÀÌ µË´Ï´Ù.
+            // ğŸ’¡ [ìˆ˜ì •] '!isFirstCheck' ì¡°ê±´ì„ ì•ì— ì¶”ê°€í–ˆìŠµë‹ˆë‹¤.
+            // ì²˜ìŒ ì¼°ì„ ë•Œ(isFirstCheckê°€ trueì¼ ë•Œ)ëŠ” ì´ ifë¬¸ì„ í†µê³¼í•˜ì§€ ì•Šê³ , 
+            // ë¬´ì¡°ê±´ ì•„ë˜ë¡œ ë‚´ë ¤ê°€ GameManager ë°ì´í„°ë¥¼ ì œëŒ€ë¡œ ê²€ì‚¬í•©ë‹ˆë‹¤.
+            if (!isFirstCheck && stageButtons[i].interactable == true)
+            {
+                int lockIndex = i - 1;
+                if (lockIcons != null && lockIndex < lockIcons.Count && lockIcons[lockIndex] != null)
+                {
+                    lockIcons[lockIndex].SetActive(false);
+                }
+                continue;
+            }
+
+            // 2. ë‘ ë²ˆì§¸ ë²„íŠ¼(ì¸ë±ìŠ¤ 1 = 2ìŠ¤í…Œì´ì§€)ë¶€í„°ëŠ” 'ì§ì „ ìŠ¤í…Œì´ì§€ ID'ë¥¼ ì—­ì¶”ì í•©ë‹ˆë‹¤.
+            // ì¸ë±ìŠ¤ 1ì¼ ë•Œ ì§ì „ ìŠ¤í…Œì´ì§€ IDëŠ” 501ë²ˆ(500 + i)ì´ ë©ë‹ˆë‹¤.
             int previousStageID = 500 + i;
 
             bool isPreviousStageCleared = false;
             if (GameManager.Instance != null)
             {
-                // GameManager ¸Ş¸ğ¸®¿¡ 501¹øÀÌ µé¾îÀÖ´ÂÁö ¹°¾îº¾´Ï´Ù.
                 isPreviousStageCleared = GameManager.Instance.IsStageCleared(previousStageID);
             }
 
-            // 3. ¹öÆ° È°¼ºÈ­ »óÅÂ Àû¿ë (Á÷Àü ÅºÀ» ²£´Ù¸é true, ¾È ²£´Ù¸é false)
+            // 3. ë²„íŠ¼ í™œì„±í™” ìƒíƒœ ì ìš© (ì§ì „ íƒ„ì„ ê¹¼ë‹¤ë©´ true, ì•ˆ ê¹¼ë‹¤ë©´ false)
             stageButtons[i].interactable = isPreviousStageCleared;
 
-            // 4. ÀÚ¹°¼è ¾ÆÀÌÄÜ ¿ÀºêÁ§Æ® ÄÑ°í ²ô±â (¸®½ºÆ® ¹üÀ§ ÃÊ°ú ¹æÁö ¾ÈÀüÀåÄ¡ Æ÷ÇÔ)
-            // 1½ºÅ×ÀÌÁö´Â ÀÚ¹°¼è°¡ ¾øÀ¸¹Ç·Î ÀÚ¹°¼è ¸®½ºÆ®ÀÇ i-1 ¹øÂ° ¿ø¼Ò¿Í ¸ÅÄª½ÃÅµ´Ï´Ù.
-            int lockIndex = i - 1;
-            if (lockIcons != null && lockIndex < lockIcons.Count && lockIcons[lockIndex] != null)
+            // 4. ìë¬¼ì‡  ì•„ì´ì½˜ ì˜¤ë¸Œì íŠ¸ ì¼œê³  ë„ê¸° (ë¦¬ìŠ¤íŠ¸ ë²”ìœ„ ì´ˆê³¼ ë°©ì§€ ì•ˆì „ì¥ì¹˜ í¬í•¨)
+            // 1ìŠ¤í…Œì´ì§€ëŠ” ìë¬¼ì‡ ê°€ ì—†ìœ¼ë¯€ë¡œ ìë¬¼ì‡  ë¦¬ìŠ¤íŠ¸ì˜ i-1 ë²ˆì§¸ ì›ì†Œì™€ ë§¤ì¹­ì‹œí‚µë‹ˆë‹¤.
+            int lockIndexForCheck = i - 1;
+            if (lockIcons != null && lockIndexForCheck < lockIcons.Count && lockIcons[lockIndexForCheck] != null)
             {
-                // ÀÌÀü ½ºÅ×ÀÌÁö¸¦ Å¬¸®¾îÇß´Ù¸é ÀÚ¹°¼è¸¦ ºñÈ°¼ºÈ­(false), ¸ø²£´Ù¸é È°¼ºÈ­(true)
-                lockIcons[lockIndex].SetActive(!isPreviousStageCleared);
+                lockIcons[lockIndexForCheck].SetActive(!isPreviousStageCleared);
             }
         }
+
+        // ğŸ’¡ [ìƒˆë¡œ ì¶”ê°€] ì „ì²´ ë£¨í”„ë¥¼ ëŒë©° ìµœì´ˆ ì •ì‚°ì„ ëë§ˆì³¤ìœ¼ë¯€ë¡œ, 
+        // í”Œë˜ê·¸ë¥¼ falseë¡œ ì „í™˜í•˜ì—¬ ë‹¤ìŒ ê²€ì‚¬(ì¬í”Œë ˆì´ í›„ íŒ¨ë°° ë“±)ë¶€í„° ì˜ˆì™¸ì²˜ë¦¬ê°€ ì‘ë™ë˜ê²Œ í•©ë‹ˆë‹¤.
+        isFirstCheck = false;
     }
     public void OnStageSelect(int stageID)
     {
@@ -76,22 +90,22 @@ public class StageSelectManager : MonoBehaviour
             SoundManager.Instance.PlaySFX("SFX_UI_Click");
         }
         selectedStageID = stageID;
-        Debug.Log($"<color=yellow>[StageSelect]</color> ½ºÅ×ÀÌÁö {selectedStageID - 500}¹øÀÌ ¼±ÅÃµÇ¾ú½À´Ï´Ù. (´ë±â Áß)");
+        Debug.Log($"<color=yellow>[StageSelect]</color> ìŠ¤í…Œì´ì§€ {selectedStageID - 500}ë²ˆì´ ì„ íƒë˜ì—ˆìŠµë‹ˆë‹¤. (ëŒ€ê¸° ì¤‘)");
     }
 
     /// <summary>
-    /// 2. ÃÖÁ¾ '½ÃÀÛ' ¹öÆ°À» ´­·¶À» ¶§ È£ÃâÇÒ ÇÔ¼ö
+    /// 2. ìµœì¢… 'ì‹œì‘' ë²„íŠ¼ì„ ëˆŒë €ì„ ë•Œ í˜¸ì¶œí•  í•¨ìˆ˜
     /// </summary>
     public void OnStartButtonClicked()
     {
-        // ¾ÈÀüÀåÄ¡: ½ºÅ×ÀÌÁö¸¦ ¼±ÅÃÇÏÁö ¾Ê°í ½ÃÀÛÀ» ´©¸¥ °æ¿ì
+        // ì•ˆì „ì¥ì¹˜: ìŠ¤í…Œì´ì§€ë¥¼ ì„ íƒí•˜ì§€ ì•Šê³  ì‹œì‘ì„ ëˆ„ë¥¸ ê²½ìš°
         if (selectedStageID == -1)
         {
-            Debug.LogWarning("[StageSelectManager] ¸ÕÀú ½ºÅ×ÀÌÁö¸¦ ¼±ÅÃÇØ¾ß ÇÕ´Ï´Ù!");
+            Debug.LogWarning("[StageSelectManager] ë¨¼ì € ìŠ¤í…Œì´ì§€ë¥¼ ì„ íƒí•´ì•¼ í•©ë‹ˆë‹¤!");
             return;
         }
 
-        // ÆÄ±«µÇÁö ¾Ê´Â StageManager¿¡°Ô ¼±ÅÃµÈ ID ÁÖÀÔ
+        // íŒŒê´´ë˜ì§€ ì•ŠëŠ” StageManagerì—ê²Œ ì„ íƒëœ ID ì£¼ì…
         if (StageManager.Instance != null)
         {
             if (SoundManager.Instance != null)
@@ -102,18 +116,18 @@ public class StageSelectManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("[StageSelectManager] StageManager ÀÎ½ºÅÏ½º¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+            Debug.LogError("[StageSelectManager] StageManager ì¸ìŠ¤í„´ìŠ¤ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
-        Debug.Log($"<color=cyan>[StageSelect]</color> °ÔÀÓ ½ÃÀÛ! ½ºÅ×ÀÌÁö {selectedStageID - 500}·Î ÀÌµ¿ÇÕ´Ï´Ù.");
+        Debug.Log($"<color=cyan>[StageSelect]</color> ê²Œì„ ì‹œì‘! ìŠ¤í…Œì´ì§€ {selectedStageID - 500}ë¡œ ì´ë™í•©ë‹ˆë‹¤.");
 
-        // ·Îµù ¾À ¿ÀÇÂ
+        // ë¡œë”© ì”¬ ì˜¤í”ˆ
         LoadingSceneManager.LoadScene();
     }
 
     /// <summary>
-    /// 3. µÚ·Î°¡±â ¹öÆ°À» ´­·¶À» ¶§ ¸ŞÀÎ ¸Ş´º ¾ÀÀ¸·Î µ¹¾Æ°¡´Â ÇÔ¼ö
+    /// 3. ë’¤ë¡œê°€ê¸° ë²„íŠ¼ì„ ëˆŒë €ì„ ë•Œ ë©”ì¸ ë©”ë‰´ ì”¬ìœ¼ë¡œ ëŒì•„ê°€ëŠ” í•¨ìˆ˜
     /// </summary>
     public void OnBackButtonClicked()
     {
@@ -121,7 +135,17 @@ public class StageSelectManager : MonoBehaviour
         {
             SoundManager.Instance.PlaySFX("SFX_UI_Click");
         }
-        Debug.Log("<color=white>[StageSelect]</color> µÚ·Î°¡±â ¹öÆ° Å¬¸¯. ¸ŞÀÎ ¸Ş´º·Î µ¹¾Æ°©´Ï´Ù.");
+        Debug.Log("<color=white>[StageSelect]</color> ë’¤ë¡œê°€ê¸° ë²„íŠ¼ í´ë¦­. ë©”ì¸ ë©”ë‰´ë¡œ ëŒì•„ê°‘ë‹ˆë‹¤.");
         SceneManager.LoadScene("Scene_Main");
     }
+#if UNITY_EDITOR
+    public List<Button> GetStageButtons()
+    {
+        return stageButtons;
+    }
+    public List<GameObject> GetLockIcon()
+    {
+        return lockIcons;
+    }
+#endif
 }

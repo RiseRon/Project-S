@@ -6,7 +6,8 @@ public class EnemySpawnGroup
 {
     public int enemyID;           // 적 데이터 ID
     public int spawnCount;        // 소환 마릿수
-    public float spawnInterval;   // 소환 간격
+    public int spawnCycle;        // 소환 간격
+    public int pathIndex;         // 적 이동 경로
 }
 
 [CreateAssetMenu(fileName = "WaveData", menuName = "Wave/WaveData")]

@@ -83,14 +83,16 @@ public class WaveDataImporter
             if (!map.ContainsKey(waveID))
                 map[waveID] = new List<EnemySpawnGroup>();
 
-            float.TryParse(data[2], out float interval);
+            int.TryParse(data[2], out int interval);
             int.TryParse(data[3], out int enemyID);
+            int.TryParse(data[5], out int pathIndex);
 
             map[waveID].Add(new EnemySpawnGroup
             {
-                spawnInterval = interval,
+                spawnCycle = interval,
                 enemyID = enemyID,
-                spawnCount = count
+                spawnCount = count,
+                pathIndex = pathIndex
             });
         }
         return map;

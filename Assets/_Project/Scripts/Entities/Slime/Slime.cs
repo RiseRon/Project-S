@@ -43,7 +43,8 @@ public class Slime : MonoBehaviour
 
     protected virtual void Targeting()
     {
-        float maxDistance = -1f;
+        // 💡 [변경] 가장 작은 남은 거리를 찾기 위해 초기값을 최대값(float.MaxValue)으로 설정합니다.
+        float minRemainingDistance = float.MaxValue;
         targetEnemy = null;
 
         Enemy[] enemies = Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
@@ -52,13 +53,16 @@ public class Slime : MonoBehaviour
         {
             if (enemy.IsDead) continue;
 
+            // 슬라임 타워와 적 사이의 물리적 거리 계산
             float distanceToEnemy = Vector3.Distance(transform.position, enemy.transform.position);
 
+            // 사정거리 안의 적들만 판별
             if (distanceToEnemy <= slimeData.attackRange)
             {
-                if (enemy.TotalDistanceTraveled > maxDistance)
+                // 💡 [핵심 변경] 목적지(방벽)까지 남은 거리가 가장 짧은 적을 타겟으로 선택합니다.
+                if (enemy.RemainingDistance < minRemainingDistance)
                 {
-                    maxDistance = enemy.TotalDistanceTraveled;
+                    minRemainingDistance = enemy.RemainingDistance;
                     targetEnemy = enemy;
                 }
             }

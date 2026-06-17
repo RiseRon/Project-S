@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Unity.VisualScripting;
@@ -10,7 +10,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] protected SO_EnemyData enemyData;
 
     [Header("UI Feedback")]
-    [SerializeField] private int rewardPopupID = 912; // PoolManager¿¡ µî·ÏµÈ ÆË¾÷ ÇÁ¸®ÆÕÀÇ ID
+    [SerializeField] private int rewardPopupID = 912; // PoolManagerì— ë“±ë¡ëœ íŒì—… í”„ë¦¬íŒ¹ì˜ ID
 
     protected Transform[] waypoints;
     protected int currentWaypointIndex = 0;
@@ -19,28 +19,28 @@ public class Enemy : MonoBehaviour
     protected float lastAttackTime;
     protected float savedHpGrowthRate;
 
-    // »óÅÂ È®ÀÎ¿ë º¯¼ö
+    // ìƒíƒœ í™•ì¸ìš© ë³€ìˆ˜
     protected bool isDead = false;
     protected bool isAtEnd = false;
     public bool isSturn = false;
     protected GameObject targetBarrier;
 
-    // Å¸¿ö°¡ Å¸°ÙÀ» °áÁ¤ÇÒ ¶§ ÂüÁ¶ÇÒ Á¤º¸
-    public float TotalDistanceTraveled { get; protected set; } // ´©Àû ÀÌµ¿ °Å¸®
-    public bool IsDead => isDead; // »ç¸Á ¿©ºÎ È®ÀÎ¿ë ÇÁ·ÎÆÛÆ¼
-    public bool IsSturn => isSturn; // ½ºÅÏ ¿©ºÎ È®ÀÎ¿ë ÇÁ·ÎÆÛÆ¼
+    // íƒ€ì›Œê°€ íƒ€ê²Ÿì„ ê²°ì •í•  ë•Œ ì°¸ì¡°í•  ì •ë³´
+    public float RemainingDistance { get; protected set; } // ë§ˆì§€ë§‰ ì›¨ì´ í¬ì¸íŠ¸ê¹Œì§€ì˜ ë‚¨ì€ ê±°ë¦¬
+    public bool IsDead => isDead; // ì‚¬ë§ ì—¬ë¶€ í™•ì¸ìš© í”„ë¡œí¼í‹°
+    public bool IsSturn => isSturn; // ìŠ¤í„´ ì—¬ë¶€ í™•ì¸ìš© í”„ë¡œí¼í‹°
 
-    // ¿¹Ãø »ç°İÀ» À§ÇØ Åõ»çÃ¼°¡ ÂüÁ¶ÇÒ ÀûÀÇ ¼Óµµ¿Í ¹æÇâ
+    // ì˜ˆì¸¡ ì‚¬ê²©ì„ ìœ„í•´ íˆ¬ì‚¬ì²´ê°€ ì°¸ì¡°í•  ì ì˜ ì†ë„ì™€ ë°©í–¥
     public float CurrentSpeed => currentSpeed;
     public Vector3 MoveDirection => transform.forward;
 
-    // [Ãß°¡µÈ »óÅÂÀÌ»ó ÅëÁ¦ ¸ğµâ º¯¼ö]
+    // [ì¶”ê°€ëœ ìƒíƒœì´ìƒ í†µì œ ëª¨ë“ˆ ë³€ìˆ˜]
     private Dictionary<int, float> activeSlows = new Dictionary<int, float>();
     private float stunImmuneEndTime = 0f;
 
     private Animator animator;
 
-    // º¸½º ¿©ºÎ È®ÀÎ(SO_EnemyDataÀÇ ÀÌ¸§À» ±âÁØÀ¸·Î ÆÇº°)
+    // ë³´ìŠ¤ ì—¬ë¶€ í™•ì¸(SO_EnemyDataì˜ ì´ë¦„ì„ ê¸°ì¤€ìœ¼ë¡œ íŒë³„)
     public bool IsBoss => enemyData.enemyName == "MidBoss" || enemyData.enemyName == "FinalBoss";
 
     protected virtual void Awake()
@@ -53,20 +53,12 @@ public class Enemy : MonoBehaviour
 
     protected virtual void Start()
     {
-        // WaypointManager¿¡¼­ °æ·Î ÀÚµ¿ ÇÒ´ç
-        if (WaypointManager.Waypoints != null && WaypointManager.Waypoints.Length > 0)
+        if (waypoints == null || waypoints.Length == 0)
         {
-            Setup(WaypointManager.Waypoints, 0, null);
+            // ì•„ë¬´ê²ƒë„ ì§€ì • ì•ˆ ë˜ì–´ ìˆìœ¼ë©´ ê¸°ë³¸ì ìœ¼ë¡œ 0ë²ˆ ê¸¸(ways1)ì´ë¼ë„ í• ë‹¹
+            Transform[] defaultPath = WaypointManager.GetPath(0);
+            if (defaultPath != null) Setup(defaultPath, 0, null);
         }
-        else
-        {
-            Debug.LogError("WaypointManager¿¡ ±æÀÌ ¼³Á¤µÇÁö ¾Ê¾Ò½À´Ï´Ù!");
-        }
-    }
-
-    public void SetTotalDistance(float distance)
-    {
-        TotalDistanceTraveled = distance;
     }
     public void SetWaypointIndex(int index)
     {
@@ -79,14 +71,14 @@ public class Enemy : MonoBehaviour
 
         if (enemyData == null)
         {
-            Debug.LogError("EnemyData°¡ ÇÒ´çµÇÁö ¾Ê¾Ò½À´Ï´Ù!");
+            Debug.LogError("EnemyDataê°€ í• ë‹¹ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤!");
             return;
         }
         waypoints = path;
         savedHpGrowthRate = hpGrowthRate;
 
-        // ±âº» Ã¼·Â + (±âº» Ã¼·Â * »ó½Â·ü / 100)
-        // ¿¹: ±âº»Ã¼·Â 30, »ó½Â·ü 10% -> 30 + (30 * 0.1) = 33
+        // ê¸°ë³¸ ì²´ë ¥ + (ê¸°ë³¸ ì²´ë ¥ * ìƒìŠ¹ë¥  / 100)
+        // ì˜ˆ: ê¸°ë³¸ì²´ë ¥ 30, ìƒìŠ¹ë¥  10% -> 30 + (30 * 0.1) = 33
         float bonusHealth = enemyData.enemyHP * (hpGrowthRate / 100f);
         currentHealth = enemyData.enemyHP + bonusHealth;
 
@@ -94,14 +86,13 @@ public class Enemy : MonoBehaviour
 
         isDead = false;
         isAtEnd = false;
-        TotalDistanceTraveled = 0f;
         targetBarrier = null;
         if(animator != null)
         {
             animator.SetBool("IsAtEnd", isAtEnd);
         }
 
-        //Debug.Log($"{gameObject.name} »ı¼º - ÃÖÁ¾ Ã¼·Â: {currentHealth} (Áõ°¡·®: {hpGrowthRate}%)");
+        UpdateRemainingDistance();
     }
 
     protected virtual void Update()
@@ -111,6 +102,8 @@ public class Enemy : MonoBehaviour
         if (!isAtEnd)
         {
             Move();
+            // ğŸ’¡ë§¤ í”„ë ˆì„ ì´ë™í•  ë•Œë§ˆë‹¤ ìµœì¢… ëª©ì ì§€ê¹Œì§€ì˜ ê±°ë¦¬ë¥¼ ì—…ë°ì´íŠ¸í•©ë‹ˆë‹¤.
+            UpdateRemainingDistance();
         }
         else
         {
@@ -120,6 +113,25 @@ public class Enemy : MonoBehaviour
             }
         }
     }
+    private void UpdateRemainingDistance()
+    {
+        if (waypoints == null || waypoints.Length == 0 || isAtEnd)
+        {
+            RemainingDistance = 0f;
+            return;
+        }
+
+        // 1. í˜„ì¬ ë‚´ê°€ ìœ„ì¹˜í•œ ê³³ì—ì„œ ë‹¤ìŒ íƒ€ê²Ÿ ì›¨ì´í¬ì¸íŠ¸ê¹Œì§€ì˜ ì‹¤ì‹œê°„ ê±°ë¦¬
+        float distance = Vector3.Distance(transform.position, waypoints[currentWaypointIndex].position);
+
+        // 2. ê·¸ ë‹¤ìŒ ì›¨ì´í¬ì¸íŠ¸ë“¤ë¼ë¦¬ì˜ ì¼ì§ì„  ë¬¼ë¦¬ì  ê±°ë¦¬ë¥¼ ì „ë¶€ ê³„ì‚°í•´ì„œ ëˆ„ì í•©ì‚°
+        for (int i = currentWaypointIndex; i < waypoints.Length - 1; i++)
+        {
+            distance += Vector3.Distance(waypoints[i].position, waypoints[i + 1].position);
+        }
+
+        RemainingDistance = distance;
+    }
 
     protected virtual void Move()
     {
@@ -127,21 +139,17 @@ public class Enemy : MonoBehaviour
 
         Transform target = waypoints[currentWaypointIndex];
 
-        // [ÇÙ½É] ÀÌµ¿ Àü À§Ä¡ ÀúÀå
+        // [í•µì‹¬] ì´ë™ ì „ ìœ„ì¹˜ ì €ì¥
         Vector3 previousPosition = transform.position;
 
-        // ÀÌµ¿ Ã³¸® (½½·Î¿ì µîÀÌ °É·Á ¼Óµµ°¡ º¯ÇÏ¸é ÀÌµ¿·®µµ ÀÚµ¿À¸·Î º¯ÇÔ)
+        // ì´ë™ ì²˜ë¦¬ (ìŠ¬ë¡œìš° ë“±ì´ ê±¸ë ¤ ì†ë„ê°€ ë³€í•˜ë©´ ì´ë™ëŸ‰ë„ ìë™ìœ¼ë¡œ ë³€í•¨)
         transform.position = Vector3.MoveTowards(
             transform.position,
             target.position,
             currentSpeed * Time.deltaTime
         );
 
-        // [Ãß°¡] ½ÇÁ¦·Î ÀÌµ¿ÇÑ ¹°¸®Àû °Å¸®¸¦ ´©Àû °Å¸®¿¡ ´õÇÔ
-        // ½ºÅÏ ½Ã¿¡´Â transform º¯È­°¡ ¾øÀ¸¹Ç·Î Áõ°¡ÇÏÁö ¾ÊÀ½
-        TotalDistanceTraveled += Vector3.Distance(previousPosition, transform.position);
-
-        // È¸Àü ·ÎÁ÷
+        // íšŒì „ ë¡œì§
         Vector3 direction = (target.position - transform.position).normalized;
         if (direction != Vector3.zero)
         {
@@ -150,7 +158,7 @@ public class Enemy : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, enemyData.rotationSpeed * Time.deltaTime);
         }
 
-        // µµÂø Ã¼Å© (¼º´ÉÀ» À§ÇØ Distance ´ë½Å sqrMagnitude¸¦ ¾²´Â °æ¿ìµµ ÀÖÀ¸³ª °¡µ¶¼ºÀ» À§ÇØ À¯Áö)
+        // ë„ì°© ì²´í¬ (ì„±ëŠ¥ì„ ìœ„í•´ Distance ëŒ€ì‹  sqrMagnitudeë¥¼ ì“°ëŠ” ê²½ìš°ë„ ìˆìœ¼ë‚˜ ê°€ë…ì„±ì„ ìœ„í•´ ìœ ì§€)
         if (Vector3.Distance(transform.position, target.position) < 0.1f)
         {
             currentWaypointIndex++;
@@ -164,21 +172,21 @@ public class Enemy : MonoBehaviour
 
     protected virtual bool CanAttack()
     {
-        // 1. °ø°İ ÄğÅ¸ÀÓ È®ÀÎ
+        // 1. ê³µê²© ì¿¨íƒ€ì„ í™•ì¸
         bool canTimeAttack = Time.time >= lastAttackTime + enemyData.attackSpeed;
 
-        // 2. ¹æº® »ıÁ¸ È®ÀÎ (BarrierÀÇ IsDestroyed ÇÁ·ÎÆÛÆ¼ ÂüÁ¶)
-        // Barrier Å¬·¡½º¿¡ public bool IsDestroyed { get; private set; }°¡ ÀÖ¾î¾ß ÇÕ´Ï´Ù.
+        // 2. ë°©ë²½ ìƒì¡´ í™•ì¸ (Barrierì˜ IsDestroyed í”„ë¡œí¼í‹° ì°¸ì¡°)
+        // Barrier í´ë˜ìŠ¤ì— public bool IsDestroyed { get; private set; }ê°€ ìˆì–´ì•¼ í•©ë‹ˆë‹¤.
         bool isBarrierAlive = Barrier.Instance != null && !Barrier.Instance.IsDestroyed;
 
-        // µµÂøÇÔ + ÄğÅ¸ÀÓ Âü + Å¸°Ù Á¸ÀçÇÔ + ¹æº®ÀÌ ¾ÆÁ÷ ÆÄ±« ¾ÈµÊ
+        // ë„ì°©í•¨ + ì¿¨íƒ€ì„ ì°¸ + íƒ€ê²Ÿ ì¡´ì¬í•¨ + ë°©ë²½ì´ ì•„ì§ íŒŒê´´ ì•ˆë¨
         return isAtEnd && canTimeAttack && targetBarrier != null && isBarrierAlive;
     }
 
     public virtual void Attack()
     {
         lastAttackTime = Time.time;
-        // GetComponentµµ ¸Å¹ø ÇÏ¸é ´À¸®¹Ç·Î, Barrier ÄÄÆ÷³ÍÆ®¸¦ Á÷Á¢ ÂüÁ¶ÇÏ´Â °Ô ´õ ÁÁ½À´Ï´Ù.
+        // GetComponentë„ ë§¤ë²ˆ í•˜ë©´ ëŠë¦¬ë¯€ë¡œ, Barrier ì»´í¬ë„ŒíŠ¸ë¥¼ ì§ì ‘ ì°¸ì¡°í•˜ëŠ” ê²Œ ë” ì¢‹ìŠµë‹ˆë‹¤.
         if (Barrier.Instance != null)
         {
             // EffectPoolManager.Instance.SpawnEffect("P_Enemy_Attack", Barrier.Instance.transform.position, Barrier.Instance.transform.rotation);
@@ -188,27 +196,28 @@ public class Enemy : MonoBehaviour
             }
             SoundManager.Instance.PlaySFX("SFX_Enemy_Attack");
             Barrier.Instance.TakeDamage(enemyData.damage);
-            Debug.Log($"{enemyData.name}ÀÌ(°¡) ¹æº®À» °ø°İ!");
+            Debug.Log($"{enemyData.name}ì´(ê°€) ë°©ë²½ì„ ê³µê²©!");
         }
     }
 
     protected virtual void ReachEnd()
     {
         isAtEnd = true;
+        RemainingDistance = 0f;
         if (animator != null)
         {
             animator.SetBool("IsAtEnd", isAtEnd);
         }
 
-        // [¼öÁ¤] ¾À ÀüÃ¼¸¦ µÚÁö´Â ´ë½Å, ¹Ì¸® µî·ÏµÈ Instance¸¦ ¹Ù·Î °¡Á®¿È (¼º´É ¼Ò¸ğ 0)
+        // [ìˆ˜ì •] ì”¬ ì „ì²´ë¥¼ ë’¤ì§€ëŠ” ëŒ€ì‹ , ë¯¸ë¦¬ ë“±ë¡ëœ Instanceë¥¼ ë°”ë¡œ ê°€ì ¸ì˜´ (ì„±ëŠ¥ ì†Œëª¨ 0)
         if (Barrier.Instance != null)
         {
             targetBarrier = Barrier.Instance.gameObject;
-            Debug.Log($"{enemyData.name}ÀÌ ¹æº®¿¡ µµ´ŞÇß½À´Ï´Ù.");
+            Debug.Log($"{enemyData.name}ì´ ë°©ë²½ì— ë„ë‹¬í–ˆìŠµë‹ˆë‹¤.");
         }
         else
         {
-            Debug.LogError("¾À¿¡ Barrier°¡ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù!");
+            Debug.LogError("ì”¬ì— Barrierê°€ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤!");
         }
     }
 
@@ -229,33 +238,33 @@ public class Enemy : MonoBehaviour
 
     public virtual void Heal(float healAmount)
     {
-        // 1. ÀÌ¹Ì Á×¾îÀÖ´Â ÀûÀÌ¶ó¸é Ä¡À¯ Á¤»ê ¿¹¿Ü ÆĞ½º
+        // 1. ì´ë¯¸ ì£½ì–´ìˆëŠ” ì ì´ë¼ë©´ ì¹˜ìœ  ì •ì‚° ì˜ˆì™¸ íŒ¨ìŠ¤
         if (isDead) return;
 
-        // 2. ÇöÀç ÀûÀÇ ¿şÀÌºê ¹èÀ²ÀÌ Àû¿ëµÈ 'ÁøÂ¥ ÃÖ´ë Ã¼·Â' ½Ç½Ã°£ °è»ê
-        // (Setup ÇÔ¼ö¿¡¼­ Á¤ÀÇµÈ ¹æ½ÄÀÎ [±âº» Ã¼·Â + »ó½Â ¹èÀ² ºĞÀ²] °ø½ÄÀ» ±×´ë·Î º¹»ç)
+        // 2. í˜„ì¬ ì ì˜ ì›¨ì´ë¸Œ ë°°ìœ¨ì´ ì ìš©ëœ 'ì§„ì§œ ìµœëŒ€ ì²´ë ¥' ì‹¤ì‹œê°„ ê³„ì‚°
+        // (Setup í•¨ìˆ˜ì—ì„œ ì •ì˜ëœ ë°©ì‹ì¸ [ê¸°ë³¸ ì²´ë ¥ + ìƒìŠ¹ ë°°ìœ¨ ë¶„ìœ¨] ê³µì‹ì„ ê·¸ëŒ€ë¡œ ë³µì‚¬)
         float bonusHealth = enemyData.enemyHP * (savedHpGrowthRate / 100f);
         float maxHealth = enemyData.enemyHP + bonusHealth;
 
-        // 3. Ã¼·Â °¡»ê ¹× ÃÖ´ë Ã¼·Â Å¬·¥ÇÎ(¿À¹öÈú ¹æÁö)
+        // 3. ì²´ë ¥ ê°€ì‚° ë° ìµœëŒ€ ì²´ë ¥ í´ë¨í•‘(ì˜¤ë²„í ë°©ì§€)
         currentHealth += healAmount;
         if (currentHealth > maxHealth)
         {
             currentHealth = maxHealth;
         }
 
-        // 4. ÇÇ°İ ÀÌÆåÆ®¿Í ±¸º°µÇ´Â Ä¡À¯ ¼º°ø ÀÌÆåÆ® ÆË¾÷ ¿¬µ¿
-        // (¸¸¾à ÃÊ·Ï»ö Èú ÀÌÆåÆ®°¡ µû·Î ÀÖ´Ù¸é "P_Enemy_Heal" µîÀ¸·Î ÀÌ¸§À» ±³Ã¼ÇÏ¼¼¿ä)
+        // 4. í”¼ê²© ì´í™íŠ¸ì™€ êµ¬ë³„ë˜ëŠ” ì¹˜ìœ  ì„±ê³µ ì´í™íŠ¸ íŒì—… ì—°ë™
+        // (ë§Œì•½ ì´ˆë¡ìƒ‰ í ì´í™íŠ¸ê°€ ë”°ë¡œ ìˆë‹¤ë©´ "P_Enemy_Heal" ë“±ìœ¼ë¡œ ì´ë¦„ì„ êµì²´í•˜ì„¸ìš”)
         if (EffectPoolManager.Instance != null)
         {
             EffectPoolManager.Instance.SpawnEffect("P_Enemy_Heal", gameObject.transform.position, Quaternion.identity);
         }
-        Debug.Log($"[{enemyData.enemyName}] Ä¡À¯ ¹ß»ı! ÇöÀç Ã¼·Â: {currentHealth} / {maxHealth}");
+        Debug.Log($"[{enemyData.enemyName}] ì¹˜ìœ  ë°œìƒ! í˜„ì¬ ì²´ë ¥: {currentHealth} / {maxHealth}");
     }
 
     protected virtual void Die()
     {
-        if (isDead) return; // ÀÌ¹Ì Á×Àº »óÅÂ¶ó¸é Áßº¹ ½ÇÇà ¹æÁö
+        if (isDead) return; // ì´ë¯¸ ì£½ì€ ìƒíƒœë¼ë©´ ì¤‘ë³µ ì‹¤í–‰ ë°©ì§€
         isDead = true;
 
         GameManager.AddKilledEnemyCount();
@@ -267,15 +276,15 @@ public class Enemy : MonoBehaviour
             WaveManager.Instance.OnEnemyDefeated();
         }
 
-        // [È¸¼ö ·ÎÁ÷] Destroy ´ë½Å PoolManager¿¡ ¹İ³³
-        // enemyData.enemyID´Â ÀÎ½ºÆåÅÍ³ª µ¥ÀÌÅÍ Å×ÀÌºí¿¡¼­ ¼³Á¤µÈ int °ªÀÔ´Ï´Ù.
+        // [íšŒìˆ˜ ë¡œì§] Destroy ëŒ€ì‹  PoolManagerì— ë°˜ë‚©
+        // enemyData.enemyIDëŠ” ì¸ìŠ¤í™í„°ë‚˜ ë°ì´í„° í…Œì´ë¸”ì—ì„œ ì„¤ì •ëœ int ê°’ì…ë‹ˆë‹¤.
         if (PoolManager.Instance != null)
         {
             PoolManager.Instance.ReturnToPool(enemyData.id, gameObject);
         }
         else
         {
-            // ¸¸¾à ¸Å´ÏÀú°¡ ¾ø´Ù¸é (Å×½ºÆ®¿ë) »èÁ¦
+            // ë§Œì•½ ë§¤ë‹ˆì €ê°€ ì—†ë‹¤ë©´ (í…ŒìŠ¤íŠ¸ìš©) ì‚­ì œ
             Destroy(gameObject);
         }
     }
@@ -287,42 +296,42 @@ public class Enemy : MonoBehaviour
 
         if (enemyData.amount > 0)
         {
-            // 1. ÀçÈ­ µ¥ÀÌÅÍ Ãß°¡
+            // 1. ì¬í™” ë°ì´í„° ì¶”ê°€
             CurrencyManager.Instance.AddCurrency(rewardType, enemyData.amount);
 
-            // 2. UI ÆË¾÷ »ı¼º ÇÔ¼ö È£Ãâ
+            // 2. UI íŒì—… ìƒì„± í•¨ìˆ˜ í˜¸ì¶œ
             ShowRewardUI(rewardType, enemyData.amount);
         }
     }
 
     private void ShowRewardUI(CurrencyType type, int amount)
     {
-        // 1. Ä«¸Ş¶ó Ã¼Å©
+        // 1. ì¹´ë©”ë¼ ì²´í¬
         if (Camera.main == null)
         {
-            Debug.LogError("¾À¿¡ MainCamera ÅÂ±×°¡ ºÙÀº Ä«¸Ş¶ó°¡ ¾ø½À´Ï´Ù!");
+            Debug.LogError("ì”¬ì— MainCamera íƒœê·¸ê°€ ë¶™ì€ ì¹´ë©”ë¼ê°€ ì—†ìŠµë‹ˆë‹¤!");
             return;
         }
 
         if (PoolManager.Instance == null) return;
 
-        // 2. ¿ùµå ÁÂÇ¥¸¦ È­¸é ÁÂÇ¥·Î º¯È¯
+        // 2. ì›”ë“œ ì¢Œí‘œë¥¼ í™”ë©´ ì¢Œí‘œë¡œ ë³€í™˜
         Vector3 worldPos = transform.position + Vector3.up * 2f;
         Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPos);
 
-        if (screenPos.z < 0) return; // Ä«¸Ş¶ó µÚÂÊÀÌ¸é ¹«½Ã
+        if (screenPos.z < 0) return; // ì¹´ë©”ë¼ ë’¤ìª½ì´ë©´ ë¬´ì‹œ
 
-        // 3. Ç®¿¡¼­ °´Ã¼ °¡Á®¿À±â
+        // 3. í’€ì—ì„œ ê°ì²´ ê°€ì ¸ì˜¤ê¸°
         GameObject popupObj = PoolManager.Instance.SpawnFromPool(rewardPopupID, transform.position, Quaternion.identity);
 
         if (popupObj == null)
         {
-            Debug.LogWarning($"PoolManager¿¡¼­ ID {rewardPopupID}¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+            Debug.LogWarning($"PoolManagerì—ì„œ ID {rewardPopupID}ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
-        // 4. Äµ¹ö½º Ã£±â (°¡Àå ÈçÇÑ ¿¡·¯ ÁöÁ¡)
-        // "Canvas"¶ó´Â ÀÌ¸§ ´ë½Å ÅÂ±×³ª Å¸ÀÔÀ» ¾²´Â °ÍÀÌ ´õ ¾ÈÀüÇÕ´Ï´Ù.
+        // 4. ìº”ë²„ìŠ¤ ì°¾ê¸° (ê°€ì¥ í”í•œ ì—ëŸ¬ ì§€ì )
+        // "Canvas"ë¼ëŠ” ì´ë¦„ ëŒ€ì‹  íƒœê·¸ë‚˜ íƒ€ì…ì„ ì“°ëŠ” ê²ƒì´ ë” ì•ˆì „í•©ë‹ˆë‹¤.
         Canvas mainCanvas = FindFirstObjectByType<Canvas>();
 
         if (mainCanvas != null)
@@ -331,11 +340,11 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            Debug.LogError("¾À¿¡ Canvas°¡ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù!");
+            Debug.LogError("ì”¬ì— Canvasê°€ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤!");
             return;
         }
 
-        // 5. ÄÄÆ÷³ÍÆ® È£Ãâ
+        // 5. ì»´í¬ë„ŒíŠ¸ í˜¸ì¶œ
         RewardPopup popup = popupObj.GetComponent<RewardPopup>();
         if (popup != null)
         {
@@ -343,15 +352,15 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            Debug.LogError("ÆË¾÷ ÇÁ¸®ÆÕ¿¡ RewardPopup ½ºÅ©¸³Æ®°¡ ºÙ¾îÀÖÁö ¾Ê½À´Ï´Ù!");
+            Debug.LogError("íŒì—… í”„ë¦¬íŒ¹ì— RewardPopup ìŠ¤í¬ë¦½íŠ¸ê°€ ë¶™ì–´ìˆì§€ ì•ŠìŠµë‹ˆë‹¤!");
         }
     }
 
     // =========================================================
-    // [»óÅÂÀÌ»ó: ½½·Î¿ì ½Ã½ºÅÛ (±âÁ¸ ApplySlow, ResetSlow ´ëÃ¼)]
+    // [ìƒíƒœì´ìƒ: ìŠ¬ë¡œìš° ì‹œìŠ¤í…œ (ê¸°ì¡´ ApplySlow, ResetSlow ëŒ€ì²´)]
     // =========================================================
 
-    /// <summary> ÀåÆÇÀÌ³ª Åõ»çÃ¼°¡ ½½·Î¿ì¸¦ '¿äÃ»'ÇÒ ¶§ È£Ãâ </summary>
+    /// <summary> ì¥íŒì´ë‚˜ íˆ¬ì‚¬ì²´ê°€ ìŠ¬ë¡œìš°ë¥¼ 'ìš”ì²­'í•  ë•Œ í˜¸ì¶œ </summary>
     public void AddSlow(int sourceID, float slowRate)
     {
         if (!activeSlows.ContainsKey(sourceID))
@@ -361,7 +370,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    /// <summary> ÀåÆÇ¿¡¼­ ¹ş¾î³µÀ» ¶§ ½½·Î¿ì 'Á¦°Å' ¿äÃ» </summary>
+    /// <summary> ì¥íŒì—ì„œ ë²—ì–´ë‚¬ì„ ë•Œ ìŠ¬ë¡œìš° 'ì œê±°' ìš”ì²­ </summary>
     public void RemoveSlow(int sourceID)
     {
         if (activeSlows.ContainsKey(sourceID))
@@ -371,7 +380,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    /// <summary> È°¼ºÈ­µÈ ½½·Î¿ì Áß °¡Àå ¼öÄ¡°¡ ³ôÀº 1°³¸¸ Àû¿ë (Áßº¹ ¹æÁö) </summary>
+    /// <summary> í™œì„±í™”ëœ ìŠ¬ë¡œìš° ì¤‘ ê°€ì¥ ìˆ˜ì¹˜ê°€ ë†’ì€ 1ê°œë§Œ ì ìš© (ì¤‘ë³µ ë°©ì§€) </summary>
     private void RecalculateSpeed()
     {
         if (isSturn)
@@ -390,15 +399,15 @@ public class Enemy : MonoBehaviour
     }
 
     // =========================================================
-    // [»óÅÂÀÌ»ó: ½ºÅÏ ½Ã½ºÅÛ]
+    // [ìƒíƒœì´ìƒ: ìŠ¤í„´ ì‹œìŠ¤í…œ]
     // =========================================================
 
-    /// <summary> Åõ»çÃ¼°¡ ½ºÅÏÀ» '¿äÃ»'ÇÒ ¶§ È£Ãâ </summary>
+    /// <summary> íˆ¬ì‚¬ì²´ê°€ ìŠ¤í„´ì„ 'ìš”ì²­'í•  ë•Œ í˜¸ì¶œ </summary>
     public void RequestStun(float stunDuration)
     {
-        if (IsBoss) return; // º¸½º´Â ½ºÅÏ ¸é¿ª
-        if (isSturn) return; // ÀÌ¹Ì ½ºÅÏ ÁßÀÌ¸é ¹«½Ã
-        if (Time.time < stunImmuneEndTime) return; // ¸é¿ª ½Ã°£ ÁßÀÌ¸é ¹«½Ã
+        if (IsBoss) return; // ë³´ìŠ¤ëŠ” ìŠ¤í„´ ë©´ì—­
+        if (isSturn) return; // ì´ë¯¸ ìŠ¤í„´ ì¤‘ì´ë©´ ë¬´ì‹œ
+        if (Time.time < stunImmuneEndTime) return; // ë©´ì—­ ì‹œê°„ ì¤‘ì´ë©´ ë¬´ì‹œ
         if (isDead || !gameObject.activeInHierarchy)
         {
             return;
@@ -410,44 +419,44 @@ public class Enemy : MonoBehaviour
     private IEnumerator StunRoutine(float duration)
     {
         isSturn = true;
-        RecalculateSpeed(); // ½ºÅÏ ½Ã ¼Óµµ¸¦ 0À¸·Î °»½Å
+        RecalculateSpeed(); // ìŠ¤í„´ ì‹œ ì†ë„ë¥¼ 0ìœ¼ë¡œ ê°±ì‹ 
 
         yield return new WaitForSeconds(duration);
 
         isSturn = false;
-        // ½ºÅÏÀÌ Ç®¸®¸é µ¥ÀÌÅÍÀÇ ¹«Àû½Ã°£(StunGrace)¸¸Å­ ÄğÅ¸ÀÓ °¡µ¿
+        // ìŠ¤í„´ì´ í’€ë¦¬ë©´ ë°ì´í„°ì˜ ë¬´ì ì‹œê°„(StunGrace)ë§Œí¼ ì¿¨íƒ€ì„ ê°€ë™
         stunImmuneEndTime = Time.time + enemyData.StunGrace;
 
         animator.speed = 1f;
-        RecalculateSpeed(); // ¿ø·¡ ¼Óµµ(È¤Àº ½½·Î¿ì °É¸° »óÅÂ)·Î º¹±¸
+        RecalculateSpeed(); // ì›ë˜ ì†ë„(í˜¹ì€ ìŠ¬ë¡œìš° ê±¸ë¦° ìƒíƒœ)ë¡œ ë³µêµ¬
     }
 
     // =========================================================
-    // [°æ·Î ±â¹İ ¿¹Ãø »ç°İ ½Ã½ºÅÛ]
+    // [ê²½ë¡œ ê¸°ë°˜ ì˜ˆì¸¡ ì‚¬ê²© ì‹œìŠ¤í…œ]
     // =========================================================
 
     /// <summary> 
-    /// Åõ»çÃ¼°¡ ÁöÁ¤µÈ ½Ã°£(ÃÊ) µÚ¿¡ ÀÌ ÀûÀÌ ¿şÀÌÆ÷ÀÎÆ®¸¦ µû¶ó ¾îµğ¿¡ ÀÖÀ»Áö ¹°¾îº¼ ¶§ À§Ä¡¸¦ ¹İÈ¯ÇÕ´Ï´Ù.
+    /// íˆ¬ì‚¬ì²´ê°€ ì§€ì •ëœ ì‹œê°„(ì´ˆ) ë’¤ì— ì´ ì ì´ ì›¨ì´í¬ì¸íŠ¸ë¥¼ ë”°ë¼ ì–´ë””ì— ìˆì„ì§€ ë¬¼ì–´ë³¼ ë•Œ ìœ„ì¹˜ë¥¼ ë°˜í™˜í•©ë‹ˆë‹¤.
     /// </summary>
     public Vector3 GetPredictedPosition(float timeInFuture)
     {
-        // 1. ÇØ´ç ½Ã°£ µ¿¾È ÀÌµ¿ÇÒ ÃÑ ¿¹»ó °Å¸®
+        // 1. í•´ë‹¹ ì‹œê°„ ë™ì•ˆ ì´ë™í•  ì´ ì˜ˆìƒ ê±°ë¦¬
         float distanceToTravel = currentSpeed * timeInFuture;
 
-        // 2. ÀÌ¹Ì Á×¾ú°Å³ª, ½ºÅÏ »óÅÂ¶ó¼­ ÀÌµ¿ °Å¸®°¡ ¾øÀ¸¸é ÇöÀç À§Ä¡ ¹İÈ¯
+        // 2. ì´ë¯¸ ì£½ì—ˆê±°ë‚˜, ìŠ¤í„´ ìƒíƒœë¼ì„œ ì´ë™ ê±°ë¦¬ê°€ ì—†ìœ¼ë©´ í˜„ì¬ ìœ„ì¹˜ ë°˜í™˜
         if (distanceToTravel <= 0f || isDead || isSturn)
             return transform.position;
 
         Vector3 currentPos = transform.position;
         int tempWpIndex = currentWaypointIndex;
 
-        // 3. ¿şÀÌÆ÷ÀÎÆ®¸¦ µû¶ó°¡¸ç °¡»óÀ¸·Î ÀÌµ¿ ½Ã¹Ä·¹ÀÌ¼Ç
+        // 3. ì›¨ì´í¬ì¸íŠ¸ë¥¼ ë”°ë¼ê°€ë©° ê°€ìƒìœ¼ë¡œ ì´ë™ ì‹œë®¬ë ˆì´ì…˜
         while (tempWpIndex < waypoints.Length)
         {
             Vector3 targetWpPos = waypoints[tempWpIndex].position;
             float distToTarget = Vector3.Distance(currentPos, targetWpPos);
 
-            // ³²Àº ÀÌµ¿ °Å¸®°¡ ´ÙÀ½ ¿şÀÌÆ÷ÀÎÆ®±îÁöÀÇ °Å¸®º¸´Ù Âª´Ù¸é (ÀÌ ±¸°£ ¾È¿¡¼­ ¸ØÃã)
+            // ë‚¨ì€ ì´ë™ ê±°ë¦¬ê°€ ë‹¤ìŒ ì›¨ì´í¬ì¸íŠ¸ê¹Œì§€ì˜ ê±°ë¦¬ë³´ë‹¤ ì§§ë‹¤ë©´ (ì´ êµ¬ê°„ ì•ˆì—ì„œ ë©ˆì¶¤)
             if (distanceToTravel <= distToTarget)
             {
                 Vector3 dir = (targetWpPos - currentPos).normalized;
@@ -455,14 +464,14 @@ public class Enemy : MonoBehaviour
             }
             else
             {
-                // ´ÙÀ½ ¿şÀÌÆ÷ÀÎÆ®¸¦ Áö³ªÃÄ¹ö¸² -> °Å¸®¸¦ ±ğ°í ´ÙÀ½ ¿şÀÌÆ÷ÀÎÆ®·Î °¡»ó ÀÌµ¿
+                // ë‹¤ìŒ ì›¨ì´í¬ì¸íŠ¸ë¥¼ ì§€ë‚˜ì³ë²„ë¦¼ -> ê±°ë¦¬ë¥¼ ê¹ê³  ë‹¤ìŒ ì›¨ì´í¬ì¸íŠ¸ë¡œ ê°€ìƒ ì´ë™
                 distanceToTravel -= distToTarget;
                 currentPos = targetWpPos;
                 tempWpIndex++;
             }
         }
 
-        // °æ·ÎÀÇ ³¡¿¡ µµ´ŞÇß´Ù¸é ¸¶Áö¸· À§Ä¡ ¹İÈ¯
+        // ê²½ë¡œì˜ ëì— ë„ë‹¬í–ˆë‹¤ë©´ ë§ˆì§€ë§‰ ìœ„ì¹˜ ë°˜í™˜
         return currentPos;
     }
 }

@@ -1,24 +1,24 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    // ¾îµğ¼­µç Á¢±Ù °¡´ÉÇÑ ½Ì±ÛÅæ ÀÎ½ºÅÏ½º
+    // ì–´ë””ì„œë“  ì ‘ê·¼ ê°€ëŠ¥í•œ ì‹±ê¸€í†¤ ì¸ìŠ¤í„´ìŠ¤
     public static SpawnManager Instance { get; private set; }
 
-    [Header("·ÎµåµÈ µ¥ÀÌÅÍ")]
+    [Header("ë¡œë“œëœ ë°ì´í„°")]
     public List<SO_EnemyData> enemyDataList = new List<SO_EnemyData>();
 
     private void Awake()
     {
-        // ½Ì±ÛÅæ ÃÊ±âÈ­ ·ÎÁ÷
+        // ì‹±ê¸€í†¤ ì´ˆê¸°í™” ë¡œì§
         if (Instance == null)
         {
             Instance = this;
         }
         else
         {
-            // Áßº¹µÈ ¸Å´ÏÀú ÆÄ±«
+            // ì¤‘ë³µëœ ë§¤ë‹ˆì € íŒŒê´´
             Destroy(gameObject);
         }
         LoadAllResources();
@@ -26,68 +26,69 @@ public class SpawnManager : MonoBehaviour
     private void LoadAllResources()
     {
         enemyDataList.Clear();
-        // Resources/SlimeSummonData Æú´õ¿¡¼­ ·Îµå
+        // Resources/SlimeSummonData í´ë”ì—ì„œ ë¡œë“œ
         var enemys = Resources.LoadAll<SO_EnemyData>("EnemyData");
         enemyDataList.AddRange(enemys);
     }
 
     /// <summary>
-    /// WaveManager·ÎºÎÅÍ È£Ãâ¹Ş¾Æ ½ÇÁ¦ ÀûÀ» »ı¼ºÇÏ°í ÃÊ±âÈ­ÇÏ´Â ÇÔ¼ö
+    /// WaveManagerë¡œë¶€í„° í˜¸ì¶œë°›ì•„ ì‹¤ì œ ì ì„ ìƒì„±í•˜ê³  ì´ˆê¸°í™”í•˜ëŠ” í•¨ìˆ˜
     /// </summary>
-    /// <param name="id">¼ÒÈ¯ÇÒ ÀûÀÇ °íÀ¯ ID (int)</param>
-    /// <param name="hpBonus">ÇØ´ç ¿şÀÌºêÀÇ Ã¼·Â Áõ°¡À² (%)</param>
-    public void Spawn(int id, float hpBonus)
+    /// <param name="id">ì†Œí™˜í•  ì ì˜ ê³ ìœ  ID (int)</param>
+    /// <param name="hpBonus">í•´ë‹¹ ì›¨ì´ë¸Œì˜ ì²´ë ¥ ì¦ê°€ìœ¨ (%)</param>
+    public void Spawn(int id, float hpBonus, int pathIndex)
     {
-        // ¿şÀÌÆ÷ÀÎÆ® µ¥ÀÌÅÍ°¡ À¯È¿ÇÑÁö ¸ÕÀú È®ÀÎÇÕ´Ï´Ù.
-        if (WaypointManager.Waypoints == null || WaypointManager.Waypoints.Length == 0)
+        // 1. ğŸ’¡ [í•µì‹¬] ì›¨ì´ë¸Œ ë°ì´í„°ê°€ ì§€ì •í•œ ì¸ë±ìŠ¤ì˜ ê²½ë¡œ ì„¸íŠ¸ë¥¼ WaypointManagerë¡œë¶€í„° ê°€ì ¸ì˜µë‹ˆë‹¤.
+        Transform[] assignedPath = WaypointManager.GetPath(pathIndex);
+
+        // í•´ë‹¹ ê²½ë¡œ ë°ì´í„°ê°€ ìœ íš¨í•œì§€ ê²€ì‚¬í•©ë‹ˆë‹¤.
+        if (assignedPath == null || assignedPath.Length == 0)
         {
-            Debug.LogError("WaypointManager¿¡ ¿şÀÌÆ÷ÀÎÆ® µ¥ÀÌÅÍ°¡ ¾ø½À´Ï´Ù! ½ºÆùÀ» Áß´ÜÇÕ´Ï´Ù.");
+            Debug.LogError($"[SpawnManager] {pathIndex}ë²ˆ ê²½ë¡œì— ì›¨ì´í¬ì¸íŠ¸ ë°ì´í„°ê°€ ì—†ê±°ë‚˜ ìœ íš¨í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤! ìŠ¤í°ì„ ì¤‘ë‹¨í•©ë‹ˆë‹¤.");
             return;
         }
+
+        // ì  ìŠ¤íƒ¯ SO ë°ì´í„°ë¥¼ ID ê¸°ë°˜ìœ¼ë¡œ ê²€ìƒ‰
         SO_EnemyData finalData = enemyDataList.Find(x => x.id == id);
         if (finalData == null)
         {
-            Debug.LogError($"ID {id}¿¡ ÇØ´çÇÏ´Â SO_EnemyData¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù!");
+            Debug.LogError($"ID {id}ì— í•´ë‹¹í•˜ëŠ” SO_EnemyDataë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤!");
             return;
         }
 
-        // ½ºÆù À§Ä¡¸¦ ¿şÀÌÆ÷ÀÎÆ®ÀÇ Ã¹ ¹øÂ° ÁöÁ¡(Index 0)À¸·Î ¼³Á¤ÇÕ´Ï´Ù.
-        Vector3 spawnPosition = WaypointManager.Waypoints[0].position;
-        // Ã¹ ¹øÂ° ¿şÀÌÆ÷ÀÎÆ®°¡ ¹Ù¶óº¸´Â ¹æÇâ ¶Ç´Â ±âº» È¸Àü°ª ¼³Á¤
+        // 2. ğŸ’¡ ë°°ì •ë°›ì€ ê²½ë¡œì˜ ì²« ë²ˆì§¸ ì§€ì (Index 0)ì„ ìŠ¤í° ìœ„ì¹˜ë¡œ ì„¤ì •í•©ë‹ˆë‹¤.
+        Vector3 spawnPosition = assignedPath[0].position;
         Quaternion spawnRotation = Quaternion.identity;
 
-        // 1. PoolManager¿¡¼­ ÇØ´ç ID¸¦ °¡Áø ÀûÀ» ²¨³»¿È
-        // À§Ä¡´Â À§¿¡¼­ ¼³Á¤ÇÑ Ã¹ ¹øÂ° ¿şÀÌÆ÷ÀÎÆ® ÁÂÇ¥¸¦ »ç¿ëÇÕ´Ï´Ù.
+        // PoolManagerì—ì„œ í•´ë‹¹ IDë¥¼ ê°€ì§„ ì ì„ êº¼ë‚´ì˜´
         GameObject enemyObj = PoolManager.Instance.SpawnFromPool(id, spawnPosition, spawnRotation);
 
         if (enemyObj != null)
         {
-            // 2. Àû ¿ÀºêÁ§Æ®¿¡¼­ Enemy ÄÄÆ÷³ÍÆ®¸¦ °¡Á®¿È
+            // ì  ì˜¤ë¸Œì íŠ¸ì—ì„œ Enemy ì»´í¬ë„ŒíŠ¸ë¥¼ ê°€ì ¸ì˜´
             Enemy enemyScript = enemyObj.GetComponent<Enemy>();
 
             if (enemyScript != null)
             {
-
+                // ì¸ë±ìŠ¤ë¥¼ ì²« ë²ˆì§¸ë¡œ ê°•ì œ ì§€ì •
                 enemyScript.SetWaypointIndex(0);
 
-                // 3. ÀûÀÇ °æ·Î¿Í ½ºÅÈ(HP Áõ°¡À²)À» ¼³Á¤ÇÏ¿© ÃÊ±âÈ­
-                // ÀÌ¹Ì WaypointManager¿¡ ÀúÀåµÈ ¹è¿­ ÀüÃ¼¸¦ ³Ñ°ÜÁİ´Ï´Ù.
-                Transform[] path = WaypointManager.Waypoints;
+                // 3. ğŸ’¡ [í•µì‹¬] ì „ì²´ ë°°ì—´ì´ ì•„ë‹ˆë¼, ë°°ì •ë°›ì€ ë…ë¦½ëœ ê²½ë¡œ(assignedPath)ë§Œ ì ì—ê²Œ ì¥ì–´ì¤ë‹ˆë‹¤.
+                enemyScript.Setup(assignedPath, hpBonus, finalData);
 
-                // Enemy Å¬·¡½ºÀÇ Setup ÇÔ¼ö¸¦ È£ÃâÇÏ¿© ÀûÀ» ÀÛµ¿½ÃÅµ´Ï´Ù.
-                enemyScript.Setup(path, hpBonus, finalData);
-                enemyObj.transform.position = WaypointManager.Waypoints[0].position;
+                // ìŠ¤í° ì§í›„ ì²« ì›¨ì´í¬ì¸íŠ¸ ìœ„ì¹˜ì— ì™„ë²½íˆ ì •ë ¬
+                enemyObj.transform.position = assignedPath[0].position;
 
-                Debug.Log($"[SpawnManager] ID {id} ¼ÒÈ¯ ¿Ï·á (À§Ä¡: Ã¹ ¹øÂ° ¿şÀÌÆ÷ÀÎÆ®)");
+                Debug.Log($"[SpawnManager] ID {id} ì†Œí™˜ ì™„ë£Œ (ê²½ë¡œ: ways{pathIndex + 1}, ìœ„ì¹˜: í•´ë‹¹ ê²½ë¡œì˜ 0ë²ˆ í¬ì¸íŠ¸)");
             }
             else
             {
-                Debug.LogError($"ID {id} ÇÁ¸®ÆÕ¿¡ Enemy ÄÄÆ÷³ÍÆ®°¡ ¾ø½À´Ï´Ù.");
+                Debug.LogError($"ID {id} í”„ë¦¬íŒ¹ì— Enemy ì»´í¬ë„ŒíŠ¸ê°€ ì—†ìŠµë‹ˆë‹¤.");
             }
         }
         else
         {
-            Debug.LogWarning($"ID {id}ÀÇ ÀûÀ» ¼ÒÈ¯ÇÒ ¼ö ¾ø½À´Ï´Ù. (Ç®¸µ ¿¡·¯)");
+            Debug.LogWarning($"ID {id}ì˜ ì ì„ ì†Œí™˜í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤. (í’€ë§ ì—ëŸ¬)");
         }
     }
 }

@@ -19,7 +19,6 @@ public class Splitter : Enemy
         if (enemyData == null || enemyData.splitID <= 0) return;
 
         Vector3 deathPosition = transform.position;
-        float parentDistance = TotalDistanceTraveled;
         Vector3 forwardDir = transform.forward;
 
         // 설정값
@@ -73,10 +72,6 @@ public class Splitter : Enemy
                         // 얘네까지 다 잡아야 다음 웨이브가 시작됩니다.
                         WaveManager.Instance.AddActiveEnemy(1);
                     }
-
-                    // 뒤로 밀려난 만큼 누적 이동 거리 차감
-                    float distanceOffset = offset.magnitude;
-                    newEnemy.SetTotalDistance(parentDistance - distanceOffset);
 
                     newEnemy.transform.position = spawnPos;
                 }

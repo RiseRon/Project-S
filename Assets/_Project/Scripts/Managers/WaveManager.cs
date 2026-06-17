@@ -126,51 +126,50 @@ public class WaveManager : MonoBehaviour
         isWaveActive = true;
         IsWaitingNextWave = true;
 
-        // 웨이브 시작 전 대기 (waitingTime)를 UI로 표현하기 위해 로직 변경
+        // 웨이브 시작 전 대기 (waitingTime) 설정
         TotalWaitTime = data.waitingTime;
         CurrentWaitTime = TotalWaitTime;
 
         Debug.Log($"[웨이브 {data.waveID}] 시작 전 대기 중...");
 
-        // 단순히 yield return new WaitForSeconds 대신 시간을 깎으며 대기
+        // 시간을 깎으며 대기
         while (CurrentWaitTime > 0)
         {
             CurrentWaitTime -= Time.deltaTime;
-            yield return null; // 매 프레임 대기
+            yield return null;
         }
-        CurrentWaitTime = 0; // 정확히 0으로 맞춤
-        IsWaitingNextWave = false; // 대기 종료 (전투 시작)
+        CurrentWaitTime = 0;
+        IsWaitingNextWave = false; // 전투 시작
 
         Debug.Log($"[웨이브 {data.waveID}] 전투 개시!");
 
         // 2. 적 소환 (Enemy List 순회)
         foreach (var group in data.enemyList)
         {
-            // 각 몬스터 그룹의 마릿수만큼 소환
             for (int i = 0; i < group.spawnCount; i++)
             {
-                // Enemy.cs의 HP 계산 방식과 맞추기 위해 CSV 수치(0, 10, 20...)를 그대로 넘김
-                SpawnEnemy(group.enemyID, (float)data.hpGrowthRate);
+                // 💡 [데이터 전달] SpawnManager에 ID, 체력 계수, 그리고 현재 웨이브의 경로 인덱스를 온전히 전달합니다.
+                SpawnEnemy(group.enemyID, (float)data.hpGrowthRate, group.pathIndex);
 
                 // 마리당 소환 간격 대기
-                yield return new WaitForSeconds(group.spawnInterval);
+                yield return new WaitForSeconds(group.spawnCycle);
             }
             if (group != data.enemyList.Last())
             {
-                // 그룹 간 대기 시간 (nextGroupCycle 사용)
                 Debug.Log($"[웨이브 {data.waveID}] 다음 그룹 소환까지 대기 ({data.nextGroupCycle}초)");
                 yield return new WaitForSeconds(data.nextGroupCycle);
             }
-            
         }
+
         bool isLastWave = (currentWaveIndex == stageWaves.Count - 1);
-        // 적을 다 잡지 못했더라도 이 시간이 지나면 EndWave로 넘어갑니다.
+
+        // 적을 다 잡지 못했더라도 waveTime 제한 시간이 지나면 다음 루틴으로 유예 대기
         float timer = 0;
         while (timer < data.waveTime)
         {
             timer += Time.deltaTime;
 
-            // 만약 시간 내에 적을 다 잡았다면 루프 탈출
+            // 만약 시간 종료 전에 적을 다 소탕했다면 조기 탈출
             if (activeEnemies <= 0 && enemiesToSpawn <= 0)
             {
                 Debug.Log("시간 종료 전 모든 적 처치 완료!");
@@ -179,15 +178,13 @@ public class WaveManager : MonoBehaviour
 
             yield return null;
         }
+
         if (isLastWave)
         {
-            // [마지막 웨이브일 때]
-            // EndWave()를 호출하지 않고 코루틴을 여기서 종료합니다.
-            // 대신 화면에 "FINAL WAVE - 모든 적을 처치하세요!" 같은 UI 문구를 띄우기 아주 좋은 타이밍입니다.
             Debug.Log("<color=red>[WaveManager]</color> 마지막 웨이브의 스폰 단계가 끝났습니다! 남은 적 소탕 시작.");
             isWaveActive = false;
 
-            // 만약 소환 시간이 다 되었을 때 이미 필드에 적이 없다면 즉시 승리 처리
+            // 혹시 스폰 제한 시간이 끝났을 때 이미 필드에 적이 전멸해있다면 즉시 승리 처리
             if (activeEnemies <= 0)
             {
                 PublishVictory();
@@ -195,8 +192,7 @@ public class WaveManager : MonoBehaviour
         }
         else
         {
-            // [일반 웨이브일 때]
-            // 기존처럼 정상적으로 웨이브 종료 문구를 띄우고 보상을 주며 다음 웨이브를 엽니다.
+            // [일반 웨이브일 때] 다음 웨이브 단계로 전환
             EndWave();
         }
     }
@@ -204,12 +200,13 @@ public class WaveManager : MonoBehaviour
     /// <summary>
     /// SpawnManager를 통해 실제로 적을 씬에 등장시키는 함수
     /// </summary>
-    private void SpawnEnemy(int id, float hpGrowthRate)
+    private void SpawnEnemy(int id, float hpGrowthRate, int pathIndex)
     {
         if (SpawnManager.Instance != null)
         {
-            // hpGrowthRate는 10, 20 같은 정수값으로 전달됨 (Enemy.cs에서 백분율 계산)
-            SpawnManager.Instance.Spawn(id, hpGrowthRate);
+            // 💡 [수정] SpawnManager에게 id, hpGrowthRate와 함께 SO에서 추출한 pathIndex도 같이 넘겨줍니다.
+            SpawnManager.Instance.Spawn(id, hpGrowthRate, pathIndex);
+
             activeEnemies++; // 생존 적 수 증가
             enemiesToSpawn--; // 남은 소환 횟수 감소
         }

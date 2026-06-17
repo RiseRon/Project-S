@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SO_StageData
   stageID: 502
   stage: 2
-  mapPrefabPath: 
+  mapPrefabPath: MapPrefab/P_M_St_2
   bgmPath: BGM_Stage_02
   startCoin: 15
   barrierHP: 100

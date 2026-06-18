@@ -15,6 +15,11 @@ public class AreaEffect : MonoBehaviour
         areaID = id;
         data = slimeData;
 
+        // 장판 프리팹의 크기를 areaDiameter에 맞게 변경합니다.
+        // X축과 Z축(넓이)을 변경하고, Y축(높이)은 너무 길어지지 않게 1로 고정하는 것이 일반적입니다.
+        // (만약 둥근 구형태의 장판이라 모든 방향으로 커져야 한다면 new Vector3(data.areaDiameter, data.areaDiameter, data.areaDiameter)로 변경하세요)
+        transform.localScale = new Vector3(data.areaDiameter, 1f, data.areaDiameter);
+
         // 풀에서 꺼내질 때 이전 장판 데이터가 남아있지 않도록 클리어
         enemyTimers.Clear();
         trackedEnemies.Clear();

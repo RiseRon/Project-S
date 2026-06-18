@@ -22,8 +22,8 @@ public class Splitter : Enemy
         Vector3 forwardDir = transform.forward;
 
         // 설정값
-        float minSpreadDistance = 1.0f; // [추가] 최소 이만큼은 떨어져서 소환
-        float maxSpreadRadius = 2.0f;   // 최대 흩어질 반경
+        float minSpreadDistance = 2.0f; // [추가] 최소 이만큼은 떨어져서 소환
+        float maxSpreadRadius = 4.0f;   // 최대 흩어질 반경
 
         for (int i = 0; i < enemyData.splitSpawnCount; i++)
         {

@@ -16,7 +16,7 @@ MonoBehaviour:
   enemyName: Basic
   enemyHP: 30
   damage: 10
-  moveSpeed: 15
+  moveSpeed: 7
   attackSpeed: 1
   splitID: 0
   splitSpawnCount: 0

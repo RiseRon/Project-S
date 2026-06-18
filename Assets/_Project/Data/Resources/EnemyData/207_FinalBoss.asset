@@ -16,7 +16,7 @@ MonoBehaviour:
   enemyName: FinalBoss
   enemyHP: 300
   damage: 40
-  moveSpeed: 20
+  moveSpeed: 10
   attackSpeed: 1
   splitID: 0
   splitSpawnCount: 0

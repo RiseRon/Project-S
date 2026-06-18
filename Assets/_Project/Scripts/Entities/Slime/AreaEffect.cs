@@ -8,11 +8,21 @@ public class AreaEffect : MonoBehaviour
 
     // 적별 '다음 도트 딜이 들어갈 시간'을 기록
     private Dictionary<Enemy, float> enemyTimers = new Dictionary<Enemy, float>();
-
+    // 장판 내부에 들어와 있는 모든 적을 예외 없이 추적하는 리스트
+    private List<Enemy> trackedEnemies = new List<Enemy>();
     public void Init(int id, SO_SlimeData slimeData)
     {
         areaID = id;
         data = slimeData;
+
+        // 장판 프리팹의 크기를 areaDiameter에 맞게 변경합니다.
+        // X축과 Z축(넓이)을 변경하고, Y축(높이)은 너무 길어지지 않게 1로 고정하는 것이 일반적입니다.
+        // (만약 둥근 구형태의 장판이라 모든 방향으로 커져야 한다면 new Vector3(data.areaDiameter, data.areaDiameter, data.areaDiameter)로 변경하세요)
+        transform.localScale = new Vector3(data.areaDiameter, 1f, data.areaDiameter);
+
+        // 풀에서 꺼내질 때 이전 장판 데이터가 남아있지 않도록 클리어
+        enemyTimers.Clear();
+        trackedEnemies.Clear();
 
         CancelInvoke();
         Invoke(nameof(Deactivate), data.areaDuration);
@@ -30,6 +40,11 @@ public class AreaEffect : MonoBehaviour
     {
         if (other.CompareTag("Enemy") && other.TryGetComponent<Enemy>(out Enemy enemy))
         {
+            if (!trackedEnemies.Contains(enemy))
+            {
+                trackedEnemies.Add(enemy);
+            }
+
             if (data.slowRate > 0)
             {
                 enemy.AddSlow(gameObject.GetInstanceID(), data.slowRate);
@@ -87,19 +102,28 @@ public class AreaEffect : MonoBehaviour
         {
             enemyTimers.Remove(enemy);
         }
+        if (trackedEnemies.Contains(enemy))
+        {
+            trackedEnemies.Remove(enemy);
+        }
     }
 
     private void ClearAllEffects()
     {
+        if (data == null) return;
         // 장판이 사라질 때 안에 있던 모든 적의 효과 해제
-        List<Enemy> currentEnemies = new List<Enemy>(enemyTimers.Keys);
-        foreach (var enemy in enemyTimers.Keys)
+        if (data.slowRate > 0)
         {
-            if (enemy != null)
+            foreach (var enemy in trackedEnemies)
             {
-                enemy.RemoveSlow(gameObject.GetInstanceID());
+                // 적이 도중에 죽지 않고 씬에 살아있을 때만 해제 요청 (널 에러 방지)
+                if (enemy != null && !enemy.IsDead)
+                {
+                    enemy.RemoveSlow(gameObject.GetInstanceID());
+                }
             }
         }
+        trackedEnemies.Clear();
         enemyTimers.Clear();
     }
 }

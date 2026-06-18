@@ -35,4 +35,5 @@ public class SO_SlimeData : ScriptableObject
     [Header("장판 설정")]
     public int areaPrefabID;
     public float areaDuration;
+    public float areaDiameter;
 }

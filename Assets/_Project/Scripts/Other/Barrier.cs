@@ -48,7 +48,10 @@ public class Barrier : MonoBehaviour
         if (IsDestroyed) return;
 
         currentHealth -= damage;
-
+        if (EffectPoolManager.Instance != null)
+        {
+            EffectPoolManager.Instance.SpawnEffect("P_Enemy_Hit", gameObject.transform.position, Quaternion.identity);
+        }
         if (currentHealth <= 0)
         {
             DestroyBarrier();

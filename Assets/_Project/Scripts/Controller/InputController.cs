@@ -11,7 +11,7 @@ public class InputController : MonoBehaviour
     [SerializeField] private float clickTimeThreshold = 0.3f;   // 누른 지 0.3초 안에 떼어야 클릭으로 판정
     [SerializeField] private LayerMask slimeLayer;              // 슬라임만 감지할 레이어 마스크
 
-    // 🌟 [이벤트 선언] 다른 매니저들이 이 소식을 구독(Subscribe)해서 듣게 됩니다.
+    // [이벤트 선언] 다른 매니저들이 이 소식을 구독(Subscribe)해서 듣게 됩니다.
     public event Action<Slime> OnSlimeClicked;       // 슬라임을 "클릭" 했을 때 (스탯창 띄우기용)
     public event Action<Slime> OnSlimeDragStart;     // 슬라임을 "드래그 시작" 했을 때 (슬롯 상태 판별용)
     public event Action OnSlimeDragging;             // 슬라임을 "드래그 중" 일 때 (마우스 따라다니기용)
@@ -35,10 +35,7 @@ public class InputController : MonoBehaviour
 
     private void Update()
     {
-        // UI(스탯창, 버튼 등) 위를 클릭했으면 필드 클릭은 완전히 무시합니다. (UI 관통 방지)
-        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-            return;
-
+        // Update 맨 위에 있던 UI 차단 코드를 지우고 순수하게 HandleInput만 부릅니다.
         HandleInput();
     }
 
@@ -47,6 +44,12 @@ public class InputController : MonoBehaviour
         // 1. 마우스 누름 (Down)
         if (Input.GetMouseButtonDown(0))
         {
+            //마우스를 '처음 누르는 순간'에만 UI 위인지 검사합니다!
+            // 이렇게 하면 UI를 누를 때는 3D 클릭이 무시되고, 
+            // 3D 슬라임을 이미 잡고 드래그 중일 때는 UI 위를 지나가도 막히지 않습니다.
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+                return;
+
             mouseDownPosition = Input.mousePosition;
             mouseDownTime = Time.time;
             isPointerDown = true;

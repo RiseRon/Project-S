@@ -29,9 +29,12 @@ public class SlimeDataImporter
             string[] data = line.Split(',');
 
             // CSV 컬럼 순서 매칭 (SlimeDataTable.csv 기준)
-            // 0:ID, 1:Name, 2:K_Name, 3:ElementType, 4:Rank, 5:Damage, 6:AttackRange, 7:AttackSpeed
-            // 8:ProjectilePrefabID, 9:ProjectileType, 10:TrajectoryType, 11:ProjectileSpeed, 12:ArcHeight
-            // 13:StunChance, 14:StunDuration, 15:AreaPrefabID, 16:AreaDuration, 17:SlowRate, 18:DotDamage, 19:DotDamageInterval
+            // 0:ID, 1:Name, 2:K_Name, 3:ElementType, 4:Level
+            // 5:Damage, 6:AttackRange, 7:AttackSpeed
+            // 8:ProjectilePrefabID, 9:ProjectileType, 10:TrajectoryType
+            // 11:ProjectileSpeed, 12:ArcHeight
+            // 13:StunChance, 14:StunDuration, 15:SlowRate,  16:DotDamageInterval
+            // 17:AreaPrefabID, 18:AreaDuration, 19:AreaDiameter
 
             if (data.Length < 20 || !int.TryParse(data[0], out int id)) continue;
 
@@ -69,11 +72,12 @@ public class SlimeDataImporter
             // 특수 효과 및 장판
             asset.stunChance = ParseFloat(data[13], "스턴 확률", id);
             asset.stunDuration = ParseFloat(data[14], "스턴 지속 시간", id);
-            asset.areaPrefabID = ParseInt(data[15], "장판 프리팹 ID", id);
-            asset.areaDuration = ParseFloat(data[16], "장판 유지 시간", id);
-            asset.slowRate = ParseFloat(data[17], "슬로우 비율", id);
-            asset.dotDamageInterval = ParseFloat(data[19], "도트 주기", id);
+            asset.slowRate = ParseFloat(data[15], "슬로우 비율", id);
+            asset.dotDamageInterval = ParseFloat(data[16], "도트 주기", id);
 
+            asset.areaPrefabID = ParseInt(data[17], "장판 프리팹 ID", id);
+            asset.areaDuration = ParseFloat(data[18], "장판 유지 시간", id);
+            asset.areaDiameter = ParseFloat(data[19], "장판 지름", id);
             EditorUtility.SetDirty(asset);
         }
 

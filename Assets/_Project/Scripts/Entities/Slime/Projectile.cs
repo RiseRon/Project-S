@@ -22,15 +22,23 @@ public class Projectile : MonoBehaviour
 
         if (targetEnemy != null)
         {
-            // 1차 예측: 현재 거리 기준으로 투사체가 닿을 예상 시간 계산
-            float dist1 = Vector3.Distance(startPosition, targetEnemy.transform.position);
-            float time1 = dist1 / data.projectileSpeed;
-            Vector3 predictedPos1 = targetEnemy.GetPredictedPosition(time1);
+            // [최적화 1] 공격 타입에 따라 타겟팅 연산을 분리합니다!
+            if (data.projectileType == ProjectileType.Single)
+            {
+                // 단일 공격: 실시간 유도탄이 될 것이므로, 복잡한 예측 없이 일단 적의 '현재 위치'만 타겟으로 잡습니다.
+                targetPosition = targetEnemy.transform.position;
+            }
+            else
+            {
+                // 범위/장판 공격: 허공을 날아 땅에 꽂혀야 하므로, 기존처럼 정밀하게 적의 '미래 위치'를 예측합니다.
+                float dist1 = Vector3.Distance(startPosition, targetEnemy.transform.position);
+                float time1 = dist1 / data.projectileSpeed;
+                Vector3 predictedPos1 = targetEnemy.GetPredictedPosition(time1);
 
-            // 2차 정밀 예측: 1차 예측 위치까지의 거리를 다시 재서 시간을 100% 보정 (코너 꺾임 완벽 반영)
-            float dist2 = Vector3.Distance(startPosition, predictedPos1);
-            float time2 = dist2 / data.projectileSpeed;
-            targetPosition = targetEnemy.GetPredictedPosition(time2);
+                float dist2 = Vector3.Distance(startPosition, predictedPos1);
+                float time2 = dist2 / data.projectileSpeed;
+                targetPosition = targetEnemy.GetPredictedPosition(time2);
+            }
         }
         else
         {
@@ -47,7 +55,11 @@ public class Projectile : MonoBehaviour
             PoolManager.Instance.ReturnToPool(data.projectilePrefabID, gameObject);
             return;
         }
-
+        // 단일 공격(유도탄)일 경우에만 매 프레임 타겟의 위치를 갱신하여 끝까지 쫓아감
+        if (data.projectileType == ProjectileType.Single && targetEnemy != null && !targetEnemy.IsDead)
+        {
+            targetPosition = targetEnemy.transform.position;
+        }
         // 궤도 설정에 따른 이동 처리
         if (data.trajectoryType == TrajectoryType.Straight)
         {
@@ -93,32 +105,24 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    // 단일(Single) 공격용: 투사체가 적과 직접 충돌했을 때 발동
-    private void OnTriggerEnter(Collider other)
-    {
-        if (data.projectileType != ProjectileType.Single) return;
-
-        if (other.CompareTag("Enemy"))
-        {
-            if (other.TryGetComponent<Enemy>(out var enemy))
-            {
-                enemy.TakeDamage(data.damage);
-                ApplyElementEffects(enemy);
-
-                PoolManager.Instance.ReturnToPool(data.projectilePrefabID, gameObject);
-            }
-        }
-    }
-
-    // 범위(Area) 및 장판(Floor) 공격용: 투사체가 목표 지점에 도달했을 때 발동
+    // 단일(Single), 범위(Area), 장판(Floor) 공격용: 투사체가 목표 지점에 도달했을 때 발동
     private void Arrive()
     {
-        if (data.projectileType == ProjectileType.Area)
+        // [추가] 단일 공격(Single)이 목표에 도달했을 때 확정 데미지 부여!
+        if (data.projectileType == ProjectileType.Single)
         {
-            // [수정] 폭발 반경(2.0f)을 사거리와 분리하여 임시로 하드코딩
+            if (targetEnemy != null && !targetEnemy.IsDead)
+            {
+                targetEnemy.TakeDamage(data.damage);
+                ApplyElementEffects(targetEnemy);
+            }
+        }
+        else if (data.projectileType == ProjectileType.Area)
+        {
+            // 폭발 반경(2.0f)을 사거리와 분리하여 임시로 하드코딩
             float explosionRadius = 2.0f;
 
-            // [수정] 레이어 마스크 검사를 제거하고, 충돌한 모든 객체 중 태그와 컴포넌트로 적만 골라냅니다.
+            // 레이어 마스크 검사를 제거하고, 충돌한 모든 객체 중 태그와 컴포넌트로 적만 골라냅니다.
             Collider[] hits = Physics.OverlapSphere(targetPosition, explosionRadius);
             foreach (var hit in hits)
             {

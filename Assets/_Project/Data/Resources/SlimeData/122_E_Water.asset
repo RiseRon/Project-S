@@ -19,7 +19,7 @@ MonoBehaviour:
   damage: 20
   attackRange: 12
   attackSpeed: 10
-  projectilePrefabID: 902
+  projectilePrefabID: 901
   projectileType: 2
   trajectoryType: 1
   projectileSpeed: 50
@@ -27,7 +27,6 @@ MonoBehaviour:
   stunChance: 0
   stunDuration: 0
   slowRate: 20
-  dotDamage: 0
   dotDamageInterval: 0
-  areaPrefabID: 0
+  areaPrefabID: 903
   areaDuration: 5

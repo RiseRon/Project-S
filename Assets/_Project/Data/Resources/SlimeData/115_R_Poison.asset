@@ -27,7 +27,7 @@ MonoBehaviour:
   stunChance: 0
   stunDuration: 0
   slowRate: 0
-  dotDamageInterval: 5
+  dotDamageInterval: 0.5
   areaPrefabID: 903
-  areaDuration: 7
+  areaDuration: 5
   areaDiameter: 20

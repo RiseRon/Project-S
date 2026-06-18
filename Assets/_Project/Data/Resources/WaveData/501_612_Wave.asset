@@ -24,17 +24,17 @@ MonoBehaviour:
   enemyList:
   - enemyID: 201
     spawnCount: 3
-    spawnCycle: 0
+    spawnCycle: 1
     pathIndex: 0
   - enemyID: 202
     spawnCount: 3
-    spawnCycle: 0
+    spawnCycle: 1
     pathIndex: 0
   - enemyID: 203
     spawnCount: 4
-    spawnCycle: 0
+    spawnCycle: 1
     pathIndex: 0
   - enemyID: 204
     spawnCount: 5
-    spawnCycle: 0
+    spawnCycle: 1
     pathIndex: 0

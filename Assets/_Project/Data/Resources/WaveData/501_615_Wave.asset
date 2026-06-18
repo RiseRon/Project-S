@@ -38,7 +38,7 @@ MonoBehaviour:
     spawnCount: 7
     spawnCycle: 1
     pathIndex: 0
-  - enemyID: 207
+  - enemyID: 206
     spawnCount: 1
     spawnCycle: 1
     pathIndex: 0

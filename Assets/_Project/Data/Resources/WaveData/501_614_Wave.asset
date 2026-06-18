@@ -30,11 +30,11 @@ MonoBehaviour:
     spawnCount: 3
     spawnCycle: 1
     pathIndex: 0
-  - enemyID: 201
+  - enemyID: 203
     spawnCount: 6
     spawnCycle: 1
     pathIndex: 0
-  - enemyID: 201
+  - enemyID: 204
     spawnCount: 7
     spawnCycle: 1
     pathIndex: 0

@@ -28,5 +28,6 @@ MonoBehaviour:
   stunDuration: 0
   slowRate: 0
   dotDamageInterval: 0
-  areaPrefabID: 901
+  areaPrefabID: 0
   areaDuration: 0
+  areaDiameter: 0

@@ -13,6 +13,14 @@ public class Slime : MonoBehaviour
     // [추가] 현재 드래그(배치) 중인지 확인하는 상태 변수
     public bool isDragging = false;
 
+    // [추가] 슬라임이 소환(활성화)될 때 무조건 1회 실행됩니다.
+    private void OnEnable()
+    {
+        // 마지막 공격 시간을 조작합니다.
+        // 드래그가 끝나고 적이 사거리에 들어오는 즉시 쿨타임 조건이 True가 되어 초탄을 발사합니다!
+        lastAttackTime = -9999f;
+    }
+
     // PlacementManager에서 호출하여 데이터를 주입함
     public void SetData(SO_SlimeData data)
     {

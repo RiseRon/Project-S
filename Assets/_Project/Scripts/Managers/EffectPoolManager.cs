@@ -9,7 +9,8 @@ public class EffectPoolManager : MonoBehaviour
     private Dictionary<string, Queue<GameObject>> poolDictionary = new Dictionary<string, Queue<GameObject>>();
     // 원본 프리팹을 빠르게 찾기 위한 딕셔너리
     private Dictionary<string, GameObject> prefabDictionary = new Dictionary<string, GameObject>();
-
+    // 현재 필드에 활성화(소환)되어 있는 이펙트들을 실시간으로 관리하는 장부
+    private HashSet<GameObject> activeEffects = new HashSet<GameObject>();
     [SerializeField] private int prewarmCount = 10;
 
     private void Awake()
@@ -71,22 +72,41 @@ public class EffectPoolManager : MonoBehaviour
         Queue<GameObject> objectPool = poolDictionary[effectName];
         GameObject effectInstance = null;
 
-        // 풀에 재사용 가능한(꺼져있는) 오브젝트가 있는지 확인
-        if (objectPool.Count > 0 && !objectPool.Peek().activeSelf)
+        // 💡 [핵심 수정] 현재 풀에 들어있는 오브젝트의 총개수를 미리 기억합니다.
+        int currentPoolCount = objectPool.Count;
+
+        // 💡 딱 풀에 있는 개수만큼만 루프를 돌며 검사합니다. (무한 루프 및 억지 생성 방지)
+        for (int i = 0; i < currentPoolCount; i++)
         {
-            effectInstance = objectPool.Dequeue();
+            GameObject peekObj = objectPool.Peek();
+
+            // 맨 앞에 있는 녀석이 꺼져있다면(재사용 가능하다면) 즉시 꺼내서 사용!
+            if (peekObj != null && !peekObj.activeSelf)
+            {
+                effectInstance = objectPool.Dequeue();
+                break; // 찾았으니 루프를 탈출합니다.
+            }
+            else
+            {
+                // 이미 켜져서 사용 중인 이펙트라면 뒤로 줄을 다시 세우고 다음 녀석을 검사합니다.
+                objectPool.Enqueue(objectPool.Dequeue());
+            }
         }
-        else
+
+        // 💡 [결과 확인] 위에서 한 바퀴 다 돌았는데도 꺼진 걸 못 찾아서 effectInstance가 null이라는 것은
+        // "진짜로 풀에 있는 모든 이펙트가 필드에서 활발히 사용 중"이라는 뜻입니다. 이때만 새로 생성합니다!
+        if (effectInstance == null)
         {
-            // 풀이 비어있거나 다 사용 중이라면 새로 생성해서 공급 (자동 확장 구조)
             GameObject prefab = prefabDictionary[effectName];
             effectInstance = Instantiate(prefab, this.transform);
 
-            // ★ 안전장치: 혹시 프리팹에 자동 반환 스크립트가 없다면 컴포넌트로 강제 부착
             if (effectInstance.GetComponent<AutoReturnEffect>() == null)
             {
                 effectInstance.AddComponent<AutoReturnEffect>();
             }
+
+            // 💡 새로 생성된 오브젝트도 규칙에 맞게 일단 큐에 한 번 넣어줍니다.
+            objectPool.Enqueue(effectInstance);
         }
 
         // 위치와 회전값을 맞추고 활성화
@@ -94,8 +114,8 @@ public class EffectPoolManager : MonoBehaviour
         effectInstance.transform.rotation = rotation;
         effectInstance.SetActive(true);
 
-        // 사용한 오브젝트는 다시 큐의 맨 뒤로 넣어 돌려막기 구조 완성
-        objectPool.Enqueue(effectInstance);
+        // 💡 활성 리스트에 등록하여 실시간 추적 관리
+        activeEffects.Add(effectInstance);
 
         return effectInstance;
     }
@@ -106,7 +126,13 @@ public class EffectPoolManager : MonoBehaviour
         // 이미 꺼져있다면 중복 처리 방지
         if (!effectInstance.activeSelf) return;
 
-        // 이펙트를 강제로 비활성화 (꺼지는 순간 AutoReturnEffect의 OnDisable이 켜지며 Invoke도 취소됨)
+        // 자연 반환 시 활성화 목록에서 안전하게 제외합니다.
+        if (activeEffects.Contains(effectInstance))
+        {
+            activeEffects.Remove(effectInstance);
+        }
+
+        effectInstance.transform.SetParent(this.transform);
         effectInstance.SetActive(false);
 
         // 장부에 안전하게 다시 줄 세우기 (혹시 모를 중복 Enqueue 방지 검사)
@@ -118,5 +144,31 @@ public class EffectPoolManager : MonoBehaviour
                 objectPool.Enqueue(effectInstance);
             }
         }
+    }
+    public void ClearAllActiveEffects()
+    {
+        Debug.Log("<color=cyan>[EffectPoolManager]</color> 활성 이펙트 목록을 기반으로 정밀 청소를 시작합니다.");
+
+        if (activeEffects.Count == 0) return;
+
+        // 💡 [전면 수정] 루프 실행 중 원본 수정 에러를 방지하기 위해 임시 복사 리스트 생성
+        List<GameObject> toReturnList = new List<GameObject>(activeEffects);
+
+        foreach (var effectInstance in toReturnList)
+        {
+            if (effectInstance == null) continue;
+
+            // 현재 맵에 켜져 있는 이펙트만 부모를 되돌리고 비활성화
+            if (effectInstance.activeSelf)
+            {
+                effectInstance.transform.SetParent(this.transform);
+                effectInstance.SetActive(false);
+            }
+        }
+
+        // 💡 청소가 끝났으므로 활성 장부를 완벽하게 비워줍니다.
+        activeEffects.Clear();
+
+        Debug.Log("<color=cyan>[EffectPoolManager]</color> 필드 위 모든 이펙트 추적 및 회수 완료.");
     }
 }

@@ -166,7 +166,7 @@ public class Boss : Enemy
     // =========================================================================
     private void CastShieldSkill(float shieldValue)
     {
-        currentShieldAmount += shieldValue;
+        currentShieldAmount = shieldValue;
         Debug.Log($"<color=emerald>[패턴 실행]</color> {activeSkillData.name} 발동! 보호막 충전: +{shieldValue} (총합: {currentShieldAmount})");
 
         if (activeShieldEffect == null)
@@ -176,7 +176,7 @@ public class Boss : Enemy
             if (activeShieldEffect != null)
             {
                 activeShieldEffect.transform.SetParent(this.transform);
-                activeShieldEffect.transform.localPosition = new Vector3(0f, 1.0f, 0f);
+                activeShieldEffect.transform.localPosition = new Vector3(0f, 0.5f, 0f);
             }
         }
     }
@@ -241,7 +241,7 @@ public class Boss : Enemy
         // 보호막 차단막이 활성화 상태일 경우 피해 필터링 우선 정산
         if (currentShieldAmount > 0f)
         {
-            if (damage <= currentShieldAmount)
+            if (damage < currentShieldAmount)
             {
                 currentShieldAmount -= damage;
                 damage = 0f;
@@ -273,9 +273,15 @@ public class Boss : Enemy
     {
         if (activeShieldEffect != null)
         {
-            activeShieldEffect.transform.SetParent(null); // 부모 관계 끊고
-            // 💡 매니저에게 강제 회수 명령 전달!
-            EffectPoolManager.Instance.ReturnEffect("P_MidBoss_Shield", activeShieldEffect);
+            // 2. 물리적으로 즉시 꺼버립니다. (이제 눈에서 사라집니다!)
+            activeShieldEffect.SetActive(false);
+            
+            if (EffectPoolManager.Instance != null)
+            {
+                // 3. 풀 매니저에게 반환하여 activeEffects 장부에서 지우고 큐에 넣습니다.
+                EffectPoolManager.Instance.ReturnEffect("P_MidBoss_Shield", activeShieldEffect);
+            }
+
             activeShieldEffect = null;
         }
     }

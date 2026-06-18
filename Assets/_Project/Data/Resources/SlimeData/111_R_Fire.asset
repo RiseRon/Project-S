@@ -30,3 +30,4 @@ MonoBehaviour:
   dotDamageInterval: 0
   areaPrefabID: 0
   areaDuration: 0
+  areaDiameter: 0

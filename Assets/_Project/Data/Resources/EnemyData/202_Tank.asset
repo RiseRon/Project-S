@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SO_EnemyData
   id: 202
   enemyName: Tank
-  enemyHP: 20
+  enemyHP: 60
   damage: 20
   moveSpeed: 7
   attackSpeed: 1

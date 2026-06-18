@@ -16,7 +16,7 @@ MonoBehaviour:
   enemyName: Fast
   enemyHP: 20
   damage: 10
-  moveSpeed: 10
+  moveSpeed: 15
   attackSpeed: 1
   splitID: 0
   splitSpawnCount: 0

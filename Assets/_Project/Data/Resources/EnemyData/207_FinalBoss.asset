@@ -24,6 +24,6 @@ MonoBehaviour:
   canAtkStun: 0
   StunGrace: 1
   SkillID: 2002
-  dropID: 302
+  dropID: 0
   amount: 0
   rotationSpeed: 10

@@ -16,8 +16,8 @@ MonoBehaviour:
   enemyName: Fast
   enemyHP: 20
   damage: 10
-  moveSpeed: 15
-  attackSpeed: 1
+  moveSpeed: 20
+  attackSpeed: 0.5
   splitID: 0
   splitSpawnCount: 0
   canMoveStun: 0
@@ -25,5 +25,5 @@ MonoBehaviour:
   StunGrace: 1
   SkillID: 0
   dropID: 301
-  amount: 5
+  amount: 1
   rotationSpeed: 10

@@ -25,7 +25,7 @@ MonoBehaviour:
   projectileSpeed: 50
   arcHeight: 0
   stunChance: 60
-  stunDuration: 0
+  stunDuration: 1
   slowRate: 0
   dotDamageInterval: 0
   areaPrefabID: 0

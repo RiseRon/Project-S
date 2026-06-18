@@ -14,15 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SO_EnemyData
   id: 205
   enemyName: Splitter_Fragment
-  enemyHP: 30
+  enemyHP: 10
   damage: 10
-  moveSpeed: 20
+  moveSpeed: 10
   attackSpeed: 1
   splitID: 0
   splitSpawnCount: 0
   canMoveStun: 0
   canAtkStun: 0
   StunGrace: 1
+  SkillID: 0
   dropID: 301
-  amount: 5
+  amount: 1
   rotationSpeed: 10

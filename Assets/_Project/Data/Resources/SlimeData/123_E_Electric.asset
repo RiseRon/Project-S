@@ -16,9 +16,9 @@ MonoBehaviour:
   slimeName: E_Electric
   elementType: 2
   rank: 3
-  damage: 40
+  damage: 10
   attackRange: 25
-  attackSpeed: 0.5
+  attackSpeed: 0.2
   projectilePrefabID: 901
   projectileType: 0
   trajectoryType: 0

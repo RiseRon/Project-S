@@ -25,5 +25,5 @@ MonoBehaviour:
   StunGrace: 1
   SkillID: 0
   dropID: 301
-  amount: 5
+  amount: 1
   rotationSpeed: 10

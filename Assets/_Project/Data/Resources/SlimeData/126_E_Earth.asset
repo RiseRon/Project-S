@@ -16,8 +16,8 @@ MonoBehaviour:
   slimeName: E_Earth
   elementType: 5
   rank: 3
-  damage: 20
-  attackRange: 12
+  damage: 40
+  attackRange: 25
   attackSpeed: 3
   projectilePrefabID: 901
   projectileType: 1
@@ -30,3 +30,4 @@ MonoBehaviour:
   dotDamageInterval: 0
   areaPrefabID: 0
   areaDuration: 0
+  areaDiameter: 0

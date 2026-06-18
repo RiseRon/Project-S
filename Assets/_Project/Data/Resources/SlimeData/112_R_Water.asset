@@ -16,8 +16,8 @@ MonoBehaviour:
   slimeName: R_Water
   elementType: 1
   rank: 2
-  damage: 10
-  attackRange: 8
+  damage: 20
+  attackRange: 20
   attackSpeed: 10
   projectilePrefabID: 901
   projectileType: 2
@@ -26,7 +26,8 @@ MonoBehaviour:
   arcHeight: 10
   stunChance: 0
   stunDuration: 0
-  slowRate: 20
-  dotDamageInterval: 0
-  areaPrefabID: 903
-  areaDuration: 5
+  slowRate: 903
+  dotDamageInterval: 5
+  areaPrefabID: 40
+  areaDuration: 0
+  areaDiameter: 0

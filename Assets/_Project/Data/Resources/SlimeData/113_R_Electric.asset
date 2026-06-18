@@ -17,8 +17,8 @@ MonoBehaviour:
   elementType: 2
   rank: 2
   damage: 20
-  attackRange: 8
-  attackSpeed: 0.8
+  attackRange: 20
+  attackSpeed: 0.5
   projectilePrefabID: 901
   projectileType: 0
   trajectoryType: 0
@@ -30,3 +30,4 @@ MonoBehaviour:
   dotDamageInterval: 0
   areaPrefabID: 0
   areaDuration: 0
+  areaDiameter: 0

@@ -22,7 +22,11 @@ MonoBehaviour:
   rewardAmount: 0
   slotMoveRecovery: 0
   enemyList:
-  - enemyID: 201
-    spawnCount: 5
+  - enemyID: 203
+    spawnCount: 3
+    spawnCycle: 1
+    pathIndex: 0
+  - enemyID: 204
+    spawnCount: 2
     spawnCycle: 1
     pathIndex: 0

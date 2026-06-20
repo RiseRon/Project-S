@@ -40,6 +40,8 @@ public class Enemy : MonoBehaviour
 
     private Animator animator;
 
+    private Vector3 dieEffectPo = new Vector3(0, 1.5f, 0);
+
     // 보스 여부 확인(SO_EnemyData의 이름을 기준으로 판별)
     public bool IsBoss => enemyData.enemyName == "MidBoss" || enemyData.enemyName == "FinalBoss";
 
@@ -270,6 +272,17 @@ public class Enemy : MonoBehaviour
         GameManager.AddKilledEnemyCount();
 
         GiveDeathReward();
+
+        if(EffectPoolManager.Instance != null)
+        {
+            dieEffectPo = gameObject.transform.position + dieEffectPo;
+            EffectPoolManager.Instance.SpawnEffect("P_Enemy_Die", dieEffectPo, gameObject.transform.rotation);
+            Debug.Log("작동");
+        }
+        if(SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX("SFX_Enemy_Die");
+        }
 
         if (WaveManager.Instance != null)
         {

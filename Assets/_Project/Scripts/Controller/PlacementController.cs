@@ -220,7 +220,14 @@ public class PlacementController : MonoBehaviour
                 }
                 else if (isDraggingFromInventory && currentDraggingCard != null)
                 {
-                    PoolManager.Instance.ReturnToPool(911, currentDraggingCard.gameObject);
+                    if(SoundManager.Instance != null)
+                    {
+                        SoundManager.Instance.PlaySFX("SFX_Slime_Build");
+                    }
+                    if(PoolManager.Instance != null)
+                    {
+                        PoolManager.Instance.ReturnToPool(911, currentDraggingCard.gameObject);
+                    }
                 }
             }
         }
@@ -228,7 +235,10 @@ public class PlacementController : MonoBehaviour
         {
             // [머지 확정] MergeSystem에게 교환을 요청해서 새 슬라임을 받아옵니다.
             Slime newSlime = MergeSystem.Instance.ExecuteMerge(draggingSlime, currentOverSlot.placedSlime);
-
+            if(SoundManager.Instance != null)
+            {
+                SoundManager.Instance.PlaySFX("SFX_Slime_Merge");
+            }
             if (newSlime != null)
             {
                 // 사령탑이 직접 슬롯을 통제합니다! (기존 데이터 비우고 새 슬라임 등록)

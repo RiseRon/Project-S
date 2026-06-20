@@ -131,11 +131,19 @@ public class SlimeInfoUI : MonoBehaviour
     public void OnRemoveButtonClicked()
     {
         if (currentTargetSlime == null) return;
-
-        Slot slot = PlacementController.Instance.FindSlotUnderSlime(currentTargetSlime.transform.position);
-        if (slot != null) slot.ClearSlot();
-
-        PoolManager.Instance.ReturnToPool(currentTargetSlime.SlimeID, currentTargetSlime.gameObject);
+        if(PlacementController.Instance != null)
+        {
+            Slot slot = PlacementController.Instance.FindSlotUnderSlime(currentTargetSlime.transform.position);
+            if (slot != null) slot.ClearSlot();
+        }
+        if(PoolManager.Instance != null)
+        {
+            PoolManager.Instance.ReturnToPool(currentTargetSlime.SlimeID, currentTargetSlime.gameObject);
+        }
+        if(SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX("SFX_Slime_Pop");
+        }
         CloseUI();
     }
 }

@@ -17,12 +17,24 @@ MonoBehaviour:
   waveTime: 30
   waitingTime: 5
   nextGroupCycle: 2
-  hpGrowthRate: 0
+  hpGrowthRate: 200
   rewardID: 301
   rewardAmount: 0
   slotMoveRecovery: 0
   enemyList:
   - enemyID: 201
-    spawnCount: 5
+    spawnCount: 2
+    spawnCycle: 1
+    pathIndex: 1
+  - enemyID: 202
+    spawnCount: 3
+    spawnCycle: 1
+    pathIndex: 1
+  - enemyID: 203
+    spawnCount: 1
+    spawnCycle: 1
+    pathIndex: 1
+  - enemyID: 204
+    spawnCount: 3
     spawnCycle: 1
     pathIndex: 0

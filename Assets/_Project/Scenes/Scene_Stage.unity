@@ -3059,6 +3059,34 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4320726461505955320, guid: 39b4ea39526811f4a800ad78af0acf6a, type: 3}
+      propertyPath: otherPools.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4320726461505955320, guid: 39b4ea39526811f4a800ad78af0acf6a, type: 3}
+      propertyPath: otherPools.Array.data[5].id
+      value: 951
+      objectReference: {fileID: 0}
+    - target: {fileID: 4320726461505955320, guid: 39b4ea39526811f4a800ad78af0acf6a, type: 3}
+      propertyPath: otherPools.Array.data[6].id
+      value: 952
+      objectReference: {fileID: 0}
+    - target: {fileID: 4320726461505955320, guid: 39b4ea39526811f4a800ad78af0acf6a, type: 3}
+      propertyPath: otherPools.Array.data[5].size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4320726461505955320, guid: 39b4ea39526811f4a800ad78af0acf6a, type: 3}
+      propertyPath: otherPools.Array.data[6].size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4320726461505955320, guid: 39b4ea39526811f4a800ad78af0acf6a, type: 3}
+      propertyPath: otherPools.Array.data[5].prefab
+      value: 
+      objectReference: {fileID: 4287493822139033748, guid: f959ddbd95c24bc4b91c26d94a7a0c29, type: 3}
+    - target: {fileID: 4320726461505955320, guid: 39b4ea39526811f4a800ad78af0acf6a, type: 3}
+      propertyPath: otherPools.Array.data[6].prefab
+      value: 
+      objectReference: {fileID: 545998032637354512, guid: e408c3526bb3ab746961fa930c7e7378, type: 3}
     - target: {fileID: 6675581423151044209, guid: 39b4ea39526811f4a800ad78af0acf6a, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.91561
@@ -5019,6 +5047,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ad440879aca0cb46b92b4904227ae8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MergeSystem
+  mergeEffectNames:
+  - 
+  - 
+  - P_Slime_Level2_Floor
+  - P_Slime_Level3_Floor
 --- !u!4 &709947775
 Transform:
   m_ObjectHideFlags: 0

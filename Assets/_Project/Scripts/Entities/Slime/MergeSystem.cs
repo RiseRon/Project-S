@@ -4,6 +4,11 @@ public class MergeSystem : MonoBehaviour
 {
     public static MergeSystem Instance { get; private set; }
 
+    [Header("이펙트 설정")]
+    [Tooltip("인덱스 번호가 슬라임의 Rank와 일치하도록 세팅하세요. (예: Rank 2 = 2레벨 합성 이펙트 ID)")]
+    // [변경] 단일 변수 대신 배열을 사용하여 레벨별 이펙트 ID를 무한히 담을 수 있게 합니다.
+    [SerializeField] private string[] mergeEffectNames;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -55,15 +60,35 @@ public class MergeSystem : MonoBehaviour
         PoolManager.Instance.ReturnToPool(targetSlime.SlimeID, targetSlime.gameObject);
 
         // 3. 시각적 피드백
-        PlayMergeEffect(spawnPos);
+        PlayMergeEffect(spawnPos, newData.rank);
 
         // 완성된 결과물을 사령탑(PlacementController)에게 넘겨줍니다.
         return newSlime;
     }
 
-    private void PlayMergeEffect(Vector3 position)
+    private void PlayMergeEffect(Vector3 position, int rank)
     {
-        // 나중에 여기에 머지 성공 파티클이나 사운드를 넣으시면 됩니다.
-        // PoolManager.Instance.SpawnFromPool(효과ID, position, ...);
+        // EffectPoolManager를 통해 문자열(이름)로 이펙트를 소환합니다.
+        if (EffectPoolManager.Instance != null)
+        {
+            if (rank >= 0 && rank < mergeEffectNames.Length)
+            {
+                string effectName = mergeEffectNames[rank];
+
+                // 등록된 이펙트 이름이 비어있지 않을 때만 소환
+                if (!string.IsNullOrEmpty(effectName))
+                {
+                    Vector3 effectPos = position - (Vector3.up * 1f);
+                    EffectPoolManager.Instance.SpawnEffect(effectName, effectPos, Quaternion.identity);
+                }
+            }
+        }
+
+        /* 합성 사운드 위치
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.PlaySFX("SFX_Merge_Success");
+        }
+        */
     }
 }

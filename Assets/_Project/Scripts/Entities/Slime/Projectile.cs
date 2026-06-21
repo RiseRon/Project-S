@@ -119,8 +119,8 @@ public class Projectile : MonoBehaviour
         }
         else if (data.projectileType == ProjectileType.Area)
         {
-            // 폭발 반경(2.0f)을 사거리와 분리하여 임시로 하드코딩
-            float explosionRadius = 2.0f;
+            // 폭발 반경은 areaDiameter로 조절 가능
+            float explosionRadius = data.areaDiameter / 2f;
 
             // 레이어 마스크 검사를 제거하고, 충돌한 모든 객체 중 태그와 컴포넌트로 적만 골라냅니다.
             Collider[] hits = Physics.OverlapSphere(targetPosition, explosionRadius);

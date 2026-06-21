@@ -22,12 +22,12 @@ MonoBehaviour:
   projectilePrefabID: 901
   projectileType: 2
   trajectoryType: 1
-  projectileSpeed: 50
+  projectileSpeed: 100
   arcHeight: 10
   stunChance: 0
   stunDuration: 0
   slowRate: 0
   dotDamageInterval: 0.5
-  areaPrefabID: 903
+  areaPrefabID: 902
   areaDuration: 5
   areaDiameter: 20
